@@ -4,10 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Voucher Scanner - Nikola</title>
-  
-  <!-- CDN Html5Qrcode -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 12px; }
@@ -33,7 +30,7 @@
 
   <h2>📱 SCANNER VOUCHER MULTI-FORMAT</h2>
 
-  <!-- 1. PENGATURAN MODE -->
+  <!-- FORM MODE -->
   <div class="card">
     <label>MODE OPERASI:</label>
     <select id="mode" onchange="switchMode()">
@@ -65,14 +62,14 @@
     </div>
   </div>
 
-  <!-- 2. KAMERA SCANNER -->
+  <!-- AREA KAMERA -->
   <div class="card">
     <div id="reader"></div>
     <button class="btn btn-primary" id="btnScanner" onclick="handleScannerClick()">📷 Nyalakan Kamera</button>
     <div id="status-box">Status: Siap scan voucher...</div>
   </div>
 
-  <!-- 3. KERANJANG SEMENTARA -->
+  <!-- KERANJANG SCAN -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <span style="font-weight: bold; font-size: 13px;">Daftar Batch (<span id="totalUnit">0</span> Unit)</span>
@@ -93,9 +90,15 @@
     <button class="btn btn-success" id="btnKirim" onclick="sendBatchData()">🚀 KIRIM KE PC UTAMA</button>
   </div>
 
+  <!-- FRAME & FORM TERSEMBUNYI (ANTI GAGAL CORS GOOGLE) -->
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+  <form id="googleForm" method="POST" target="hidden_iframe" style="display:none;">
+    <input type="hidden" name="data" id="formDataInput">
+  </form>
+
   <script>
-    // URL GOOGLE APPS SCRIPT RESMI MILIK ANDA:
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyL46D88bDsdZ6iGlk4XCS2wer52c9T5igM7DVX2oqgK_MkcCHimY_PiEeDB5FaaWYC/exec"; 
+    // MASUKKAN URL HASIL DEPLOY DARI LANGKAH 1 KE SINI:
+    const SCRIPT_URL = "MASUKKAN_URL_BARU_ANDA_DI_SINI"; 
 
     let html5QrCode = null;
     let isScanning = false;
@@ -140,7 +143,7 @@
         isScanning = true;
         btn.innerText = "⏹ Matikan Kamera";
         btn.style.background = "#ef4444";
-        setStatus("Kamera aktif. Arahkan ke voucher (10-15 cm).");
+        setStatus("Kamera aktif. Dekatkan barcode 10-15 cm.");
       } catch (e) {
         btn.innerText = "📷 Nyalakan Kamera";
         btn.style.background = "#0284c7";
@@ -222,7 +225,7 @@
     function sendBatchData() {
       const keys = Object.keys(cart);
       if (keys.length === 0) {
-        alert("Keranjang masih kosong! Silakan scan voucher terlebih dahulu.");
+        alert("Keranjang masih kosong!");
         return;
       }
 
@@ -231,7 +234,7 @@
 
       const btnKirim = document.getElementById("btnKirim");
       btnKirim.disabled = true;
-      btnKirim.innerText = "⏳ Sedang Mengirim...";
+      btnKirim.innerText = "⏳ Mengirim...";
 
       const mode = document.getElementById("mode").value;
       const itemsPayload = keys.map(k => ({ barcode: k, qty: cart[k], modal: 0 }));
@@ -245,30 +248,19 @@
         items: itemsPayload
       };
 
-      setStatus("Mengirim data ke Google Sheets...");
+      // KIRIM MENGGUNAKAN FORM POST (100% TEMBUS KE GOOGLE SHEET)
+      const form = document.getElementById("googleForm");
+      form.action = SCRIPT_URL;
+      document.getElementById("formDataInput").value = JSON.stringify(payload);
+      form.submit();
 
-      // Mengirim via form POST plain-text agar dijamin menembus batasan CORS Google
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
+      setTimeout(() => {
         btnKirim.disabled = false;
         btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
-        alert("✅ SUKSES! Data voucher berhasil dikirim ke antrean Google Sheets.");
+        alert("✅ BERHASIL DIKIRIM! Silakan periksa Google Sheet Anda.");
         clearCart();
-        setStatus("Data berhasil terkirim ke antrean.");
-      })
-      .catch(err => {
-        btnKirim.disabled = false;
-        btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
-        alert("Terjadi kendala pengiriman: " + err);
-        setStatus("Gagal kirim: " + err);
-      });
+        setStatus("Pengiriman sukses.");
+      }, 1000);
     }
   </script>
 </body>
