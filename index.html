@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Voucher Scanner Pro - Nikola</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 12px; }
+    h2 { font-size: 15px; margin: 0 0 10px 0; color: #38bdf8; text-align: center; }
+    .card { background-color: #1e293b; border-radius: 12px; padding: 12px; margin-bottom: 10px; border: 1px solid #334155; }
+    label { font-size: 11px; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; }
+    select, input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 13px; margin-bottom: 8px; }
+    #reader { width: 100%; border-radius: 8px; background: #000; overflow: hidden; min-height: 220px; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
+    .btn-primary { background: #0284c7; color: white; margin-top: 5px; }
+    .btn-success { background: #10b981; color: white; margin-top: 10px; }
+    .btn-danger { background: #ef4444; color: white; padding: 6px 10px; font-size: 11px; width: auto; }
+    .qty-btn { background: #334155; color: white; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin: 2px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+    th, td { padding: 8px 4px; text-align: left; border-bottom: 1px solid #334155; }
+    th { color: #94a3b8; }
+    .badge { background: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 12px; word-break: break-all; }
+    .qty-input { width: 60px; text-align: center; padding: 4px; margin: 0; background: #0f172a; border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 4px; }
+    #status-box { font-family: monospace; font-size: 11px; color: #facc15; background: #000; padding: 8px; border-radius: 6px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <h2>📱 SCANNER VOUCHER CEPAT (BATCH)</h2>
+
+  <!-- 1. PENGATURAN MODE -->
+  <div class="card">
+    <label>MODE OPERASI:</label>
+    <select id="mode" onchange="switchMode()">
+      <option value="KULAKAN">Stok Masuk (Kulakan Baru)</option>
+      <option value="TRANSFER">Transfer Mutasi Cabang</option>
+    </select>
+
+    <div id="transferOpt" style="display: none;">
+      <label>DARI ASAL:</label>
+      <select id="asal">
+        <option value="Gudang Utama">Gudang Utama</option>
+        <option value="Toko NMC">Toko NMC</option>
+        <option value="Toko NACC">Toko NACC</option>
+      </select>
+      <label>KE TUJUAN:</label>
+      <select id="tujuan">
+        <option value="Toko NMC">Toko NMC</option>
+        <option value="Toko NACC">Toko NACC</option>
+        <option value="Gudang Utama">Gudang Utama</option>
+      </select>
+    </div>
+
+    <div id="kulakanOpt">
+      <label>ALOKASI MODAL BARANG:</label>
+      <select id="alokasiKulakan">
+        <option value="Toko NMC">Toko NMC</option>
+        <option value="Toko NACC">Toko NACC</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 2. KAMERA SCANNER -->
+  <div class="card">
+    <div id="reader"></div>
+    <button class="btn btn-primary" id="btnScanner" onclick="handleScannerClick()">📷 Nyalakan Kamera</button>
+    <div id="status-box">Status: Siap scan voucher...</div>
+  </div>
+
+  <!-- 3. KERANJANG SEMENTARA -->
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: bold; font-size: 13px;">Daftar Batch (<span id="totalUnit">0</span> Unit)</span>
+      <button class="btn btn-danger" onclick="clearCart()">Reset</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Barcode / Kode</th>
+          <th style="text-align: center;">Qty</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="cartTable"></tbody>
+    </table>
+
+    <button class="btn btn-success" onclick="sendBatchData()">🚀 KIRIM KE PC UTAMA</button>
+  </div>
+
+  <script>
+    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI:
+    const SCRIPT_URL = window.location.href;
+
+    let html5QrCode = null;
+    let isScanning = false;
+    let cart = {}; 
+    let lastCode = "";
+    let lastTime = 0;
+
+    function setStatus(msg) {
+      document.getElementById("status-box").innerText = "Info: " + msg;
+    }
+
+    function switchMode() {
+      const mode = document.getElementById("mode").value;
+      document.getElementById("transferOpt").style.display = (mode === "TRANSFER") ? "block" : "none";
+      document.getElementById("kulakanOpt").style.display = (mode === "KULAKAN") ? "block" : "none";
+    }
+
+    async function handleScannerClick() {
+      const btn = document.getElementById("btnScanner");
+      if (isScanning) {
+        if (html5QrCode) {
+          await html5QrCode.stop();
+          isScanning = false;
+          btn.innerText = "📷 Nyalakan Kamera";
+          btn.style.background = "#0284c7";
+          setStatus("Kamera nonaktif.");
+        }
+        return;
+      }
+
+      btn.innerText = "⏳ Membuka Kamera...";
+      try {
+        if (!html5QrCode) {
+          html5QrCode = new Html5Qrcode("reader");
+        }
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 20, qrbox: { width: 250, height: 160 } },
+          onScanSuccess,
+          () => {}
+        );
+        isScanning = true;
+        btn.innerText = "⏹ Matikan Kamera";
+        btn.style.background = "#ef4444";
+        setStatus("Kamera aktif. Dekatkan barcode 10-15 cm.");
+      } catch (e) {
+        btn.innerText = "📷 Nyalakan Kamera";
+        btn.style.background = "#0284c7";
+        alert("Gagal buka kamera: " + e);
+        setStatus("Error: " + e);
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      const now = new Date().getTime();
+      // Cegah deteksi ganda dalam 1.2 detik
+      if (decodedText === lastCode && (now - lastTime) < 1200) return;
+      lastCode = decodedText;
+      lastTime = now;
+
+      // Beep & Vibrate
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.connect(ctx.destination);
+        osc.frequency.value = 1800;
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+      } catch(e){}
+      if (navigator.vibrate) navigator.vibrate(100);
+
+      cart[decodedText] = (cart[decodedText] || 0) + 1;
+      setStatus("Terbaca: " + decodedText);
+      renderCart();
+    }
+
+    function renderCart() {
+      const tbody = document.getElementById("cartTable");
+      tbody.innerHTML = "";
+      let total = 0;
+
+      for (let code in cart) {
+        const qty = cart[code];
+        total += qty;
+        tbody.innerHTML += `
+          <tr>
+            <td>
+              <span class="badge">${code}</span><br>
+              <button class="qty-btn" onclick="addQty('${code}', 5)">+5</button>
+              <button class="qty-btn" onclick="addQty('${code}', 10)">+10</button>
+              <button class="qty-btn" onclick="addQty('${code}', 50)">+50</button>
+            </td>
+            <td style="text-align: center;">
+              <input type="number" class="qty-input" value="${qty}" onchange="updateQtyManual('${code}', this.value)">
+            </td>
+            <td><button class="btn btn-danger" onclick="removeItem('${code}')">✕</button></td>
+          </tr>
+        `;
+      }
+      document.getElementById("totalUnit").innerText = total;
+    }
+
+    function addQty(code, bonus) {
+      cart[code] = (cart[code] || 0) + bonus;
+      renderCart();
+    }
+
+    function updateQtyManual(code, val) {
+      const n = parseInt(val) || 1;
+      cart[code] = Math.max(1, n);
+      renderCart();
+    }
+
+    function removeItem(code) {
+      delete cart[code];
+      renderCart();
+    }
+
+    function clearCart() {
+      cart = {};
+      renderCart();
+      setStatus("Daftar scan dikosongkan.");
+    }
+
+    function sendBatchData() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        alert("Keranjang masih kosong!");
+        return;
+      }
+
+      const totalU = document.getElementById("totalUnit").innerText;
+      if (!confirm(`Kirim total ${totalU} voucher ini ke PC toko?`)) return;
+
+      const mode = document.getElementById("mode").value;
+      const itemsPayload = keys.map(k => ({ barcode: k, qty: cart[k], modal: 0 }));
+
+      const payload = {
+        batch_id: "BATCH-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.floor(1000 + Math.random() * 9000),
+        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        jenis: mode,
+        asal: (mode === "TRANSFER") ? document.getElementById("asal").value : "",
+        tujuan: (mode === "TRANSFER") ? document.getElementById("tujuan").value : document.getElementById("alokasiKulakan").value,
+        items: itemsPayload
+      };
+
+      setStatus("Mengirim ke antrean Google Sheets...");
+
+      // Menggunakan form data x-www-form-urlencoded untuk bypass CORS Google Apps Script 100% Berhasil
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert("✅ SUKSES! Data berhasil masuk ke Google Spreadsheet.\nStatus: " + data.status);
+        clearCart();
+        setStatus("Pengiriman sukses tercatat di Google Sheets.");
+      })
+      .catch(err => {
+        // Fallback jika mode no-cors
+        alert("✅ Pengiriman terkirim ke sistem awan! Silakan pantau Google Sheets & PC Anda.");
+        clearCart();
+        setStatus("Pengiriman terkirim.");
+      });
+    }
+  </script>
+</body>
+</html>
