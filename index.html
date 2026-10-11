@@ -24,6 +24,9 @@
     .badge { background: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 12px; word-break: break-all; }
     .qty-input { width: 60px; text-align: center; padding: 4px; margin: 0; background: #0f172a; border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 4px; }
     #status-box { font-family: monospace; font-size: 11px; color: #facc15; background: #000; padding: 8px; border-radius: 6px; margin-top: 6px; }
+    .manual-box { display: flex; gap: 6px; margin-top: 8px; }
+    .manual-box input { margin-bottom: 0; }
+    .manual-box button { width: auto; padding: 0 16px; background: #334155; color: white; border: 1px solid #475569; border-radius: 8px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -62,10 +65,16 @@
     </div>
   </div>
 
-  <!-- AREA KAMERA -->
+  <!-- AREA KAMERA & MANUAL INPUT -->
   <div class="card">
     <div id="reader"></div>
     <button class="btn btn-primary" id="btnScanner" onclick="handleScannerClick()">📷 Nyalakan Kamera</button>
+    
+    <div class="manual-box">
+      <input type="text" id="manualCode" placeholder="Atau ketik barcode manual...">
+      <button type="button" onclick="addManualCode()">+ Tambah</button>
+    </div>
+    
     <div id="status-box">Status: Siap scan voucher...</div>
   </div>
 
@@ -90,14 +99,8 @@
     <button class="btn btn-success" id="btnKirim" onclick="sendBatchData()">🚀 KIRIM KE PC UTAMA</button>
   </div>
 
-  <!-- FRAME & FORM TERSEMBUNYI (ANTI GAGAL CORS GOOGLE) -->
-  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-  <form id="googleForm" method="POST" target="hidden_iframe" style="display:none;">
-    <input type="hidden" name="data" id="formDataInput">
-  </form>
-
   <script>
-    // MASUKKAN URL HASIL DEPLOY DARI LANGKAH 1 KE SINI:
+    // URL Web App Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec"; 
 
     let html5QrCode = null;
@@ -158,7 +161,7 @@
       lastCode = decodedText;
       lastTime = now;
 
-      // Beep & Getar
+      // Beep & Getar Audio Feedback
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -171,6 +174,16 @@
 
       cart[decodedText] = (cart[decodedText] || 0) + 1;
       setStatus("Terbaca: " + decodedText);
+      renderCart();
+    }
+
+    function addManualCode() {
+      const inp = document.getElementById("manualCode");
+      const code = inp.value.trim();
+      if (!code) return;
+      cart[code] = (cart[code] || 0) + 1;
+      inp.value = "";
+      setStatus("Ditambahkan manual: " + code);
       renderCart();
     }
 
@@ -222,7 +235,7 @@
       setStatus("Daftar scan dikosongkan.");
     }
 
-    function sendBatchData() {
+    async function sendBatchData() {
       const keys = Object.keys(cart);
       if (keys.length === 0) {
         alert("Keranjang masih kosong!");
@@ -235,32 +248,47 @@
       const btnKirim = document.getElementById("btnKirim");
       btnKirim.disabled = true;
       btnKirim.innerText = "⏳ Mengirim...";
+      setStatus("Mengirim data ke Google Spreadsheet...");
 
       const mode = document.getElementById("mode").value;
       const itemsPayload = keys.map(k => ({ barcode: k, qty: cart[k], modal: 0 }));
 
+      // Format Waktu Lokal (WIB)
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const waktuStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
       const payload = {
-        batch_id: "BATCH-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.floor(1000 + Math.random() * 9000),
-        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        batch_id: "BATCH-" + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + "-" + Math.floor(1000 + Math.random() * 9000),
+        waktu: waktuStr,
         jenis: mode,
         asal: (mode === "TRANSFER") ? document.getElementById("asal").value : "",
         tujuan: (mode === "TRANSFER") ? document.getElementById("tujuan").value : document.getElementById("alokasiKulakan").value,
         items: itemsPayload
       };
 
-      // KIRIM MENGGUNAKAN FORM POST (100% TEMBUS KE GOOGLE SHEET)
-      const form = document.getElementById("googleForm");
-      form.action = SCRIPT_URL;
-      document.getElementById("formDataInput").value = JSON.stringify(payload);
-      form.submit();
+      try {
+        // Mengirim JSON dengan Content-Type text/plain agar 100% tembus CORS Google Apps Script
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(payload)
+        });
 
-      setTimeout(() => {
-        btnKirim.disabled = false;
-        btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
-        alert("✅ BERHASIL DIKIRIM! Silakan periksa Google Sheet Anda.");
+        alert("✅ BERHASIL DIKIRIM!\nData telah masuk ke antrean Google Sheet dan akan segera diproses oleh PC.");
         clearCart();
         setStatus("Pengiriman sukses.");
-      }, 1000);
+      } catch (err) {
+        console.error(err);
+        alert("⚠️ Gagal mengirim data. Silakan periksa koneksi internet ponsel.");
+        setStatus("Error kirim: " + err);
+      } finally {
+        btnKirim.disabled = false;
+        btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
+      }
     }
   </script>
 </body>
