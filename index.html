@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#0b1329">
-  <title>Nikola Scanner Pro v4.6</title>
+  <title>Nikola Scanner Pro v4.7</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -18,6 +18,7 @@
       --accent-glow: #38bdf8;
       --success: #10b981;
       --danger: #ef4444;
+      --warning: #f59e0b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.08);
@@ -35,12 +36,12 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* NAVIGASI 2 TAB UTAMA */
+    /* NAVIGASI TAB */
     .nav-tabs-top { display: flex; background: #0f172a; padding: 6px 10px; border-bottom: 1px solid var(--border-color); gap: 6px; }
     .nav-tab-btn { flex: 1; padding: 9px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); transition: all 0.2s ease; }
     .nav-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 3px 10px rgba(2, 132, 199, 0.4); }
 
-    /* KONTEN */
+    /* AREA KONTEN */
     .content-area { flex: 1; padding: 8px; padding-bottom: 95px; }
     .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
     label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
@@ -63,7 +64,7 @@
       border: 1px solid var(--accent); border-radius: 12px; overflow: hidden;
     }
     #reader-wrapper {
-      position: relative; width: 100%; min-height: 200px; background: #000;
+      position: relative; width: 100%; min-height: 210px; background: #000;
       border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;
     }
     #reader { width: 100% !important; border: none !important; }
@@ -73,19 +74,33 @@
 
     /* LASER GUIDELINES */
     .laser-guide {
-      position: absolute; top: 50%; left: 6%; width: 88%; height: 2px;
-      background: #ef4444; box-shadow: 0 0 10px #ef4444; pointer-events: none; z-index: 15;
+      position: absolute; top: 50%; left: 4%; width: 92%; height: 2px;
+      background: #ef4444; box-shadow: 0 0 12px #ef4444; pointer-events: none; z-index: 15;
       transform: translateY(-50%); display: none;
     }
     .laser-guide.active {
-      display: block; animation: laserSweep 1.5s ease-in-out infinite alternate;
+      display: block; animation: laserSweep 1.3s ease-in-out infinite alternate;
     }
     @keyframes laserSweep {
-      0% { transform: translateY(-30px); opacity: 0.6; }
-      100% { transform: translateY(30px); opacity: 0.9; }
+      0% { transform: translateY(-22px); opacity: 0.6; }
+      100% { transform: translateY(22px); opacity: 0.95; }
     }
 
-    /* PILIHAN FORMAT */
+    /* KONTROL ZOOM HARDWARE */
+    .zoom-toolbar {
+      display: none; gap: 6px; margin-top: 6px;
+    }
+    .btn-zoom {
+      flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border-color);
+      background: var(--bg-main); color: var(--text-main); font-size: 10.5px; font-weight: 800;
+      cursor: pointer; text-align: center; transition: all 0.2s ease;
+    }
+    .btn-zoom.active {
+      background: var(--warning); color: #000; border-color: #fde047; font-weight: 900;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    }
+
+    /* TOMBOL PILIHAN FORMAT */
     .format-selector { display: flex; gap: 6px; margin-top: 6px; margin-bottom: 6px; }
     .btn-format {
       flex: 1; padding: 10px 4px; border: 1.5px solid var(--border-color); border-radius: 8px;
@@ -143,7 +158,7 @@
 
   <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">⚡ NIKOLA PRO v4.6</div>
+    <div class="brand-title">⚡ NIKOLA PRO v4.7</div>
     <div class="badge-outlet" id="headerOutletBadge">Kulakan: Toko NMC</div>
   </div>
 
@@ -155,7 +170,9 @@
 
   <div class="content-area">
 
-    <!-- TAB 1: SCAN TRANSAKSI (KULAKAN & MUTASI) -->
+    <!-- =========================================================================
+         TAB VIEW 1: SCAN TRANSAKSI (KULAKAN & MUTASI)
+         ========================================================================= -->
     <div id="viewScanTransaksi">
       <div class="card" id="camera-card">
         <div id="reader-wrapper">
@@ -165,6 +182,13 @@
         <button class="btn btn-primary" id="btnScanner" style="width: 100%; margin-top: 6px;" onclick="handleScannerClick()">
           📷 Buka Kamera Scanner
         </button>
+
+        <!-- KONTROL HARDWARE ZOOM OPTIK / DIGITAL -->
+        <div class="zoom-toolbar" id="zoomControls">
+          <button class="btn-zoom" id="btnZoom1" onclick="applyZoom(1.0)">1x Normal</button>
+          <button class="btn-zoom active" id="btnZoom2" onclick="applyZoom(2.0)">🔍 2x (Makro Tri/Tsel)</button>
+          <button class="btn-zoom" id="btnZoom3" onclick="applyZoom(3.0)">🔍 3x Dekat</button>
+        </div>
       </div>
 
       <div class="card">
@@ -172,11 +196,11 @@
         <div class="format-selector">
           <div class="btn-format active" id="btnFmtBarcode" onclick="selectFormat('BARCODE')">
             <span>📊 BARCODE BALOK (1D)</span>
-            <span class="subtext">Axis, XL, Smartfren, Tsel Tengah</span>
+            <span class="subtext">Tri Tengah, Axis, XL, Tsel, Smartfren</span>
           </div>
           <div class="btn-format" id="btnFmtQR" onclick="selectFormat('QR')">
             <span>🔲 QR CODE KOTAK (2D)</span>
-            <span class="subtext">Tsel QR, by.U, Tri, Smartfren QR</span>
+            <span class="subtext">Tsel QR, by.U, Smartfren QR</span>
           </div>
         </div>
 
@@ -258,7 +282,9 @@
       </div>
     </div>
 
-    <!-- TAB 2: DAFTAR PRODUK BARU -->
+    <!-- =========================================================================
+         TAB VIEW 2: DAFTAR PRODUK BARU
+         ========================================================================= -->
     <div id="viewDaftarBaru" style="display: none;">
       <div class="card">
         <div style="font-size: 13px; font-weight: 900; color: var(--accent-glow); margin-bottom: 3px;">📝 DAFTARKAN PRODUK BARU</div>
@@ -266,7 +292,7 @@
 
         <label>BARCODE / SERIAL NUMBER VOUCHER:</label>
         <div style="display: flex; gap: 6px;">
-          <input type="text" id="newProdBarcode" placeholder="Scan atau ketik nomor seri...">
+          <input type="text" id="newProdBarcode" placeholder="Scan atau ketik nomor seri..." oninput="sanitizeManualInput(this)">
           <button class="btn btn-primary" style="width: auto; padding: 0 14px; margin-bottom: 6px;" onclick="scanBarcodeForNewProduct()">📷 Scan</button>
         </div>
 
@@ -275,11 +301,11 @@
           <div style="flex: 1.2;">
             <select id="selOperator" onchange="autoGenerateName()">
               <option value="Telkomsel">Telkomsel</option>
+              <option value="Tri">Tri (3)</option>
               <option value="Indosat IM3">Indosat IM3</option>
               <option value="XL">XL</option>
               <option value="Axis">Axis</option>
               <option value="Smartfren">Smartfren</option>
-              <option value="Tri">Tri (3)</option>
               <option value="by.U">by.U</option>
             </select>
           </div>
@@ -295,6 +321,7 @@
               <option value="5 GB">5 GB</option>
               <option value="6 GB">6 GB</option>
               <option value="8 GB">8 GB</option>
+              <option value="9 GB">9 GB</option>
               <option value="10 GB">10 GB</option>
               <option value="12 GB">12 GB</option>
               <option value="15 GB">15 GB</option>
@@ -362,6 +389,9 @@
 
     let html5QrCode = null;
     let isScanning = false;
+    let currentVideoTrack = null;
+    let activeZoomLevel = 2.0;
+
     let cart = {}; 
     let currentMode = 1;
     let currentFormat = 'BARCODE';
@@ -464,11 +494,19 @@
       document.getElementById("rangeStepText").innerText = "Langkah 1: Scan Lembar PERTAMA (Awal)";
     }
 
+    // =========================================================================
     // SANITASI NOMOR SERI SUPER KETAT
+    // =========================================================================
     function parseVoucherCode(rawText) {
       if (!rawText) return null;
       let text = String(rawText).trim();
 
+      // Abaikan QR statis yang hanya link web tri.co.id
+      if (text.toLowerCase().includes("tri.co.id") && !text.includes("sn=") && !text.includes("?")) {
+        return null;
+      }
+
+      // Bersihkan jika QR Code membawa URL
       if (text.includes("http://") || text.includes("https://")) {
         try {
           const url = new URL(text);
@@ -482,13 +520,48 @@
 
       let clean = text.replace(/[\s\-]/g, "");
 
-      // Cegah barcode percetakan samping kiri Telkomsel (310/320)
+      // Cegah barcode percetakan samping kiri (310/320)
       if (currentFormat === 'BARCODE' && clean.length === 12 && (clean.startsWith("310") || clean.startsWith("320"))) {
         return null;
       }
 
       const pure = clean.match(/\d{8,25}/);
       return pure ? pure[0] : clean;
+    }
+
+    function sanitizeManualInput(elem) {
+      const cleaned = parseVoucherCode(elem.value);
+      if (cleaned && cleaned !== elem.value && cleaned.length >= 8) {
+        elem.value = cleaned;
+      }
+    }
+
+    // =========================================================================
+    // KONTROL HARDWARE ZOOM & AUTOFOKUS MAKRO
+    // =========================================================================
+    async function applyZoom(level) {
+      activeZoomLevel = level;
+      document.getElementById("btnZoom1").className = (level === 1.0) ? "btn-zoom active" : "btn-zoom";
+      document.getElementById("btnZoom2").className = (level === 2.0) ? "btn-zoom active" : "btn-zoom";
+      document.getElementById("btnZoom3").className = (level === 3.0) ? "btn-zoom active" : "btn-zoom";
+
+      if (!currentVideoTrack) return;
+      try {
+        const capabilities = currentVideoTrack.getCapabilities();
+        if (capabilities.zoom) {
+          const minZ = capabilities.zoom.min || 1.0;
+          const maxZ = capabilities.zoom.max || 5.0;
+          const targetZ = Math.min(Math.max(level, minZ), maxZ);
+          await currentVideoTrack.applyConstraints({
+            advanced: [{ zoom: targetZ }]
+          });
+          showToast(`🔍 Zoom aktif: ${targetZ.toFixed(1)}x`);
+        } else {
+          showToast("Kamera tidak mendukung hardware zoom. Mundurkan HP ke jarak 15 cm.");
+        }
+      } catch(err) {
+        console.warn("Gagal menerapkan zoom:", err);
+      }
     }
 
     async function handleScannerClick() {
@@ -502,23 +575,65 @@
     async function startCamera() {
       const btn = document.getElementById("btnScanner");
       const laser = document.getElementById("laserGuide");
-      btn.innerText = "⏳ Membuka Kamera...";
+      const zoomBar = document.getElementById("zoomControls");
+      btn.innerText = "⏳ Membuka Kamera HD...";
 
       try {
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
 
+        // Konfigurasi Area Bidik Khusus Barcode Rapat
+        const config = {
+          fps: 25,
+          // Jendela horizontal sangat pipih untuk memotong tulisan atas/bawah
+          qrbox: (viewfinderWidth, viewfinderHeight) => {
+            if (currentFormat === 'BARCODE') {
+              return {
+                width: Math.floor(viewfinderWidth * 0.85),
+                height: Math.floor(viewfinderHeight * 0.22)
+              };
+            } else {
+              return {
+                width: Math.floor(viewfinderWidth * 0.65),
+                height: Math.floor(viewfinderWidth * 0.65)
+              };
+            }
+          },
+          experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true // Akselerasi Native Google ML Kit bawaan Android
+          }
+        };
+
+        // Kunci Resolusi Tinggi & Autofokus Makro
+        const cameraConstraints = {
+          facingMode: "environment",
+          width: { ideal: 1920, min: 1280 },
+          height: { ideal: 1080, min: 720 },
+          advanced: [{ focusMode: "continuous" }]
+        };
+
         await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 25 },
+          cameraConstraints,
+          config,
           onScanSuccess,
           () => {}
         );
+
+        // Ambil track video untuk kontrol zoom hardware
+        try {
+          const videoElem = document.querySelector("#reader video");
+          if (videoElem && videoElem.srcObject) {
+            currentVideoTrack = videoElem.srcObject.getVideoTracks()[0];
+            zoomBar.style.display = "flex";
+            // Otomatis aktifkan Zoom 2x untuk voucher rapat
+            setTimeout(() => applyZoom(activeZoomLevel), 500);
+          }
+        } catch(e) {}
 
         isScanning = true;
         laser.className = "laser-guide active";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#ef4444";
-        showToast("Kamera aktif!");
+        showToast("Kamera siap! Gunakan jarak 15 cm agar fokus tajam.");
       } catch (e) {
         btn.innerText = "📷 Buka Kamera Scanner";
         btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
@@ -529,12 +644,15 @@
     async function stopCamera() {
       const btn = document.getElementById("btnScanner");
       const laser = document.getElementById("laserGuide");
+      const zoomBar = document.getElementById("zoomControls");
       if (html5QrCode) {
         try {
           await html5QrCode.stop();
         } catch(e){}
         isScanning = false;
+        currentVideoTrack = null;
         laser.className = "laser-guide";
+        zoomBar.style.display = "none";
         btn.innerText = "📷 Buka Kamera Scanner";
         btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
       }
@@ -613,7 +731,7 @@
           cart[snStr] = (cart[snStr] || 0) + 1;
         }
 
-        alert(`✅ Sukses menambahkan ${totalPcs} lembar!`);
+        alert(`✅ Sukses menambahkan ${totalPcs} lembar ke daftar!`);
         resetRangeInputs();
         setScanMode(1);
         renderCart();
@@ -661,12 +779,15 @@
     function removeItem(code) { delete cart[code]; renderCart(); }
     function clearCart() { cart = {}; renderCart(); showToast("Daftar scan dikosongkan."); }
 
+    // =========================================================================
+    // PENGIRIMAN BATCH TRANSAKSI (KULAKAN & MUTASI)
+    // =========================================================================
     async function sendBatchData() {
       const keys = Object.keys(cart);
       if (keys.length === 0) return alert("Keranjang voucher kosong! Scan minimal 1 voucher.");
 
       const totalU = document.getElementById("totalUnit").innerText;
-      if (!confirm(`Kirim ${totalU} voucher ini ke sistem PC utama sekarang?`)) return;
+      if (!confirm(`Kirim total ${totalU} voucher ini ke sistem PC toko sekarang?`)) return;
 
       const btnKirim = document.getElementById("btnKirim");
       btnKirim.disabled = true;
@@ -713,6 +834,9 @@
       }
     }
 
+    // =========================================================================
+    // PENDAFTARAN PRODUK BARU
+    // =========================================================================
     async function submitNewProduct() {
       const rawBarcode = document.getElementById("newProdBarcode").value.trim();
       const barcode = parseVoucherCode(rawBarcode) || rawBarcode;
@@ -745,7 +869,7 @@
         tujuan: document.getElementById("alokasiKulakan").value,
         items: [{
           barcode: barcode,
-          nama: name,   // Kirim Nama Paket Riil
+          nama: name,   // Kirim Nama Paket Lengkap
           modal: modal,
           jual: jual,   // Kirim Harga Jual Kasir
           qty: qty
