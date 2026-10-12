@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#0b1329">
-  <title>Nikola Scanner Pro v4.8</title>
+  <title>Nikola Scanner Pro v4.9</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -36,7 +36,7 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* NAVIGASI TAB */
+    /* NAVIGASI 2 TAB UTAMA */
     .nav-tabs-top { display: flex; background: #0f172a; padding: 6px 10px; border-bottom: 1px solid var(--border-color); gap: 6px; }
     .nav-tab-btn { flex: 1; padding: 9px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); transition: all 0.2s ease; }
     .nav-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 3px 10px rgba(2, 132, 199, 0.4); }
@@ -100,7 +100,7 @@
       box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
     }
 
-    /* PILIHAN FORMAT */
+    /* TOMBOL FORMAT */
     .format-selector { display: flex; gap: 6px; margin-top: 6px; margin-bottom: 6px; }
     .btn-format {
       flex: 1; padding: 10px 4px; border: 1.5px solid var(--border-color); border-radius: 8px;
@@ -158,7 +158,7 @@
 
   <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">⚡ NIKOLA PRO v4.8</div>
+    <div class="brand-title">⚡ NIKOLA PRO v4.9</div>
     <div class="badge-outlet" id="headerOutletBadge">Kulakan: Toko NMC</div>
   </div>
 
@@ -171,7 +171,7 @@
   <div class="content-area">
 
     <!-- =========================================================================
-         TAB 1: SCAN TRANSAKSI (KULAKAN & MUTASI)
+         TAB VIEW 1: SCAN TRANSAKSI (KULAKAN & MUTASI)
          ========================================================================= -->
     <div id="viewScanTransaksi">
       <div class="card" id="camera-card">
@@ -183,7 +183,7 @@
           📷 Buka Kamera Scanner
         </button>
 
-        <!-- KONTROL ZOOM OPTIK / HARDWARE -->
+        <!-- KONTROL ZOOM OPTIK / DIGITAL -->
         <div class="zoom-toolbar" id="zoomControls">
           <button class="btn-zoom" id="btnZoom1" onclick="applyZoom(1.0)">1x Normal</button>
           <button class="btn-zoom active" id="btnZoom2" onclick="applyZoom(2.0)">🔍 2x (Makro Tri/Tsel)</button>
@@ -283,7 +283,7 @@
     </div>
 
     <!-- =========================================================================
-         TAB 2: DAFTAR PRODUK BARU
+         TAB VIEW 2: DAFTAR PRODUK BARU
          ========================================================================= -->
     <div id="viewDaftarBaru" style="display: none;">
       <div class="card">
@@ -496,7 +496,7 @@
     }
 
     // =========================================================================
-    // SANITASI NOMOR SERI
+    // SANITASI NOMOR SERI SUPER KETAT
     // =========================================================================
     function parseVoucherCode(rawText) {
       if (!rawText) return null;
@@ -575,7 +575,7 @@
     }
 
     // =========================================================================
-    // KONTROL KAMERA (STATE-SAFE & ANTI-CRASH)
+    // KONTROL KAMERA (EXACTLY 1 KEY PADA PARAMETER PERTAMA)
     // =========================================================================
     async function startCamera() {
       if (isTransitioning || isScanning) return;
@@ -589,28 +589,24 @@
       btn.innerText = "⏳ Membuka Kamera...";
 
       try {
-        // 1. Bersihkan instance lama secara tuntas untuk cegah 'transition lock'
+        // 1. Bersihkan instans lama agar tidak bentrok
         if (html5QrCode) {
-          try {
-            await html5QrCode.stop();
-          } catch(e) {}
-          try {
-            await html5QrCode.clear();
-          } catch(e) {}
+          try { await html5QrCode.stop(); } catch(e) {}
+          try { await html5QrCode.clear(); } catch(e) {}
           html5QrCode = null;
         }
 
-        // 2. Buat instance baru dalam kondisi bersih
+        // 2. Buat instans baru
         html5QrCode = new Html5Qrcode("reader");
 
         // 3. Konfigurasi Area Bidik (qrbox)
-        const config = {
+        const scanConfig = {
           fps: 25,
           qrbox: (viewfinderWidth, viewfinderHeight) => {
             if (currentFormat === 'BARCODE') {
               return {
                 width: Math.floor(viewfinderWidth * 0.85),
-                height: Math.floor(viewfinderHeight * 0.25) // Slit horizontal untuk potong teks atas/bawah
+                height: Math.floor(viewfinderHeight * 0.25) // Jendela tipis memotong teks atas/bawah
               };
             } else {
               return {
@@ -618,20 +614,15 @@
                 height: Math.floor(viewfinderWidth * 0.65)
               };
             }
-          },
-          experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true // Akselerasi Native Android Google ML Kit
           }
         };
 
-        // 4. Parameter kamera aman (menghindari OverconstrainedError)
-        const cameraConstraints = {
-          facingMode: "environment"
-        };
+        // 4. KUNCI PERBAIKAN: Parameter pertama WAJIB HANYA 1 KEY!
+        const cameraConfig = { facingMode: "environment" };
 
         await html5QrCode.start(
-          cameraConstraints,
-          config,
+          cameraConfig,
+          scanConfig,
           onScanSuccess,
           () => {}
         );
@@ -641,17 +632,18 @@
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#ef4444";
 
-        // 5. Kaitkan track video untuk zoom hardware
+        // 5. Ambil track kamera untuk zoom hardware (setelah kamera sukses terbuka)
         try {
           const videoElem = document.querySelector("#reader video");
           if (videoElem && videoElem.srcObject) {
             currentVideoTrack = videoElem.srcObject.getVideoTracks()[0];
             zoomBar.style.display = "flex";
-            setTimeout(() => applyZoom(activeZoomLevel), 500);
+            // Terapkan Zoom 2x untuk barcode rapat
+            setTimeout(() => applyZoom(activeZoomLevel), 400);
           }
         } catch(e) {}
 
-        showToast("Kamera siap! Gunakan jarak 15 cm agar fokus tajam.");
+        showToast("Kamera aktif! Jaga jarak 15 cm agar fokus tajam.");
       } catch (e) {
         isScanning = false;
         btn.innerText = "📷 Buka Kamera Scanner";
@@ -676,12 +668,8 @@
 
       try {
         if (html5QrCode) {
-          try {
-            await html5QrCode.stop();
-          } catch(e) {}
-          try {
-            await html5QrCode.clear();
-          } catch(e) {}
+          try { await html5QrCode.stop(); } catch(e) {}
+          try { await html5QrCode.clear(); } catch(e) {}
           html5QrCode = null;
         }
       } catch(e) {
@@ -697,3 +685,246 @@
         isTransitioning = false;
       }
     }
+
+    function playBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.connect(ctx.destination);
+        osc.frequency.value = 1900;
+        osc.start();
+        osc.stop(ctx.currentTime + 0.07);
+      } catch(e){}
+      if (navigator.vibrate) navigator.vibrate(80);
+    }
+
+    function onScanSuccess(decodedText) {
+      const cleanSN = parseVoucherCode(decodedText);
+      if (!cleanSN) return;
+
+      const now = new Date().getTime();
+      const delay = (currentMode === 2) ? 400 : 1200;
+      if (cleanSN === lastCode && (now - lastTime) < delay) return;
+      lastCode = cleanSN;
+      lastTime = now;
+
+      playBeep();
+
+      if (isScanningForNewItem) {
+        document.getElementById("newProdBarcode").value = cleanSN;
+        isScanningForNewItem = false;
+        switchMainTab('NEW_PROD');
+        showToast("Barcode terisi: " + cleanSN);
+        return;
+      }
+
+      if (currentMode === 1) {
+        cart[cleanSN] = (cart[cleanSN] || 0) + 1;
+        showToast("Terbaca: " + cleanSN + " (+1)");
+        renderCart();
+      } else if (currentMode === 2) {
+        cart[cleanSN] = (cart[cleanSN] || 0) + 1;
+        showToast("Tembak: " + cleanSN);
+        renderCart();
+      } else if (currentMode === 3) {
+        if (rangeStep === 1) {
+          document.getElementById("snStart").value = cleanSN;
+          rangeStep = 2;
+          document.getElementById("rangeStepText").innerText = "Langkah 2: Scan Lembar TERAKHIR (Akhir)";
+          showToast("Awal: " + cleanSN);
+        } else if (rangeStep === 2) {
+          document.getElementById("snEnd").value = cleanSN;
+          document.getElementById("rangeStepText").innerText = "Langkah 3: Klik 'Masukkan Rentang'";
+          showToast("Akhir: " + cleanSN);
+        }
+      }
+    }
+
+    function generateRangeItems() {
+      const startStr = document.getElementById("snStart").value.trim();
+      const endStr = document.getElementById("snEnd").value.trim();
+      if (!startStr || !endStr) return alert("Scan lembar awal dan akhir terlebih dahulu!");
+
+      try {
+        const startBig = BigInt(startStr);
+        const endBig = BigInt(endStr);
+        if (endBig < startBig) return alert("Nomor akhir lebih kecil dari nomor awal!");
+
+        const totalPcs = Number(endBig - startBig) + 1;
+        if (totalPcs > 500 && !confirm(`Generate ${totalPcs} lembar?`)) return;
+
+        const len = startStr.length;
+        for (let i = startBig; i <= endBig; i++) {
+          let snStr = i.toString().padStart(len, '0');
+          cart[snStr] = (cart[snStr] || 0) + 1;
+        }
+
+        alert(`✅ Sukses menambahkan ${totalPcs} lembar ke daftar!`);
+        resetRangeInputs();
+        setScanMode(1);
+        renderCart();
+      } catch (err) {
+        alert("Gagal memproses rentang: " + err);
+      }
+    }
+
+    function renderCart() {
+      const tbody = document.getElementById("cartTable");
+      tbody.innerHTML = "";
+      const keys = Object.keys(cart);
+      let grandTotal = 0;
+
+      if (keys.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>`;
+        document.getElementById("totalUnit").innerText = "0";
+        return;
+      }
+
+      for (let code of keys) {
+        const qty = cart[code];
+        grandTotal += qty;
+        tbody.innerHTML += `
+          <tr>
+            <td>
+              <span class="badge-code">${code}</span><br>
+              <button class="qty-btn" onclick="addQty('${code}', 5)">+5</button>
+              <button class="qty-btn" onclick="addQty('${code}', 10)">+10</button>
+              <button class="qty-btn" onclick="addQty('${code}', 50)">+50</button>
+            </td>
+            <td style="text-align: center;">
+              <input type="number" class="qty-input" value="${qty}" onchange="updateQtyManual('${code}', this.value)">
+            </td>
+            <td><button class="btn-danger" onclick="removeItem('${code}')">✕</button></td>
+          </tr>
+        `;
+      }
+
+      document.getElementById("totalUnit").innerText = grandTotal;
+    }
+
+    function addQty(code, bonus) { cart[code] = (cart[code] || 0) + bonus; renderCart(); }
+    function updateQtyManual(code, val) { cart[code] = Math.max(1, parseInt(val) || 1); renderCart(); }
+    function removeItem(code) { delete cart[code]; renderCart(); }
+    function clearCart() { cart = {}; renderCart(); showToast("Daftar scan dikosongkan."); }
+
+    // =========================================================================
+    // PENGIRIMAN BATCH TRANSAKSI
+    // =========================================================================
+    async function sendBatchData() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) return alert("Keranjang voucher kosong! Scan minimal 1 voucher.");
+
+      const totalU = document.getElementById("totalUnit").innerText;
+      if (!confirm(`Kirim total ${totalU} voucher ini ke sistem PC toko sekarang?`)) return;
+
+      const btnKirim = document.getElementById("btnKirim");
+      btnKirim.disabled = true;
+      btnKirim.innerText = "⏳ MENGIRIM KE PC...";
+      showToast("Mengirim ke antrean Cloud...");
+
+      const mode = document.getElementById("trxType").value;
+      const itemsPayload = keys.map(k => ({ 
+        barcode: parseVoucherCode(k) || k, 
+        qty: cart[k], 
+        modal: 0,
+        nama: "",
+        jual: 0
+      }));
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const waktuStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+      const payload = {
+        batch_id: "BATCH-" + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + "-" + Math.floor(1000 + Math.random() * 9000),
+        waktu: waktuStr,
+        jenis: mode,
+        asal: (mode === "TRANSFER") ? document.getElementById("asal").value : "",
+        tujuan: (mode === "TRANSFER") ? document.getElementById("tujuan").value : document.getElementById("alokasiKulakan").value,
+        items: itemsPayload
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        alert(`✅ SUKSES TERKIRIM!\nSebanyak ${totalU} voucher berhasil dikirim ke antrean dan akan segera disinkronkan oleh PC toko.`);
+        clearCart();
+      } catch (err) {
+        alert("⚠️ Gagal kirim: " + err);
+      } finally {
+        btnKirim.disabled = false;
+        btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
+      }
+    }
+
+    // =========================================================================
+    // PENDAFTARAN PRODUK BARU
+    // =========================================================================
+    async function submitNewProduct() {
+      const rawBarcode = document.getElementById("newProdBarcode").value.trim();
+      const barcode = parseVoucherCode(rawBarcode) || rawBarcode;
+      
+      let name = document.getElementById("newProdName").value.trim();
+      if (!name) {
+        autoGenerateName();
+        name = document.getElementById("newProdName").value.trim();
+      }
+
+      const modal = parseInt(document.getElementById("newProdModal").value) || 0;
+      const jual = parseInt(document.getElementById("newProdJual").value) || 0;
+      const qty = parseInt(document.getElementById("newProdQty").value) || 1;
+
+      if (!barcode) return alert("Barcode wajib diisi!");
+      if (!name) return alert("Nama produk tidak boleh kosong!");
+      if (jual < modal) return alert("Harga jual tidak boleh lebih rendah dari modal!");
+
+      if (!confirm(`Daftarkan '${name}' (Modal: Rp ${modal.toLocaleString()}, Jual: Rp ${jual.toLocaleString()}) dengan stok ${qty} pcs ke Master PC?`)) return;
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const waktuStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+      const payload = {
+        batch_id: "NEWPROD-" + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + "-" + Math.floor(1000 + Math.random() * 9000),
+        waktu: waktuStr,
+        jenis: "DAFTAR_BARU",
+        asal: "",
+        tujuan: document.getElementById("alokasiKulakan").value,
+        items: [{
+          barcode: barcode,
+          nama: name,   // Kirim Nama Paket Lengkap
+          modal: modal,
+          jual: jual,   // Kirim Harga Jual Kasir
+          qty: qty
+        }]
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        alert(`✅ BERHASIL DIDAFTARKAN!\nProduk '${name}' (${qty} pcs) berhasil dikirim dan akan segera dicatat di Master PC.`);
+        document.getElementById("newProdBarcode").value = "";
+        document.getElementById("newProdModal").value = "";
+        document.getElementById("newProdJual").value = "";
+        document.getElementById("newProdQty").value = "1";
+        switchMainTab('SCAN');
+      } catch (err) {
+        alert("⚠️ Gagal mendaftarkan produk: " + err);
+      }
+    }
+
+    updateHeaderBadge();
+    autoGenerateName();
+  </script>
+</body>
+</html>
