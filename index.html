@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#0b1329">
-  <title>Nikola Scanner Pro v4.5</title>
+  <title>Nikola Scanner Pro v4.6</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -37,7 +37,7 @@
 
     /* NAVIGASI 2 TAB UTAMA */
     .nav-tabs-top { display: flex; background: #0f172a; padding: 6px 10px; border-bottom: 1px solid var(--border-color); gap: 6px; }
-    .nav-tab-btn { flex: 1; padding: 9px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); }
+    .nav-tab-btn { flex: 1; padding: 9px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); transition: all 0.2s ease; }
     .nav-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 3px 10px rgba(2, 132, 199, 0.4); }
 
     /* KONTEN */
@@ -48,13 +48,14 @@
       width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color);
       background: var(--bg-main); color: white; font-size: 12px; font-weight: 600; margin-bottom: 6px; outline: none;
     }
+    input:focus, select:focus { border-color: var(--accent-glow); }
 
     /* PREVIEW GENERATED NAME BOX */
     .name-preview-box {
       background: #0f172a; border: 1px solid var(--accent-glow); border-radius: 8px;
-      padding: 9px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 10px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
     }
-    .name-preview-text { font-size: 13px; font-weight: 900; color: #38bdf8; letter-spacing: 0.3px; width: 100%; }
+    .name-preview-text { font-size: 13px; font-weight: 900; color: #38bdf8; letter-spacing: 0.3px; width: 100%; background: transparent; border: none; margin-bottom: 0; }
 
     /* KAMERA VIEWPORT */
     #camera-card {
@@ -70,7 +71,7 @@
     #reader__header_message, #reader__status_span, #reader img { display: none !important; }
     #reader__scan_region { min-height: auto !important; }
 
-    /* LASER MERAH */
+    /* LASER GUIDELINES */
     .laser-guide {
       position: absolute; top: 50%; left: 6%; width: 88%; height: 2px;
       background: #ef4444; box-shadow: 0 0 10px #ef4444; pointer-events: none; z-index: 15;
@@ -84,7 +85,7 @@
       100% { transform: translateY(30px); opacity: 0.9; }
     }
 
-    /* TOMBOL PILIHAN FORMAT */
+    /* PILIHAN FORMAT */
     .format-selector { display: flex; gap: 6px; margin-top: 6px; margin-bottom: 6px; }
     .btn-format {
       flex: 1; padding: 10px 4px; border: 1.5px solid var(--border-color); border-radius: 8px;
@@ -108,13 +109,13 @@
     td { padding: 6px 4px; border-bottom: 1px solid var(--border-color); }
     .badge-code { background: var(--bg-elevated); color: var(--accent-glow); padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 11px; font-weight: bold; }
     .qty-input { width: 50px; text-align: center; padding: 4px; background: var(--bg-main); border: 1px solid var(--accent); color: var(--accent-glow); font-weight: 900; border-radius: 4px; margin: 0; }
-    .qty-btn { background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-color); padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin: 1px; }
+    .qty-btn { background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-color); padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin: 1px; cursor: pointer; }
 
     /* TOMBOL UTAMA */
     .btn { padding: 11px; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .btn-primary { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; }
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-    .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 10px; padding: 4px 8px; border-radius: 6px; }
+    .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 10px; padding: 4px 8px; border-radius: 6px; cursor: pointer; }
 
     /* FLOATING BOTTOM BAR */
     .bottom-floating-bar {
@@ -142,8 +143,8 @@
 
   <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">⚡ NIKOLA PRO v4.5</div>
-    <div class="badge-outlet" id="headerOutletBadge">Gudang Utama</div>
+    <div class="brand-title">⚡ NIKOLA PRO v4.6</div>
+    <div class="badge-outlet" id="headerOutletBadge">Kulakan: Toko NMC</div>
   </div>
 
   <!-- NAVIGASI 2 TAB UTAMA -->
@@ -154,11 +155,8 @@
 
   <div class="content-area">
 
-    <!-- =========================================================================
-         TAB VIEW 1: SCAN TRANSAKSI (KULAKAN & MUTASI)
-         ========================================================================= -->
+    <!-- TAB 1: SCAN TRANSAKSI (KULAKAN & MUTASI) -->
     <div id="viewScanTransaksi">
-      <!-- 1. KAMERA PALING ATAS -->
       <div class="card" id="camera-card">
         <div id="reader-wrapper">
           <div id="reader"></div>
@@ -169,7 +167,6 @@
         </button>
       </div>
 
-      <!-- 2. PILIHAN FORMAT KODE & METODE HITUNG -->
       <div class="card">
         <label>JENIS KODE YANG AKAN DI-SCAN:</label>
         <div class="format-selector">
@@ -190,7 +187,6 @@
           <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">RENTANG SERI</div>
         </div>
 
-        <!-- KOTAK RENTANG -->
         <div id="rangePanel" style="display: none; margin-top: 6px;">
           <div style="font-size: 10px; font-weight: 800; color: var(--accent-glow); margin-bottom: 4px;" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
           <div style="display: flex; gap: 4px;">
@@ -201,7 +197,6 @@
         </div>
       </div>
 
-      <!-- 3. PENGATURAN TUJUAN TRANSAKSI -->
       <div class="card">
         <div style="display: flex; gap: 6px;">
           <div style="flex: 1;">
@@ -242,7 +237,6 @@
         </div>
       </div>
 
-      <!-- 4. KERANJANG SEMENTARA -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <span style="font-size: 11px; font-weight: 800; color: var(--text-main);">📋 DAFTAR VOUCHER TERSCAN</span>
@@ -264,22 +258,19 @@
       </div>
     </div>
 
-    <!-- =========================================================================
-         TAB VIEW 2: DAFTAR PRODUK BARU DENGAN SMART DROPDOWN NAMA
-         ========================================================================= -->
+    <!-- TAB 2: DAFTAR PRODUK BARU -->
     <div id="viewDaftarBaru" style="display: none;">
       <div class="card">
         <div style="font-size: 13px; font-weight: 900; color: var(--accent-glow); margin-bottom: 3px;">📝 DAFTARKAN PRODUK BARU</div>
         <div style="font-size: 10.5px; color: var(--text-muted); margin-bottom: 12px;">Standardisasi nama otomatis: Operator + Kuota (GB) + Masa Aktif (Hari).</div>
 
-        <label>BARCODE / SERIAL NUMBER:</label>
+        <label>BARCODE / SERIAL NUMBER VOUCHER:</label>
         <div style="display: flex; gap: 6px;">
-          <input type="text" id="newProdBarcode" placeholder="Scan atau ketik kode barcode...">
+          <input type="text" id="newProdBarcode" placeholder="Scan atau ketik nomor seri...">
           <button class="btn btn-primary" style="width: auto; padding: 0 14px; margin-bottom: 6px;" onclick="scanBarcodeForNewProduct()">📷 Scan</button>
         </div>
 
-        <!-- GENERATOR NAMA VOUCHER -->
-        <label>PILIHAN DATA PAKET VOUCHER:</label>
+        <label>KOMPOSISI PAKET DATA:</label>
         <div style="display: flex; gap: 6px;">
           <div style="flex: 1.2;">
             <select id="selOperator" onchange="autoGenerateName()">
@@ -328,7 +319,7 @@
           </div>
         </div>
 
-        <label>NAMA PRODUK AKHIR (BISA DITAMBAH KETERANGAN JIKA PERLU):</label>
+        <label>NAMA PAKET LENGKAP (AKAN DITAMPILKAN DI PC):</label>
         <div class="name-preview-box">
           <input type="text" id="newProdName" class="name-preview-text" value="Telkomsel 3 GB 30 Hari">
         </div>
@@ -344,7 +335,7 @@
           </div>
         </div>
 
-        <label>STOK AWAL LANGSUNG MASUK:</label>
+        <label>STOK AWAL MASUK GUDANG (PCS):</label>
         <input type="number" id="newProdQty" value="1" min="1">
 
         <button class="btn btn-success" style="margin-top: 10px;" onclick="submitNewProduct()">
@@ -386,7 +377,6 @@
       setTimeout(() => { t.style.display = "none"; }, dur);
     }
 
-    // AUTO GENERATOR NAMA VOUCHER STANDAR
     function autoGenerateName() {
       const op = document.getElementById("selOperator").value;
       const gb = document.getElementById("selKuota").value;
@@ -421,7 +411,7 @@
       isScanningForNewItem = true;
       switchMainTab('SCAN');
       if (!isScanning) handleScannerClick();
-      showToast("Scan voucher untuk mengisi barcode produk baru.");
+      showToast("Scan voucher untuk mengisi barcode.");
     }
 
     async function selectFormat(fmt) {
@@ -429,8 +419,7 @@
       currentFormat = fmt;
       document.getElementById("btnFmtBarcode").className = (fmt === 'BARCODE') ? "btn-format active" : "btn-format";
       document.getElementById("btnFmtQR").className = (fmt === 'QR') ? "btn-format active" : "btn-format";
-
-      showToast(fmt === 'BARCODE' ? "Mode Barcode Balok Aktif" : "Mode QR Code Aktif");
+      showToast(fmt === 'BARCODE' ? "Mode Barcode Balok (1D) Aktif" : "Mode QR Code (2D) Aktif");
 
       if (isScanning) {
         await stopCamera();
@@ -475,6 +464,7 @@
       document.getElementById("rangeStepText").innerText = "Langkah 1: Scan Lembar PERTAMA (Awal)";
     }
 
+    // SANITASI NOMOR SERI SUPER KETAT
     function parseVoucherCode(rawText) {
       if (!rawText) return null;
       let text = String(rawText).trim();
@@ -492,6 +482,7 @@
 
       let clean = text.replace(/[\s\-]/g, "");
 
+      // Cegah barcode percetakan samping kiri Telkomsel (310/320)
       if (currentFormat === 'BARCODE' && clean.length === 12 && (clean.startsWith("310") || clean.startsWith("320"))) {
         return null;
       }
@@ -527,7 +518,7 @@
         laser.className = "laser-guide active";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#ef4444";
-        showToast("Kamera siap! Arahkan ke barcode.");
+        showToast("Kamera aktif!");
       } catch (e) {
         btn.innerText = "📷 Buka Kamera Scanner";
         btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
@@ -622,7 +613,7 @@
           cart[snStr] = (cart[snStr] || 0) + 1;
         }
 
-        alert(`✅ Sukses menambahkan ${totalPcs} lembar ke daftar!`);
+        alert(`✅ Sukses menambahkan ${totalPcs} lembar!`);
         resetRangeInputs();
         setScanMode(1);
         renderCart();
@@ -672,18 +663,24 @@
 
     async function sendBatchData() {
       const keys = Object.keys(cart);
-      if (keys.length === 0) return alert("Keranjang voucher masih kosong! Scan minimal 1 voucher.");
+      if (keys.length === 0) return alert("Keranjang voucher kosong! Scan minimal 1 voucher.");
 
       const totalU = document.getElementById("totalUnit").innerText;
-      if (!confirm(`Kirim total ${totalU} voucher ini ke sistem PC toko sekarang?`)) return;
+      if (!confirm(`Kirim ${totalU} voucher ini ke sistem PC utama sekarang?`)) return;
 
       const btnKirim = document.getElementById("btnKirim");
       btnKirim.disabled = true;
       btnKirim.innerText = "⏳ MENGIRIM KE PC...";
-      showToast("Mengirim ke antrean Google Sheets...");
+      showToast("Mengirim ke antrean Cloud...");
 
       const mode = document.getElementById("trxType").value;
-      const itemsPayload = keys.map(k => ({ barcode: k, qty: cart[k], modal: 0 }));
+      const itemsPayload = keys.map(k => ({ 
+        barcode: parseVoucherCode(k) || k, 
+        qty: cart[k], 
+        modal: 0,
+        nama: "",
+        jual: 0
+      }));
 
       const now = new Date();
       const pad = (n) => String(n).padStart(2, '0');
@@ -706,7 +703,7 @@
           body: JSON.stringify(payload)
         });
 
-        alert(`✅ SUKSES TERKIRIM!\nSebanyak ${totalU} voucher berhasil dikirim ke antrean Google Sheet dan akan segera dicatat otomatis oleh PC toko.`);
+        alert(`✅ SUKSES TERKIRIM!\nSebanyak ${totalU} voucher berhasil dikirim ke antrean dan akan segera disinkronkan oleh PC toko.`);
         clearCart();
       } catch (err) {
         alert("⚠️ Gagal kirim: " + err);
@@ -716,13 +713,10 @@
       }
     }
 
-    // =========================================================================
-    // SUBMIT PRODUK BARU: MENGIRIM NAMA LENGKAP & HARGA JUAL KE GOOGLE SHEET
-    // =========================================================================
     async function submitNewProduct() {
-      const barcode = document.getElementById("newProdBarcode").value.trim();
+      const rawBarcode = document.getElementById("newProdBarcode").value.trim();
+      const barcode = parseVoucherCode(rawBarcode) || rawBarcode;
       
-      // Ambil nilai nama dari input text (yang sudah otomatis disusun oleh autoGenerateName)
       let name = document.getElementById("newProdName").value.trim();
       if (!name) {
         autoGenerateName();
@@ -737,7 +731,7 @@
       if (!name) return alert("Nama produk tidak boleh kosong!");
       if (jual < modal) return alert("Harga jual tidak boleh lebih rendah dari modal!");
 
-      if (!confirm(`Daftarkan '${name}' dengan stok awal ${qty} pcs ke Master PC?`)) return;
+      if (!confirm(`Daftarkan '${name}' (Modal: Rp ${modal.toLocaleString()}, Jual: Rp ${jual.toLocaleString()}) dengan stok ${qty} pcs ke Master PC?`)) return;
 
       const now = new Date();
       const pad = (n) => String(n).padStart(2, '0');
@@ -751,9 +745,9 @@
         tujuan: document.getElementById("alokasiKulakan").value,
         items: [{
           barcode: barcode,
-          nama: name,   // Mengirim nama paket lengkap
+          nama: name,   // Kirim Nama Paket Riil
           modal: modal,
-          jual: jual,   // Mengirim harga jual kasir
+          jual: jual,   // Kirim Harga Jual Kasir
           qty: qty
         }]
       };
@@ -766,7 +760,7 @@
           body: JSON.stringify(payload)
         });
 
-        alert(`✅ BERHASIL DIDAFTARKAN!\nProduk '${name}' (${qty} pcs) dikirim ke antrean dan otomatis terdaftar di Master PC.`);
+        alert(`✅ BERHASIL DIDAFTARKAN!\nProduk '${name}' (${qty} pcs) berhasil dikirim dan akan segera dicatat di Master PC.`);
         document.getElementById("newProdBarcode").value = "";
         document.getElementById("newProdModal").value = "";
         document.getElementById("newProdJual").value = "";
