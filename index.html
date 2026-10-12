@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#0b1329">
-  <title>Nikola Scanner Pro v4.0</title>
+  <title>Nikola Scanner Pro v4.5</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -35,7 +35,7 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* TAB PILIHAN UTAMA ATAS */
+    /* NAVIGASI 2 TAB UTAMA */
     .nav-tabs-top { display: flex; background: #0f172a; padding: 6px 10px; border-bottom: 1px solid var(--border-color); gap: 6px; }
     .nav-tab-btn { flex: 1; padding: 9px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); }
     .nav-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 3px 10px rgba(2, 132, 199, 0.4); }
@@ -54,7 +54,7 @@
       background: #0f172a; border: 1px solid var(--accent-glow); border-radius: 8px;
       padding: 9px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
     }
-    .name-preview-text { font-size: 13px; font-weight: 900; color: #38bdf8; letter-spacing: 0.3px; }
+    .name-preview-text { font-size: 13px; font-weight: 900; color: #38bdf8; letter-spacing: 0.3px; width: 100%; }
 
     /* KAMERA VIEWPORT */
     #camera-card {
@@ -142,7 +142,7 @@
 
   <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">⚡ NIKOLA PRO v4.0</div>
+    <div class="brand-title">⚡ NIKOLA PRO v4.5</div>
     <div class="badge-outlet" id="headerOutletBadge">Gudang Utama</div>
   </div>
 
@@ -330,7 +330,7 @@
 
         <label>NAMA PRODUK AKHIR (BISA DITAMBAH KETERANGAN JIKA PERLU):</label>
         <div class="name-preview-box">
-          <input type="text" id="newProdName" style="margin: 0; background: transparent; border: none; font-size: 13px; font-weight: 900; color: #38bdf8; padding: 0;">
+          <input type="text" id="newProdName" class="name-preview-text" value="Telkomsel 3 GB 30 Hari">
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -386,9 +386,7 @@
       setTimeout(() => { t.style.display = "none"; }, dur);
     }
 
-    // =========================================================================
-    // SMART GENERATOR NAMA VOUCHER
-    // =========================================================================
+    // AUTO GENERATOR NAMA VOUCHER STANDAR
     function autoGenerateName() {
       const op = document.getElementById("selOperator").value;
       const gb = document.getElementById("selKuota").value;
@@ -415,7 +413,7 @@
         bScan.className = "nav-tab-btn";
         bNew.className = "nav-tab-btn active";
         fBar.style.display = "none";
-        autoGenerateName(); // Otomatis generate nama saat tab dibuka
+        autoGenerateName();
       }
     }
 
@@ -719,17 +717,25 @@
     }
 
     // =========================================================================
-    // SUBMIT PRODUK BARU
+    // SUBMIT PRODUK BARU: MENGIRIM NAMA LENGKAP & HARGA JUAL KE GOOGLE SHEET
     // =========================================================================
     async function submitNewProduct() {
       const barcode = document.getElementById("newProdBarcode").value.trim();
-      const name = document.getElementById("newProdName").value.trim();
+      
+      // Ambil nilai nama dari input text (yang sudah otomatis disusun oleh autoGenerateName)
+      let name = document.getElementById("newProdName").value.trim();
+      if (!name) {
+        autoGenerateName();
+        name = document.getElementById("newProdName").value.trim();
+      }
+
       const modal = parseInt(document.getElementById("newProdModal").value) || 0;
       const jual = parseInt(document.getElementById("newProdJual").value) || 0;
       const qty = parseInt(document.getElementById("newProdQty").value) || 1;
 
-      if (!barcode || !name) return alert("Barcode dan Nama Produk wajib diisi!");
-      if (jual < modal) return alert("Harga jual tidak boleh lebih rendah dari harga modal!");
+      if (!barcode) return alert("Barcode wajib diisi!");
+      if (!name) return alert("Nama produk tidak boleh kosong!");
+      if (jual < modal) return alert("Harga jual tidak boleh lebih rendah dari modal!");
 
       if (!confirm(`Daftarkan '${name}' dengan stok awal ${qty} pcs ke Master PC?`)) return;
 
@@ -745,9 +751,9 @@
         tujuan: document.getElementById("alokasiKulakan").value,
         items: [{
           barcode: barcode,
-          nama: name,
+          nama: name,   // Mengirim nama paket lengkap
           modal: modal,
-          jual: jual,
+          jual: jual,   // Mengirim harga jual kasir
           qty: qty
         }]
       };
