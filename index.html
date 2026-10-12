@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0b1329">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Nikola Scanner Pro - PPOB Edition</title>
+  <title>Nikola Voucher Scanner Pro</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -17,237 +15,107 @@
       --accent-glow: #38bdf8;
       --success: #10b981;
       --danger: #ef4444;
-      --warning: #f59e0b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.08);
     }
 
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* TOP BAR FINTECH */
+    /* TOP BAR */
     .header-bar {
-      height: 55px; background: rgba(11, 19, 41, 0.85); backdrop-filter: blur(12px);
+      height: 48px; background: rgba(11, 19, 41, 0.95);
       border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px; flex-shrink: 0; z-index: 50;
+      padding: 0 12px; flex-shrink: 0; z-index: 50;
     }
-    .brand-title { font-size: 14px; font-weight: 900; letter-spacing: 0.8px; color: var(--accent-glow); display: flex; align-items: center; gap: 8px; }
-    .badge-outlet { background: rgba(56, 189, 248, 0.12); color: var(--accent-glow); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 20px; }
+    .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
+    .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* KONTEN UTAMA (SPA VIEWPORT) */
-    .main-viewport { flex: 1; overflow-y: auto; padding: 12px; position: relative; }
-    .tab-page { display: none; height: 100%; flex-direction: column; }
-    .tab-page.active { display: flex; }
+    /* CONTAINER SCROLLABLE */
+    .content-area { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 95px; }
 
-    /* KARTU FINTECH */
-    .card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: 14px; padding: 14px; margin-bottom: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
-    label { font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* KARTU */
+    .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+    label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
     select, input {
-      width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border-color);
-      background: var(--bg-main); color: white; font-size: 13px; font-weight: 600; margin-bottom: 8px; outline: none;
+      width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-main); color: white; font-size: 12px; font-weight: 600; margin-bottom: 6px; outline: none;
     }
-    select:focus, input:focus { border-color: var(--accent-glow); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
 
-    /* AREA SCANNER & LASER */
-    #reader-container { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; flex: 1; min-height: 220px; display: flex; align-items: center; justify-content: center; }
+    /* KAMERA VIEWPORT (KETINGGIAN DIBATASI MAKS 190PX AGAR TIDAK MENUTUPI LAYAR) */
+    #reader-container { position: relative; width: 100%; height: 185px; border-radius: 10px; overflow: hidden; background: #000; margin-bottom: 8px; }
     #reader { width: 100%; height: 100%; }
     .laser-line {
       position: absolute; top: 50%; left: 8%; width: 84%; height: 2px;
       background: #ef4444; box-shadow: 0 0 10px #ef4444; z-index: 10;
-      pointer-events: none; transform: translateY(-50%); animation: laserPulse 1.8s infinite ease-in-out;
-    }
-    @keyframes laserPulse {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
+      pointer-events: none; transform: translateY(-50%);
     }
 
-    /* TOMBOL MODERN */
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-primary { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.35); }
-    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35); }
-    .btn-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 11px; padding: 6px 12px; width: auto; border-radius: 8px; }
-    .qty-btn { background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin: 2px; }
+    /* TOMBOL MODE SCAN */
+    .mode-pills { display: flex; gap: 4px; margin-bottom: 8px; }
+    .mode-pill { flex: 1; padding: 6px 2px; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; font-size: 9.5px; font-weight: 800; text-align: center; cursor: pointer; }
+    .mode-pill.active { background: var(--accent); color: white; border-color: var(--accent-glow); }
 
-    /* PILIHAN MODE SCAN */
-    .mode-pills { display: flex; gap: 6px; margin-bottom: 10px; }
-    .mode-pill { flex: 1; padding: 8px 4px; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; font-size: 10px; font-weight: 800; text-align: center; cursor: pointer; }
-    .mode-pill.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4); }
+    /* TABEL HASIL SCAN */
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { padding: 6px 4px; text-align: left; color: var(--text-muted); font-size: 9.5px; font-weight: 800; border-bottom: 1px solid var(--border-color); }
+    td { padding: 6px 4px; border-bottom: 1px solid var(--border-color); }
+    .badge-code { background: var(--bg-elevated); color: var(--accent-glow); padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 11px; font-weight: bold; }
+    .qty-input { width: 50px; text-align: center; padding: 4px; background: var(--bg-main); border: 1px solid var(--accent); color: var(--accent-glow); font-weight: 900; border-radius: 4px; margin: 0; }
+    .qty-btn { background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-color); padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin: 1px; }
 
-    /* BANNER STATUS NOTIFIKASI */
+    /* TOMBOL UTAMA */
+    .btn { padding: 10px; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-primary { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 10px; padding: 4px 8px; border-radius: 6px; }
+
+    /* FLOATING ACTION BOTTOM BAR (SELALU MELAYANG DI BAWAH DENGAN TOMBOL KIRIM) */
+    .bottom-floating-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(11, 19, 41, 0.98); backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border-color); padding: 10px 14px;
+      display: flex; gap: 10px; align-items: center; z-index: 100;
+      box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.5);
+    }
+    .total-counter { display: flex; flex-direction: column; min-width: 80px; }
+    .total-counter .title { font-size: 9px; color: var(--text-muted); font-weight: 800; }
+    .total-counter .value { font-size: 19px; color: var(--accent-glow); font-weight: 900; }
+
     #status-toast {
-      position: absolute; top: 12px; left: 16px; right: 16px;
-      background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
-      border: 1px solid var(--accent-glow); border-radius: 10px; padding: 10px 14px;
-      font-size: 11px; font-weight: 700; color: #facc15; z-index: 100;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); display: none; text-align: center;
-    }
-
-    /* TABEL BATCH */
-    .table-container { flex: 1; overflow-y: auto; margin-top: 8px; border-radius: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th { padding: 8px; text-align: left; color: var(--text-muted); font-size: 10px; font-weight: 800; border-bottom: 1px solid var(--border-color); }
-    td { padding: 10px 6px; border-bottom: 1px solid var(--border-color); }
-    .badge-code { background: var(--bg-elevated); border: 1px solid var(--border-color); color: var(--accent-glow); padding: 3px 6px; border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: bold; }
-    .qty-input { width: 60px; text-align: center; padding: 6px; background: var(--bg-main); border: 1px solid var(--accent); color: var(--accent-glow); font-weight: 900; border-radius: 6px; }
-
-    /* BOTTOM NAVIGATION BAR FINTECH */
-    .bottom-nav {
-      height: 62px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(14px);
-      border-top: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-around;
-      flex-shrink: 0; z-index: 50; padding-bottom: env(safe-area-inset-bottom);
-    }
-    .nav-item {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 3px; color: var(--text-muted); text-decoration: none; font-size: 9.5px; font-weight: 800;
-      width: 25%; height: 100%; cursor: pointer; position: relative;
-    }
-    .nav-item.active { color: var(--accent-glow); }
-    .nav-icon { font-size: 19px; }
-    .cart-badge {
-      position: absolute; top: 6px; right: 20px; background: var(--danger);
-      color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 10px;
+      position: fixed; top: 12px; left: 16px; right: 16px;
+      background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent-glow);
+      border-radius: 8px; padding: 8px 12px; font-size: 11px; font-weight: 700;
+      color: #facc15; z-index: 200; text-align: center; display: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- STATUS TOAST POPUP -->
-  <div id="status-toast">Siap memindai voucher...</div>
+  <div id="status-toast">Siap memindai...</div>
 
-  <!-- HEADER BAR ATAS -->
+  <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">
-      <span>⚡ NIKOLA PRO</span>
-    </div>
+    <div class="brand-title">⚡ NIKOLA VOUCHER PRO</div>
     <div class="badge-outlet" id="headerOutletBadge">Gudang Utama</div>
   </div>
 
-  <!-- CONTAINER UTAMA (VIEWPORT) -->
-  <div class="main-viewport">
+  <!-- KONTEN SCROLLABLE -->
+  <div class="content-area">
 
-    <!-- TAB 1: PUSAT SCANNER -->
-    <div class="tab-page active" id="tabScanner">
-      <div class="mode-pills">
-        <div class="mode-pill active" id="pillMode1" onclick="setScanMode(1)">1. SAMPLE + MULTI</div>
-        <div class="mode-pill" id="pillMode2" onclick="setScanMode(2)">2. TEMBAK CEPAT</div>
-        <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">3. RENTANG SERI</div>
-      </div>
-
-      <!-- KOTAK RENTANG JIKA MODE 3 AKTIF -->
-      <div id="rangePanel" class="card" style="display: none; padding: 10px; margin-bottom: 8px;">
-        <div style="font-size: 11px; font-weight: 800; color: var(--accent-glow); margin-bottom: 6px;" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
-        <div style="display: flex; gap: 6px;">
-          <input type="text" id="snStart" placeholder="SN Awal..." readonly style="margin-bottom: 4px;">
-          <input type="text" id="snEnd" placeholder="SN Akhir..." readonly style="margin-bottom: 4px;">
-        </div>
-        <button class="btn btn-primary" style="padding: 8px; font-size: 11px;" onclick="generateRangeItems()">➕ Masukkan Seluruh Rentang</button>
-      </div>
-
-      <!-- VIEWFINDER KAMERA -->
-      <div id="reader-container">
-        <div id="reader"></div>
-        <div class="laser-line" id="laserLine" style="display: none;"></div>
-      </div>
-
-      <div style="margin-top: 10px;">
-        <button class="btn btn-primary" id="btnScanner" onclick="handleScannerClick()">📷 Buka Kamera Scanner</button>
-      </div>
-    </div>
-
-    <!-- TAB 2: KERANJANG BATCH -->
-    <div class="tab-page" id="tabCart">
-      <div class="card" style="margin-bottom: 6px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-size: 10px; font-weight: 800; color: var(--text-muted);">TOTAL VOUCHER BATCH</div>
-            <div style="font-size: 22px; font-weight: 900; color: var(--accent-glow);"><span id="totalUnit">0</span> <span style="font-size: 12px; color: white;">Pcs</span></div>
-          </div>
-          <button class="btn btn-danger" onclick="clearCart()">Reset Batch</button>
-        </div>
-      </div>
-
-      <div class="table-container card" style="padding: 6px;">
-        <table>
-          <thead>
-            <tr>
-              <th>Barcode / SN</th>
-              <th style="text-align: center;">Qty</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="cartTable"></tbody>
-        </table>
-      </div>
-
-      <button class="btn btn-success" id="btnKirim" style="margin-top: 8px;" onclick="sendBatchData()">🚀 KIRIM KE PC UTAMA</button>
-    </div>
-
-    <!-- TAB 3: DAFTAR BARANG BARU -->
-    <div class="tab-page" id="tabNewProduct">
-      <div class="card">
-        <div style="font-size: 13px; font-weight: 900; color: var(--accent-glow); margin-bottom: 4px;">📝 DAFTARKAN PRODUK BARU</div>
-        <div style="font-size: 10.5px; color: var(--text-muted); margin-bottom: 12px;">Daftarkan voucher / kartu perdana yang belum ada di Master PC langsung dari HP.</div>
-
-        <label>BARCODE / SERIAL NUMBER:</label>
-        <div style="display: flex; gap: 6px;">
-          <input type="text" id="newProdBarcode" placeholder="Scan atau ketik kode...">
-          <button class="btn btn-primary" style="width: auto; padding: 0 14px; margin-bottom: 8px;" onclick="openQuickScanForNew()">📷 Scan</button>
-        </div>
-
-        <label>NAMA BARANG / VOUCHER:</label>
-        <input type="text" id="newProdName" placeholder="Contoh: Telkomsel 5GB 14 Hari">
-
-        <div style="display: flex; gap: 8px;">
-          <div style="flex: 1;">
-            <label>HARGA MODAL (RP):</label>
-            <input type="number" id="newProdModal" placeholder="0">
-          </div>
-          <div style="flex: 1;">
-            <label>HARGA JUAL (RP):</label>
-            <input type="number" id="newProdJual" placeholder="0">
-          </div>
-        </div>
-
-        <label>STOK AWAL LANGSUNG MASUK:</label>
-        <input type="number" id="newProdQty" value="1" min="1">
-
-        <button class="btn btn-success" style="margin-top: 8px;" onclick="submitNewProduct()">💾 SIMPAN KE MASTER PC</button>
-      </div>
-    </div>
-
-    <!-- TAB 4: PENGATURAN & OUTLET -->
-    <div class="tab-page" id="tabSettings">
-      <div class="card">
-        <div style="font-size: 13px; font-weight: 900; color: var(--accent-glow); margin-bottom: 10px;">⚙️ PENGATURAN ALOKASI</div>
-
-        <label>MODE OPERASI TRANSAKSI:</label>
-        <select id="trxType" onchange="switchTrxType()">
-          <option value="KULAKAN">Stok Masuk (Kulakan Baru Gudang)</option>
-          <option value="TRANSFER">Transfer Mutasi Cabang</option>
-        </select>
-
-        <div id="transferOpt" style="display: none;">
-          <label>DARI LOKASI:</label>
-          <select id="asal">
-            <option value="Gudang Utama">Gudang Utama</option>
-            <option value="Toko NMC">Toko NMC</option>
-            <option value="Toko NACC">Toko NACC</option>
-          </select>
-          <label>KE TUJUAN:</label>
-          <select id="tujuan" onchange="updateHeaderBadge()">
-            <option value="Toko NMC">Toko NMC</option>
-            <option value="Toko NACC">Toko NACC</option>
-            <option value="Gudang Utama">Gudang Utama</option>
+    <!-- 1. PENGATURAN MODE TRANSAKSI -->
+    <div class="card">
+      <div style="display: flex; gap: 6px;">
+        <div style="flex: 1;">
+          <label>JENIS TRANSAKSI:</label>
+          <select id="trxType" onchange="switchTrxType()">
+            <option value="KULAKAN">Stok Masuk (Kulakan Gudang)</option>
+            <option value="TRANSFER">Transfer Mutasi Cabang</option>
           </select>
         </div>
-
-        <div id="kulakanOpt">
-          <label>ALOKASI MODAL BARANG:</label>
+        <div style="flex: 1;" id="boxAlokasi">
+          <label>ALOKASI MODAL:</label>
           <select id="alokasiKulakan" onchange="updateHeaderBadge()">
             <option value="Toko NMC">Toko NMC</option>
             <option value="Toko NACC">Toko NACC</option>
@@ -255,41 +123,90 @@
         </div>
       </div>
 
-      <div class="card">
-        <div style="font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">ℹ️ INFORMASI SISTEM</div>
-        <div style="font-size: 11px; color: var(--text-muted); line-height: 150%;">
-          • <b>Ponsel Terminal:</b> Nikola Mobile Scanner Pro<br>
-          • <b>Protokol Sinkronisasi:</b> Google Sheets Buffer API<br>
-          • <b>Aplikasi PC:</b> LegoArt Desktop POS (SQLite Sync)
+      <div id="transferOpt" style="display: none;">
+        <div style="display: flex; gap: 6px;">
+          <div style="flex: 1;">
+            <label>DARI:</label>
+            <select id="asal">
+              <option value="Gudang Utama">Gudang Utama</option>
+              <option value="Toko NMC">Toko NMC</option>
+              <option value="Toko NACC">Toko NACC</option>
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label>KE:</label>
+            <select id="tujuan" onchange="updateHeaderBadge()">
+              <option value="Toko NMC">Toko NMC</option>
+              <option value="Toko NACC">Toko NACC</option>
+              <option value="Gudang Utama">Gudang Utama</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- 2. SCANNER & KAMERA VIEWPORT -->
+    <div class="card">
+      <div class="mode-pills">
+        <div class="mode-pill active" id="pillMode1" onclick="setScanMode(1)">1. SAMPLE + MULTI</div>
+        <div class="mode-pill" id="pillMode2" onclick="setScanMode(2)">2. TEMBAK CEPAT</div>
+        <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">3. RENTANG SERI</div>
+      </div>
+
+      <!-- KOTAK RENTANG JIKA MODE 3 AKTIF -->
+      <div id="rangePanel" style="display: none; margin-bottom: 6px;">
+        <div style="font-size: 10px; font-weight: 800; color: var(--accent-glow); margin-bottom: 4px;" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
+        <div style="display: flex; gap: 4px;">
+          <input type="text" id="snStart" placeholder="SN Awal..." readonly>
+          <input type="text" id="snEnd" placeholder="SN Akhir..." readonly>
+        </div>
+        <button class="btn btn-primary" style="padding: 6px; font-size: 10.5px;" onclick="generateRangeItems()">➕ Masukkan Rentang</button>
+      </div>
+
+      <!-- KAMERA -->
+      <div id="reader-container">
+        <div id="reader"></div>
+        <div class="laser-line" id="laserLine" style="display: none;"></div>
+      </div>
+
+      <button class="btn btn-primary" id="btnScanner" style="width: 100%; margin-top: 4px;" onclick="handleScannerClick()">📷 Buka Kamera Scanner</button>
+    </div>
+
+    <!-- 3. KERANJANG SEMENTARA (LANGSUNG TERLIHAT DI BAWAH KAMERA) -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 11px; font-weight: 800; color: var(--text-main);">📋 DAFTAR VOUCHER TERSCAN</span>
+        <button class="btn-danger" onclick="clearCart()">Kosongkan</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Barcode / SN</th>
+            <th style="text-align: center;">Qty</th>
+            <th>Hapus</th>
+          </tr>
+        </thead>
+        <tbody id="cartTable">
+          <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan. Buka kamera di atas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 
-  <!-- BOTTOM NAVIGATION BAR FINTECH -->
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchNavTab('tabScanner', this)">
-      <div class="nav-icon">📷</div>
-      <span>Scanner</span>
+  <!-- FLOATING ACTION BOTTOM BAR (SELALU TERLIHAT DI BAWAH LAYAR) -->
+  <div class="bottom-floating-bar">
+    <div class="total-counter">
+      <div class="title">TOTAL UNIT</div>
+      <div class="value"><span id="totalUnit">0</span> <span style="font-size: 11px; color: white;">Pcs</span></div>
     </div>
-    <div class="nav-item" onclick="switchNavTab('tabCart', this)">
-      <div class="nav-icon">🛒</div>
-      <span>Keranjang</span>
-      <div class="cart-badge" id="navCartBadge" style="display: none;">0</div>
-    </div>
-    <div class="nav-item" onclick="switchNavTab('tabNewProduct', this)">
-      <div class="nav-icon">📝</div>
-      <span>Daftar Baru</span>
-    </div>
-    <div class="nav-item" onclick="switchNavTab('tabSettings', this)">
-      <div class="nav-icon">⚙️</div>
-      <span>Pengaturan</span>
-    </div>
+    <button class="btn btn-success" id="btnKirim" style="flex: 1;" onclick="sendBatchData()">
+      🚀 KIRIM KE PC UTAMA
+    </button>
   </div>
 
   <script>
-    // URL Web App Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec";
 
     let html5QrCode = null;
@@ -299,37 +216,25 @@
     let lastCode = "";
     let lastTime = 0;
     let rangeStep = 1;
-    let isQuickScanningForNew = false;
 
-    function showToast(msg, duration=2200) {
-      const toast = document.getElementById("status-toast");
-      toast.innerText = msg;
-      toast.style.display = "block";
-      setTimeout(() => { toast.style.display = "none"; }, duration);
-    }
-
-    function switchNavTab(tabId, el) {
-      document.querySelectorAll(".tab-page").forEach(p => p.classList.remove("active"));
-      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-      document.getElementById(tabId).classList.add("active");
-      if (el) el.classList.add("active");
+    function showToast(msg, dur=2200) {
+      const t = document.getElementById("status-toast");
+      t.innerText = msg;
+      t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, dur);
     }
 
     function switchTrxType() {
-      const mode = document.getElementById("trxType").value;
-      document.getElementById("transferOpt").style.display = (mode === "TRANSFER") ? "block" : "none";
-      document.getElementById("kulakanOpt").style.display = (mode === "KULAKAN") ? "block" : "none";
+      const m = document.getElementById("trxType").value;
+      document.getElementById("transferOpt").style.display = (m === "TRANSFER") ? "block" : "none";
+      document.getElementById("boxAlokasi").style.display = (m === "KULAKAN") ? "block" : "none";
       updateHeaderBadge();
     }
 
     function updateHeaderBadge() {
-      const mode = document.getElementById("trxType").value;
-      const badge = document.getElementById("headerOutletBadge");
-      if (mode === "KULAKAN") {
-        badge.innerText = "Kulakan: " + document.getElementById("alokasiKulakan").value;
-      } else {
-        badge.innerText = "Mutasi -> " + document.getElementById("tujuan").value;
-      }
+      const m = document.getElementById("trxType").value;
+      const b = document.getElementById("headerOutletBadge");
+      b.innerText = (m === "KULAKAN") ? "Kulakan: " + document.getElementById("alokasiKulakan").value : "Mutasi -> " + document.getElementById("tujuan").value;
     }
 
     function setScanMode(m) {
@@ -342,7 +247,7 @@
       if (m === 3) {
         pRange.style.display = "block";
         resetRangeInputs();
-        showToast("Mode Rentang: Scan lembar awal.");
+        showToast("Mode Rentang: Scan lembar pertama.");
       } else {
         pRange.style.display = "none";
         showToast(m === 1 ? "Mode Sampel (+Multi) Aktif" : "Mode Tembak Cepat Aktif");
@@ -364,25 +269,19 @@
         try {
           const url = new URL(text);
           for (let p of ['sn', 'code', 'id', 'v', 'serial', 'c']) {
-            if (url.searchParams.get(p)) {
-              text = url.searchParams.get(p).trim();
-              break;
-            }
+            if (url.searchParams.get(p)) { text = url.searchParams.get(p).trim(); break; }
           }
         } catch(e){}
-        const matches = text.match(/\d{8,25}/);
-        if (matches) text = matches[0];
+        const m = text.match(/\d{8,25}/);
+        if (m) text = m[0];
       }
 
-      let cleanNumbers = text.replace(/[\s\-]/g, "");
-
+      let clean = text.replace(/[\s\-]/g, "");
       // Blacklist Barcode Percetakan Kiri Telkomsel (310... / 320...)
-      if (cleanNumbers.length === 12 && (cleanNumbers.startsWith("310") || cleanNumbers.startsWith("320"))) {
-        return null;
-      }
+      if (clean.length === 12 && (clean.startsWith("310") || clean.startsWith("320"))) return null;
 
-      const pureDigits = cleanNumbers.match(/\d{8,25}/);
-      return pureDigits ? pureDigits[0] : cleanNumbers;
+      const pure = clean.match(/\d{8,25}/);
+      return pure ? pure[0] : clean;
     }
 
     async function handleScannerClick() {
@@ -402,13 +301,11 @@
 
       btn.innerText = "⏳ Membuka Kamera...";
       try {
-        if (!html5QrCode) {
-          html5QrCode = new Html5Qrcode("reader");
-        }
+        if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
 
         await html5QrCode.start(
           { facingMode: "environment" },
-          { fps: 25, qrbox: { width: 270, height: 90 } },
+          { fps: 24, qrbox: { width: 260, height: 85 } },
           onScanSuccess,
           () => {}
         );
@@ -449,15 +346,6 @@
 
       playBeep();
 
-      // Kasus jika dipanggil dari form Tab Baru
-      if (isQuickScanningForNew) {
-        document.getElementById("newProdBarcode").value = cleanSN;
-        isQuickScanningForNew = false;
-        switchNavTab('tabNewProduct', document.querySelectorAll('.nav-item')[2]);
-        showToast("Barcode terisi: " + cleanSN);
-        return;
-      }
-
       if (currentMode === 1) {
         cart[cleanSN] = (cart[cleanSN] || 0) + 1;
         showToast("Terbaca: " + cleanSN + " (+1)");
@@ -474,17 +362,10 @@
           showToast("Awal: " + cleanSN);
         } else if (rangeStep === 2) {
           document.getElementById("snEnd").value = cleanSN;
-          document.getElementById("rangeStepText").innerText = "Langkah 3: Klik 'Masukkan Seluruh Rentang'";
+          document.getElementById("rangeStepText").innerText = "Langkah 3: Klik 'Masukkan Rentang'";
           showToast("Akhir: " + cleanSN);
         }
       }
-    }
-
-    function openQuickScanForNew() {
-      isQuickScanningForNew = true;
-      switchNavTab('tabScanner', document.querySelectorAll('.nav-item')[0]);
-      if (!isScanning) handleScannerClick();
-      showToast("Scan barcode untuk produk baru.");
     }
 
     function generateRangeItems() {
@@ -495,7 +376,7 @@
       try {
         const startBig = BigInt(startStr);
         const endBig = BigInt(endStr);
-        if (endBig < startBig) return alert("Nomor akhir lebih kecil dari awal!");
+        if (endBig < startBig) return alert("Nomor akhir lebih kecil dari nomor awal!");
 
         const totalPcs = Number(endBig - startBig) + 1;
         if (totalPcs > 500 && !confirm(`Generate ${totalPcs} lembar?`)) return;
@@ -506,11 +387,10 @@
           cart[snStr] = (cart[snStr] || 0) + 1;
         }
 
-        alert(`✅ Sukses menambahkan ${totalPcs} lembar ke keranjang!`);
+        alert(`✅ Sukses menambahkan ${totalPcs} lembar ke daftar!`);
         resetRangeInputs();
         setScanMode(1);
         renderCart();
-        switchNavTab('tabCart', document.querySelectorAll('.nav-item')[1]);
       } catch (err) {
         alert("Gagal memproses rentang: " + err);
       }
@@ -521,9 +401,14 @@
       tbody.innerHTML = "";
       const keys = Object.keys(cart);
       let grandTotal = 0;
-      const displayKeys = keys.slice(0, 40);
 
-      for (let code of displayKeys) {
+      if (keys.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>`;
+        document.getElementById("totalUnit").innerText = "0";
+        return;
+      }
+
+      for (let code of keys) {
         const qty = cart[code];
         grandTotal += qty;
         tbody.innerHTML += `
@@ -537,35 +422,30 @@
             <td style="text-align: center;">
               <input type="number" class="qty-input" value="${qty}" onchange="updateQtyManual('${code}', this.value)">
             </td>
-            <td><button class="btn btn-danger" onclick="removeItem('${code}')">✕</button></td>
+            <td><button class="btn-danger" onclick="removeItem('${code}')">✕</button></td>
           </tr>
         `;
       }
 
-      for (let i = 40; i < keys.length; i++) grandTotal += cart[keys[i]];
-
       document.getElementById("totalUnit").innerText = grandTotal;
-      const badgeNav = document.getElementById("navCartBadge");
-      badgeNav.innerText = grandTotal;
-      badgeNav.style.display = grandTotal > 0 ? "block" : "none";
     }
 
     function addQty(code, bonus) { cart[code] = (cart[code] || 0) + bonus; renderCart(); }
     function updateQtyManual(code, val) { cart[code] = Math.max(1, parseInt(val) || 1); renderCart(); }
     function removeItem(code) { delete cart[code]; renderCart(); }
-    function clearCart() { cart = {}; renderCart(); showToast("Keranjang dibersihkan."); }
+    function clearCart() { cart = {}; renderCart(); showToast("Daftar scan dikosongkan."); }
 
     async function sendBatchData() {
       const keys = Object.keys(cart);
-      if (keys.length === 0) return alert("Keranjang batch masih kosong!");
+      if (keys.length === 0) return alert("Keranjang voucher masih kosong! Scan minimal 1 voucher.");
 
       const totalU = document.getElementById("totalUnit").innerText;
-      if (!confirm(`Kirim total ${totalU} voucher ini ke sistem PC utama?`)) return;
+      if (!confirm(`Kirim total ${totalU} voucher ini ke sistem PC toko sekarang?`)) return;
 
       const btnKirim = document.getElementById("btnKirim");
       btnKirim.disabled = true;
-      btnKirim.innerText = "⏳ Mengirim...";
-      showToast("Mengirim antrean ke Google Sheets...");
+      btnKirim.innerText = "⏳ MENGIRIM KE PC...";
+      showToast("Mengirim ke antrean Google Sheets...");
 
       const mode = document.getElementById("trxType").value;
       const itemsPayload = keys.map(k => ({ barcode: k, qty: cart[k], modal: 0 }));
@@ -591,7 +471,7 @@
           body: JSON.stringify(payload)
         });
 
-        alert(`✅ SUKSES TERKIRIM!\nSebanyak ${totalU} unit voucher masuk antrean dan segera dicatat oleh PC toko.`);
+        alert(`✅ SUKSES TERKIRIM!\nSebanyak ${totalU} voucher berhasil dikirim ke antrean Google Sheet dan akan segera dicatat otomatis oleh PC toko.`);
         clearCart();
       } catch (err) {
         alert("⚠️ Gagal kirim: " + err);
@@ -601,57 +481,6 @@
       }
     }
 
-    async function submitNewProduct() {
-      const barcode = document.getElementById("newProdBarcode").value.trim();
-      const name = document.getElementById("newProdName").value.trim();
-      const modal = parseInt(document.getElementById("newProdModal").value) || 0;
-      const jual = parseInt(document.getElementById("newProdJual").value) || 0;
-      const qty = parseInt(document.getElementById("newProdQty").value) || 1;
-
-      if (!barcode || !name) return alert("Barcode dan Nama Produk wajib diisi!");
-      if (jual < modal) return alert("Harga jual tidak boleh lebih rendah dari modal!");
-
-      if (!confirm(`Daftarkan produk baru '${name}' ke Master PC?`)) return;
-
-      const now = new Date();
-      const pad = (n) => String(n).padStart(2, '0');
-      const waktuStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-
-      const payload = {
-        batch_id: "NEWPROD-" + now.getFullYear() + pad(now.getMonth()+1) + pad(now.getDate()) + "-" + Math.floor(1000 + Math.random() * 9000),
-        waktu: waktuStr,
-        jenis: "DAFTAR_BARU",
-        asal: "",
-        tujuan: document.getElementById("alokasiKulakan").value,
-        items: [{
-          barcode: barcode,
-          nama: name,
-          modal: modal,
-          jual: jual,
-          qty: qty
-        }]
-      };
-
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-
-        alert(`✅ SUKSES!\nProduk '${name}' berhasil didaftarkan dan antrean dikirim ke PC toko.`);
-        document.getElementById("newProdBarcode").value = "";
-        document.getElementById("newProdName").value = "";
-        document.getElementById("newProdModal").value = "";
-        document.getElementById("newProdJual").value = "";
-        document.getElementById("newProdQty").value = "1";
-      } catch (err) {
-        alert("⚠️ Gagal mendaftarkan produk: " + err);
-      }
-    }
-
-    // Inisialisasi awal
     updateHeaderBadge();
   </script>
 </body>
