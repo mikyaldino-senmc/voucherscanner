@@ -3,57 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Voucher Scanner - Nikola</title>
+  <title>Voucher Scanner Multi-Mode - Nikola</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 12px; }
-    h2 { font-size: 15px; margin: 0 0 10px 0; color: #38bdf8; text-align: center; }
-    .card { background-color: #1e293b; border-radius: 12px; padding: 12px; margin-bottom: 10px; border: 1px solid #334155; }
-    label { font-size: 11px; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; }
-    select, input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 13px; margin-bottom: 8px; }
-    #reader { width: 100%; border-radius: 8px; background: #000; overflow: hidden; min-height: 220px; }
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
-    .btn-primary { background: #0284c7; color: white; margin-top: 5px; }
-    .btn-success { background: #10b981; color: white; margin-top: 10px; }
-    .btn-danger { background: #ef4444; color: white; padding: 6px 10px; font-size: 11px; width: auto; }
-    .qty-btn { background: #334155; color: white; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin: 2px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
-    th, td { padding: 8px 4px; text-align: left; border-bottom: 1px solid #334155; }
+    body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 10px; }
+    h2 { font-size: 14px; margin: 0 0 8px 0; color: #38bdf8; text-align: center; font-weight: 800; letter-spacing: 0.5px; }
+    .card { background-color: #1e293b; border-radius: 10px; padding: 10px; margin-bottom: 8px; border: 1px solid #334155; }
+    label { font-size: 10.5px; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; }
+    select, input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 12px; margin-bottom: 6px; }
+    #reader { width: 100%; border-radius: 8px; background: #000; overflow: hidden; min-height: 200px; }
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+    .btn-primary { background: #0284c7; color: white; margin-top: 4px; }
+    .btn-success { background: #10b981; color: white; margin-top: 8px; }
+    .btn-danger { background: #ef4444; color: white; padding: 4px 8px; font-size: 10px; width: auto; }
+    .qty-btn { background: #334155; color: white; border: 1px solid #475569; padding: 3px 6px; border-radius: 4px; font-size: 10px; margin: 1px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
+    th, td { padding: 6px 3px; text-align: left; border-bottom: 1px solid #334155; }
     th { color: #94a3b8; }
-    .badge { background: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 12px; word-break: break-all; }
-    .qty-input { width: 60px; text-align: center; padding: 4px; margin: 0; background: #0f172a; border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 4px; }
-    #status-box { font-family: monospace; font-size: 11px; color: #facc15; background: #000; padding: 8px; border-radius: 6px; margin-top: 6px; }
-    .manual-box { display: flex; gap: 6px; margin-top: 8px; }
-    .manual-box input { margin-bottom: 0; }
-    .manual-box button { width: auto; padding: 0 16px; background: #334155; color: white; border: 1px solid #475569; border-radius: 8px; font-weight: bold; }
+    .badge { background: #0369a1; padding: 2px 5px; border-radius: 4px; font-weight: bold; font-family: monospace; font-size: 11px; word-break: break-all; }
+    .qty-input { width: 55px; text-align: center; padding: 3px; margin: 0; background: #0f172a; border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 4px; }
+    #status-box { font-family: monospace; font-size: 10.5px; color: #facc15; background: #000; padding: 6px 8px; border-radius: 5px; margin-top: 6px; }
+
+    /* PILIHAN 3 TAB MODE */
+    .mode-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+    .mode-tab { flex: 1; padding: 8px 4px; background: #0f172a; border: 1px solid #475569; color: #94a3b8; border-radius: 6px; font-size: 10px; font-weight: bold; text-align: center; cursor: pointer; }
+    .mode-tab.active { background: #0284c7; color: white; border-color: #38bdf8; }
+
+    .range-box { background: #0f172a; border: 1px solid #38bdf8; border-radius: 6px; padding: 8px; margin-top: 6px; }
+    .range-step { font-size: 10.5px; color: #38bdf8; font-weight: bold; margin-bottom: 4px; }
+    .mode-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; margin-bottom: 4px; line-height: 120%; }
   </style>
 </head>
 <body>
 
-  <h2>📱 SCANNER VOUCHER MULTI-FORMAT</h2>
+  <h2>📱 VOUCHER SCANNER NIKOLA (3-IN-1)</h2>
 
-  <!-- FORM MODE -->
+  <!-- 1. PENGATURAN TRANSAKSI -->
   <div class="card">
-    <label>MODE OPERASI:</label>
-    <select id="mode" onchange="switchMode()">
-      <option value="KULAKAN">Stok Masuk (Kulakan Baru)</option>
+    <label>TUJUAN TRANSAKSI:</label>
+    <select id="trxType" onchange="switchTrxType()">
+      <option value="KULAKAN">Stok Masuk (Kulakan Baru Gudang)</option>
       <option value="TRANSFER">Transfer Mutasi Cabang</option>
     </select>
 
     <div id="transferOpt" style="display: none;">
-      <label>DARI ASAL:</label>
-      <select id="asal">
-        <option value="Gudang Utama">Gudang Utama</option>
-        <option value="Toko NMC">Toko NMC</option>
-        <option value="Toko NACC">Toko NACC</option>
-      </select>
-      <label>KE TUJUAN:</label>
-      <select id="tujuan">
-        <option value="Toko NMC">Toko NMC</option>
-        <option value="Toko NACC">Toko NACC</option>
-        <option value="Gudang Utama">Gudang Utama</option>
-      </select>
+      <div style="display: flex; gap: 6px;">
+        <div style="flex:1;">
+          <label>DARI:</label>
+          <select id="asal">
+            <option value="Gudang Utama">Gudang Utama</option>
+            <option value="Toko NMC">Toko NMC</option>
+            <option value="Toko NACC">Toko NACC</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <label>KE:</label>
+          <select id="tujuan">
+            <option value="Toko NMC">Toko NMC</option>
+            <option value="Toko NACC">Toko NACC</option>
+            <option value="Gudang Utama">Gudang Utama</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div id="kulakanOpt">
@@ -65,30 +77,44 @@
     </div>
   </div>
 
-  <!-- AREA KAMERA & MANUAL INPUT -->
+  <!-- 2. PEMILIHAN 3 METODE SCAN -->
   <div class="card">
+    <label>PILIH METODE PEMINDAIAN SESUAI KONDISI VOUCHER:</label>
+    <div class="mode-tabs">
+      <div class="mode-tab active" id="tabMode1" onclick="setScanMode(1)">1. SAMPLE + MULTI</div>
+      <div class="mode-tab" id="tabMode2" onclick="setScanMode(2)">2. TEMBAK CEPAT</div>
+      <div class="mode-tab" id="tabMode3" onclick="setScanMode(3)">3. RENTANG SERI</div>
+    </div>
+
+    <div id="modeDesc" class="mode-desc">
+      💡 <b>Mode 1 (Sample + Multiplier)</b>: Scan 1 lembar sampel per varian, lalu tentukan jumlah totalnya (+5, +10, +50 / isi manual). Sangat cocok untuk paket rapi terikat.
+    </div>
+
+    <!-- AREA KHUSUS JIKA MODE 3 (RENTANG) DIPILIH -->
+    <div id="rangePanel" class="range-box" style="display: none;">
+      <div class="range-step" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
+      <input type="text" id="snStart" placeholder="Nomor Seri Awal..." readonly>
+      <input type="text" id="snEnd" placeholder="Nomor Seri Akhir..." readonly>
+      <button class="btn btn-primary" style="margin-top:0;" onclick="generateRangeItems()">➕ Masukkan Seluruh Rentang</button>
+    </div>
+
+    <!-- KAMERA -->
     <div id="reader"></div>
     <button class="btn btn-primary" id="btnScanner" onclick="handleScannerClick()">📷 Nyalakan Kamera</button>
-    
-    <div class="manual-box">
-      <input type="text" id="manualCode" placeholder="Atau ketik barcode manual...">
-      <button type="button" onclick="addManualCode()">+ Tambah</button>
-    </div>
-    
-    <div id="status-box">Status: Siap scan voucher...</div>
+    <div id="status-box">Status: Siap memindai...</div>
   </div>
 
-  <!-- KERANJANG SCAN -->
+  <!-- 3. KERANJANG TAMPUNG -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: bold; font-size: 13px;">Daftar Batch (<span id="totalUnit">0</span> Unit)</span>
+      <span style="font-weight: bold; font-size: 12px;">Batch Siap Kirim (<span id="totalUnit" style="color:#38bdf8;">0</span> Pcs)</span>
       <button class="btn btn-danger" onclick="clearCart()">Reset</button>
     </div>
 
     <table>
       <thead>
         <tr>
-          <th>Barcode / Kode</th>
+          <th>Barcode / SN</th>
           <th style="text-align: center;">Qty</th>
           <th>Aksi</th>
         </tr>
@@ -100,23 +126,70 @@
   </div>
 
   <script>
-    // URL Web App Google Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec";
 
     let html5QrCode = null;
     let isScanning = false;
     let cart = {}; 
+    let currentMode = 1; // 1: Sample Multiplier, 2: Continuous Rapid, 3: Range
     let lastCode = "";
     let lastTime = 0;
+    let rangeStep = 1;
 
     function setStatus(msg) {
       document.getElementById("status-box").innerText = "Info: " + msg;
     }
 
-    function switchMode() {
-      const mode = document.getElementById("mode").value;
+    function switchTrxType() {
+      const mode = document.getElementById("trxType").value;
       document.getElementById("transferOpt").style.display = (mode === "TRANSFER") ? "block" : "none";
       document.getElementById("kulakanOpt").style.display = (mode === "KULAKAN") ? "block" : "none";
+    }
+
+    function setScanMode(m) {
+      currentMode = m;
+      document.getElementById("tabMode1").className = (m === 1) ? "mode-tab active" : "mode-tab";
+      document.getElementById("tabMode2").className = (m === 2) ? "mode-tab active" : "mode-tab";
+      document.getElementById("tabMode3").className = (m === 3) ? "mode-tab active" : "mode-tab";
+
+      const pRange = document.getElementById("rangePanel");
+      const desc = document.getElementById("modeDesc");
+
+      if (m === 1) {
+        pRange.style.display = "none";
+        desc.innerHTML = "💡 <b>Mode 1 (Sample + Multiplier)</b>: Scan 1 lembar sampel per varian, lalu tentukan jumlahnya (+5, +10, +50 / manual). Cocok untuk paket terikat rapi.";
+        setStatus("Mode 1 aktif: Siap scan 1 lembar contoh.");
+      } else if (m === 2) {
+        pRange.style.display = "none";
+        desc.innerHTML = "⚡ <b>Mode 2 (Tembak Cepat / Continuous)</b>: Kamera menyala terus tanpa henti. Selisik dan buka lembaran voucher satu per satu di bawah kamera seperti kartu remi. Cocok untuk voucher campur aduk.";
+        setStatus("Mode 2 aktif: Siap tembak cepat per lembar.");
+      } else if (m === 3) {
+        pRange.style.display = "block";
+        resetRangeInputs();
+        desc.innerHTML = "📦 <b>Mode 3 (Rentang Nomor Seri)</b>: Hanya scan lembar pertama & lembar terakhir. Seluruh nomor di antaranya terisi otomatis. Cocok untuk 1 pack resmi segel pabrik.";
+        setStatus("Mode 3 aktif: Scan lembar pertama (atas).");
+      }
+    }
+
+    function resetRangeInputs() {
+      rangeStep = 1;
+      document.getElementById("snStart").value = "";
+      document.getElementById("snEnd").value = "";
+      document.getElementById("rangeStepText").innerText = "Langkah 1: Scan Lembar PERTAMA (Awal)";
+    }
+
+    function cleanExtractedSN(rawText) {
+      if (rawText.includes("http://") || rawText.includes("https://")) {
+        try {
+          const url = new URL(rawText);
+          for (let p of ['sn', 'code', 'id', 'v', 'serial']) {
+            if (url.searchParams.get(p)) return url.searchParams.get(p).trim();
+          }
+        } catch(e){}
+        const matches = rawText.match(/\d{8,25}/);
+        if (matches) return matches[0];
+      }
+      return rawText.trim();
     }
 
     async function handleScannerClick() {
@@ -139,62 +212,121 @@
         }
         await html5QrCode.start(
           { facingMode: "environment" },
-          { fps: 20, qrbox: { width: 260, height: 180 } },
+          { fps: 24, qrbox: { width: 260, height: 180 } },
           onScanSuccess,
           () => {}
         );
         isScanning = true;
         btn.innerText = "⏹ Matikan Kamera";
         btn.style.background = "#ef4444";
-        setStatus("Kamera aktif. Dekatkan barcode 10-15 cm.");
+        setStatus("Kamera aktif. Dekatkan barcode voucher.");
       } catch (e) {
         btn.innerText = "📷 Nyalakan Kamera";
         btn.style.background = "#0284c7";
-        alert("Gagal buka kamera: " + e);
+        alert("Gagal membuka kamera: " + e);
         setStatus("Error: " + e);
       }
     }
 
-    function onScanSuccess(decodedText) {
-      const now = new Date().getTime();
-      if (decodedText === lastCode && (now - lastTime) < 1200) return;
-      lastCode = decodedText;
-      lastTime = now;
-
-      // Beep & Getar Audio Feedback
+    function playBeep() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         osc.connect(ctx.destination);
-        osc.frequency.value = 1800;
+        osc.frequency.value = 1900;
         osc.start();
-        osc.stop(ctx.currentTime + 0.08);
+        osc.stop(ctx.currentTime + 0.07);
       } catch(e){}
-      if (navigator.vibrate) navigator.vibrate(100);
-
-      cart[decodedText] = (cart[decodedText] || 0) + 1;
-      setStatus("Terbaca: " + decodedText);
-      renderCart();
+      if (navigator.vibrate) navigator.vibrate(80);
     }
 
-    function addManualCode() {
-      const inp = document.getElementById("manualCode");
-      const code = inp.value.trim();
-      if (!code) return;
-      cart[code] = (cart[code] || 0) + 1;
-      inp.value = "";
-      setStatus("Ditambahkan manual: " + code);
-      renderCart();
+    function onScanSuccess(decodedText) {
+      const now = new Date().getTime();
+      // Delay deteksi: Mode 2 (Rapid) dibuat sangat singkat (350ms), mode lain 1100ms
+      const delayThreshold = (currentMode === 2) ? 350 : 1100;
+      if (decodedText === lastCode && (now - lastTime) < delayThreshold) return;
+      lastCode = decodedText;
+      lastTime = now;
+
+      playBeep();
+      const cleanSN = cleanExtractedSN(decodedText);
+
+      // LOGIKA SESUAI 3 MODE:
+      if (currentMode === 1) {
+        // MODE 1: Masukkan 1 unit awal, beri kesempatan kasir menekan tombol multiplier
+        cart[decodedText] = (cart[decodedText] || 0) + 1;
+        setStatus("Mode 1: " + cleanSN + " (+1). Tambah Qty jika berupa ikatan.");
+        renderCart();
+      } else if (currentMode === 2) {
+        // MODE 2: Tembak cepat terus bertambah
+        cart[decodedText] = (cart[decodedText] || 0) + 1;
+        setStatus("Mode 2 (Tembak): " + cleanSN + " terdata!");
+        renderCart();
+      } else if (currentMode === 3) {
+        // MODE 3: Rekam rentang
+        if (rangeStep === 1) {
+          document.getElementById("snStart").value = cleanSN;
+          rangeStep = 2;
+          document.getElementById("rangeStepText").innerText = "Langkah 2: Scan Lembar TERAKHIR (Akhir)";
+          setStatus("Awal tercatat: " + cleanSN + ". Silakan scan lembar paling bawah.");
+        } else if (rangeStep === 2) {
+          document.getElementById("snEnd").value = cleanSN;
+          document.getElementById("rangeStepText").innerText = "Langkah 3: Klik 'Masukkan Seluruh Rentang'";
+          setStatus("Akhir tercatat: " + cleanSN + ". Siap dihitung.");
+        }
+      }
+    }
+
+    function generateRangeItems() {
+      const startStr = document.getElementById("snStart").value.trim();
+      const endStr = document.getElementById("snEnd").value.trim();
+
+      if (!startStr || !endStr) {
+        alert("Scan lembar awal dan lembar akhir terlebih dahulu!");
+        return;
+      }
+
+      try {
+        const startBig = BigInt(startStr);
+        const endBig = BigInt(endStr);
+
+        if (endBig < startBig) {
+          alert("Nomor akhir lebih kecil dari nomor awal! Periksa kembali urutan fisiknya.");
+          return;
+        }
+
+        const totalPcs = Number(endBig - startBig) + 1;
+        if (totalPcs > 500) {
+          if (!confirm(`Terdeteksi ${totalPcs} lembar voucher. Lanjutkan perhitungan rentang?`)) return;
+        }
+
+        const len = startStr.length;
+        for (let i = startBig; i <= endBig; i++) {
+          let snStr = i.toString().padStart(len, '0');
+          cart[snStr] = (cart[snStr] || 0) + 1;
+        }
+
+        alert(`✅ Sukses menambahkan ${totalPcs} nomor seri ke daftar!`);
+        resetRangeInputs();
+        setScanMode(1); // Balik ke tampilan normal
+        renderCart();
+      } catch (err) {
+        alert("Gagal memproses rentang: " + err);
+      }
     }
 
     function renderCart() {
       const tbody = document.getElementById("cartTable");
       tbody.innerHTML = "";
-      let total = 0;
+      const keys = Object.keys(cart);
+      let grandTotal = 0;
 
-      for (let code in cart) {
+      // Optimasi DOM: batasi visual maksimal 40 baris agar HP tetap ringan
+      const displayKeys = keys.slice(0, 40);
+
+      for (let code of displayKeys) {
         const qty = cart[code];
-        total += qty;
+        grandTotal += qty;
         tbody.innerHTML += `
           <tr>
             <td>
@@ -210,7 +342,23 @@
           </tr>
         `;
       }
-      document.getElementById("totalUnit").innerText = total;
+
+      // Hitung unit keseluruhan jika melebihi 40
+      for (let i = 40; i < keys.length; i++) {
+        grandTotal += cart[keys[i]];
+      }
+
+      document.getElementById("totalUnit").innerText = grandTotal;
+
+      if (keys.length > 40) {
+        tbody.innerHTML += `
+          <tr>
+            <td colspan="3" style="text-align:center; color:#94a3b8; font-style:italic;">
+              ... dan ${keys.length - 40} voucher lainnya siap dikirim ...
+            </td>
+          </tr>
+        `;
+      }
     }
 
     function addQty(code, bonus) {
@@ -250,10 +398,9 @@
       btnKirim.innerText = "⏳ Mengirim...";
       setStatus("Mengirim data ke Google Spreadsheet...");
 
-      const mode = document.getElementById("mode").value;
+      const mode = document.getElementById("trxType").value;
       const itemsPayload = keys.map(k => ({ barcode: k, qty: cart[k], modal: 0 }));
 
-      // Format Waktu Lokal (WIB)
       const now = new Date();
       const pad = (n) => String(n).padStart(2, '0');
       const waktuStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
@@ -268,23 +415,20 @@
       };
 
       try {
-        // Mengirim JSON dengan Content-Type text/plain agar 100% tembus CORS Google Apps Script
         await fetch(SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
 
-        alert("✅ BERHASIL DIKIRIM!\nData telah masuk ke antrean Google Sheet dan akan segera diproses oleh PC.");
+        alert(`✅ BERHASIL DIKIRIM!\nSebanyak ${totalU} unit voucher masuk antrean Google Sheet dan segera disinkronkan ke PC.`);
         clearCart();
         setStatus("Pengiriman sukses.");
       } catch (err) {
         console.error(err);
-        alert("⚠️ Gagal mengirim data. Silakan periksa koneksi internet ponsel.");
-        setStatus("Error kirim: " + err);
+        alert("⚠️ Gagal mengirim data. Periksa jaringan internet ponsel.");
+        setStatus("Error: " + err);
       } finally {
         btnKirim.disabled = false;
         btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
