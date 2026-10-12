@@ -8,11 +8,20 @@
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 10px; }
-    h2 { font-size: 14px; margin: 0 0 8px 0; color: #38bdf8; text-align: center; font-weight: 800; letter-spacing: 0.5px; }
+    h2 { font-size: 13.5px; margin: 0 0 8px 0; color: #38bdf8; text-align: center; font-weight: 800; }
     .card { background-color: #1e293b; border-radius: 10px; padding: 10px; margin-bottom: 8px; border: 1px solid #334155; }
     label { font-size: 10.5px; font-weight: bold; color: #94a3b8; display: block; margin-bottom: 4px; }
     select, input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 12px; margin-bottom: 6px; }
-    #reader { width: 100%; border-radius: 8px; background: #000; overflow: hidden; min-height: 200px; }
+    
+    /* AREA KAMERA & LASER BIDIK */
+    #reader-container { position: relative; width: 100%; border-radius: 8px; overflow: hidden; background: #000; }
+    #reader { width: 100%; min-height: 200px; }
+    .laser-line {
+      position: absolute; top: 50%; left: 10%; width: 80%; height: 2px;
+      background: #ef4444; box-shadow: 0 0 8px #ef4444; z-index: 10;
+      pointer-events: none; transform: translateY(-50%);
+    }
+
     .btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
     .btn-primary { background: #0284c7; color: white; margin-top: 4px; }
     .btn-success { background: #10b981; color: white; margin-top: 8px; }
@@ -25,7 +34,7 @@
     .qty-input { width: 55px; text-align: center; padding: 3px; margin: 0; background: #0f172a; border: 1px solid #38bdf8; color: #38bdf8; font-weight: bold; border-radius: 4px; }
     #status-box { font-family: monospace; font-size: 10.5px; color: #facc15; background: #000; padding: 6px 8px; border-radius: 5px; margin-top: 6px; }
 
-    /* PILIHAN 3 TAB MODE */
+    /* TAB MODE */
     .mode-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
     .mode-tab { flex: 1; padding: 8px 4px; background: #0f172a; border: 1px solid #475569; color: #94a3b8; border-radius: 6px; font-size: 10px; font-weight: bold; text-align: center; cursor: pointer; }
     .mode-tab.active { background: #0284c7; color: white; border-color: #38bdf8; }
@@ -37,7 +46,7 @@
 </head>
 <body>
 
-  <h2>📱 VOUCHER SCANNER NIKOLA (3-IN-1)</h2>
+  <h2>📱 VOUCHER SCANNER MULTI-FORMAT (NIKOLA)</h2>
 
   <!-- 1. PENGATURAN TRANSAKSI -->
   <div class="card">
@@ -77,9 +86,9 @@
     </div>
   </div>
 
-  <!-- 2. PEMILIHAN 3 METODE SCAN -->
+  <!-- 2. PILIHAN METODE SCAN -->
   <div class="card">
-    <label>PILIH METODE PEMINDAIAN SESUAI KONDISI VOUCHER:</label>
+    <label>METODE SCAN SESUAI KONDISI VOUCHER:</label>
     <div class="mode-tabs">
       <div class="mode-tab active" id="tabMode1" onclick="setScanMode(1)">1. SAMPLE + MULTI</div>
       <div class="mode-tab" id="tabMode2" onclick="setScanMode(2)">2. TEMBAK CEPAT</div>
@@ -87,10 +96,10 @@
     </div>
 
     <div id="modeDesc" class="mode-desc">
-      💡 <b>Mode 1 (Sample + Multiplier)</b>: Scan 1 lembar sampel per varian, lalu tentukan jumlah totalnya (+5, +10, +50 / isi manual). Sangat cocok untuk paket rapi terikat.
+      💡 <b>Mode 1</b>: Scan 1 lembar contoh per ikatan, lalu masukkan jumlahnya (+5, +10, +50 / isi angka).
     </div>
 
-    <!-- AREA KHUSUS JIKA MODE 3 (RENTANG) DIPILIH -->
+    <!-- AREA RENTANG -->
     <div id="rangePanel" class="range-box" style="display: none;">
       <div class="range-step" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
       <input type="text" id="snStart" placeholder="Nomor Seri Awal..." readonly>
@@ -98,23 +107,27 @@
       <button class="btn btn-primary" style="margin-top:0;" onclick="generateRangeItems()">➕ Masukkan Seluruh Rentang</button>
     </div>
 
-    <!-- KAMERA -->
-    <div id="reader"></div>
+    <!-- KAMERA DENGAN BIDIKAN LASER -->
+    <div id="reader-container">
+      <div id="reader"></div>
+      <div class="laser-line" id="laserLine" style="display:none;"></div>
+    </div>
+
     <button class="btn btn-primary" id="btnScanner" onclick="handleScannerClick()">📷 Nyalakan Kamera</button>
-    <div id="status-box">Status: Siap memindai...</div>
+    <div id="status-box">Status: Siap memindai voucher...</div>
   </div>
 
-  <!-- 3. KERANJANG TAMPUNG -->
+  <!-- 3. KERANJANG SEMENTARA -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span style="font-weight: bold; font-size: 12px;">Batch Siap Kirim (<span id="totalUnit" style="color:#38bdf8;">0</span> Pcs)</span>
+      <span style="font-weight: bold; font-size: 12px;">Daftar Batch (<span id="totalUnit" style="color:#38bdf8;">0</span> Pcs)</span>
       <button class="btn btn-danger" onclick="clearCart()">Reset</button>
     </div>
 
     <table>
       <thead>
         <tr>
-          <th>Barcode / SN</th>
+          <th>Barcode / Serial Number</th>
           <th style="text-align: center;">Qty</th>
           <th>Aksi</th>
         </tr>
@@ -131,7 +144,7 @@
     let html5QrCode = null;
     let isScanning = false;
     let cart = {}; 
-    let currentMode = 1; // 1: Sample Multiplier, 2: Continuous Rapid, 3: Range
+    let currentMode = 1;
     let lastCode = "";
     let lastTime = 0;
     let rangeStep = 1;
@@ -157,17 +170,17 @@
 
       if (m === 1) {
         pRange.style.display = "none";
-        desc.innerHTML = "💡 <b>Mode 1 (Sample + Multiplier)</b>: Scan 1 lembar sampel per varian, lalu tentukan jumlahnya (+5, +10, +50 / manual). Cocok untuk paket terikat rapi.";
-        setStatus("Mode 1 aktif: Siap scan 1 lembar contoh.");
+        desc.innerHTML = "💡 <b>Mode 1 (Sample + Multiplier)</b>: Scan 1 lembar contoh per ikatan paket, lalu tentukan kuantitasnya (+5, +10, +50 / manual).";
+        setStatus("Mode 1 aktif: Scan 1 lembar contoh.");
       } else if (m === 2) {
         pRange.style.display = "none";
-        desc.innerHTML = "⚡ <b>Mode 2 (Tembak Cepat / Continuous)</b>: Kamera menyala terus tanpa henti. Selisik dan buka lembaran voucher satu per satu di bawah kamera seperti kartu remi. Cocok untuk voucher campur aduk.";
-        setStatus("Mode 2 aktif: Siap tembak cepat per lembar.");
+        desc.innerHTML = "⚡ <b>Mode 2 (Tembak Cepat / Continuous)</b>: Kamera membaca otomatis dengan jeda cepat. Cocok untuk voucher campur aduk.";
+        setStatus("Mode 2 aktif: Siap tembak beruntun.");
       } else if (m === 3) {
         pRange.style.display = "block";
         resetRangeInputs();
-        desc.innerHTML = "📦 <b>Mode 3 (Rentang Nomor Seri)</b>: Hanya scan lembar pertama & lembar terakhir. Seluruh nomor di antaranya terisi otomatis. Cocok untuk 1 pack resmi segel pabrik.";
-        setStatus("Mode 3 aktif: Scan lembar pertama (atas).");
+        desc.innerHTML = "📦 <b>Mode 3 (Rentang Nomor Seri)</b>: Scan lembar pertama & lembar terakhir. Seluruh nomor seri dihitung otomatis.";
+        setStatus("Mode 3 aktif: Scan lembar pertama.");
       }
     }
 
@@ -178,26 +191,57 @@
       document.getElementById("rangeStepText").innerText = "Langkah 1: Scan Lembar PERTAMA (Awal)";
     }
 
-    function cleanExtractedSN(rawText) {
-      if (rawText.includes("http://") || rawText.includes("https://")) {
+    // ==============================================================
+    // FILTER CERDAS KHUSUS VOUCHER & KARTU PERDANA INDONESIA
+    // ==============================================================
+    function parseVoucherCode(rawText) {
+      if (!rawText) return null;
+      let text = String(rawText).trim();
+
+      // 1. Ekstraksi jika hasil scan adalah URL web
+      if (text.includes("http://") || text.includes("https://")) {
         try {
-          const url = new URL(rawText);
-          for (let p of ['sn', 'code', 'id', 'v', 'serial']) {
-            if (url.searchParams.get(p)) return url.searchParams.get(p).trim();
+          const url = new URL(text);
+          for (let p of ['sn', 'code', 'id', 'v', 'serial', 'c']) {
+            if (url.searchParams.get(p)) {
+              text = url.searchParams.get(p).trim();
+              break;
+            }
           }
         } catch(e){}
-        const matches = rawText.match(/\d{8,25}/);
-        if (matches) return matches[0];
+        const matches = text.match(/\d{8,25}/);
+        if (matches) text = matches[0];
       }
-      return rawText.trim();
+
+      // Bersihkan spasi dan strip (Contoh Axis: '1158 5900...' -> '11585900...')
+      let cleanNumbers = text.replace(/[\s\-]/g, "");
+
+      // 2. BLACKLIST BARCODE PRODUKSI TELKOMSEL (Barcode Kiri yang Berdempetan)
+      // Voucher Telkomsel kode kiri selalu diawali 310... atau 320... (bukan serial number)
+      if (cleanNumbers.length === 12 && (cleanNumbers.startsWith("310") || cleanNumbers.startsWith("320"))) {
+        console.warn("Mengabaikan barcode material Telkomsel:", cleanNumbers);
+        return null; // Tolak! Minta kamera membaca barcode tengah
+      }
+
+      // 3. Validasi Serial Number Resmi Operator
+      // Jika nomor seri kartu Tri berakhiran '-3' atau sejenisnya, ambil digit murni
+      const pureDigits = cleanNumbers.match(/\d{8,25}/);
+      if (pureDigits) {
+        return pureDigits[0];
+      }
+
+      return cleanNumbers;
     }
 
     async function handleScannerClick() {
       const btn = document.getElementById("btnScanner");
+      const laser = document.getElementById("laserLine");
+
       if (isScanning) {
         if (html5QrCode) {
           await html5QrCode.stop();
           isScanning = false;
+          laser.style.display = "none";
           btn.innerText = "📷 Nyalakan Kamera";
           btn.style.background = "#0284c7";
           setStatus("Kamera nonaktif.");
@@ -210,16 +254,23 @@
         if (!html5QrCode) {
           html5QrCode = new Html5Qrcode("reader");
         }
+
+        // KUNCI PRESISI: Kotak bidik tipis pipih (270x90) agar barcode samping tidak ikut terbaca!
         await html5QrCode.start(
           { facingMode: "environment" },
-          { fps: 24, qrbox: { width: 260, height: 180 } },
+          { 
+            fps: 25, 
+            qrbox: { width: 270, height: 90 }
+          },
           onScanSuccess,
           () => {}
         );
+
         isScanning = true;
+        laser.style.display = "block";
         btn.innerText = "⏹ Matikan Kamera";
         btn.style.background = "#ef4444";
-        setStatus("Kamera aktif. Dekatkan barcode voucher.");
+        setStatus("Kamera aktif. Posisikan garis merah tepat di barcode tengah!");
       } catch (e) {
         btn.innerText = "📷 Nyalakan Kamera";
         btn.style.background = "#0284c7";
@@ -241,38 +292,43 @@
     }
 
     function onScanSuccess(decodedText) {
+      const cleanSN = parseVoucherCode(decodedText);
+      if (!cleanSN) {
+        // Barcode terdeteksi tapi di-reject (misal kena barcode produksi kiri 310...)
+        return;
+      }
+
       const now = new Date().getTime();
-      // Delay deteksi: Mode 2 (Rapid) dibuat sangat singkat (350ms), mode lain 1100ms
-      const delayThreshold = (currentMode === 2) ? 350 : 1100;
-      if (decodedText === lastCode && (now - lastTime) < delayThreshold) return;
-      lastCode = decodedText;
+      const delay = (currentMode === 2) ? 400 : 1200;
+      if (cleanSN === lastCode && (now - lastTime) < delay) return;
+      lastCode = cleanSN;
       lastTime = now;
 
       playBeep();
-      const cleanSN = cleanExtractedSN(decodedText);
 
-      // LOGIKA SESUAI 3 MODE:
+      // MODE 1: Sample + Multiplier
       if (currentMode === 1) {
-        // MODE 1: Masukkan 1 unit awal, beri kesempatan kasir menekan tombol multiplier
-        cart[decodedText] = (cart[decodedText] || 0) + 1;
-        setStatus("Mode 1: " + cleanSN + " (+1). Tambah Qty jika berupa ikatan.");
+        cart[cleanSN] = (cart[cleanSN] || 0) + 1;
+        setStatus("Terbaca: " + cleanSN + " (+1). Tambah Qty jika berupa ikatan.");
         renderCart();
-      } else if (currentMode === 2) {
-        // MODE 2: Tembak cepat terus bertambah
-        cart[decodedText] = (cart[decodedText] || 0) + 1;
-        setStatus("Mode 2 (Tembak): " + cleanSN + " terdata!");
+      } 
+      // MODE 2: Tembak Beruntun Cepat
+      else if (currentMode === 2) {
+        cart[cleanSN] = (cart[cleanSN] || 0) + 1;
+        setStatus("Tembak: " + cleanSN + " terdata!");
         renderCart();
-      } else if (currentMode === 3) {
-        // MODE 3: Rekam rentang
+      } 
+      // MODE 3: Rentang Seri (Start - End)
+      else if (currentMode === 3) {
         if (rangeStep === 1) {
           document.getElementById("snStart").value = cleanSN;
           rangeStep = 2;
           document.getElementById("rangeStepText").innerText = "Langkah 2: Scan Lembar TERAKHIR (Akhir)";
-          setStatus("Awal tercatat: " + cleanSN + ". Silakan scan lembar paling bawah.");
+          setStatus("Awal: " + cleanSN + ". Silakan scan lembar paling bawah.");
         } else if (rangeStep === 2) {
           document.getElementById("snEnd").value = cleanSN;
           document.getElementById("rangeStepText").innerText = "Langkah 3: Klik 'Masukkan Seluruh Rentang'";
-          setStatus("Akhir tercatat: " + cleanSN + ". Siap dihitung.");
+          setStatus("Akhir: " + cleanSN + ". Siap dihitung.");
         }
       }
     }
@@ -291,7 +347,7 @@
         const endBig = BigInt(endStr);
 
         if (endBig < startBig) {
-          alert("Nomor akhir lebih kecil dari nomor awal! Periksa kembali urutan fisiknya.");
+          alert("Nomor akhir lebih kecil dari nomor awal! Periksa kembali fisik voucher.");
           return;
         }
 
@@ -308,7 +364,7 @@
 
         alert(`✅ Sukses menambahkan ${totalPcs} nomor seri ke daftar!`);
         resetRangeInputs();
-        setScanMode(1); // Balik ke tampilan normal
+        setScanMode(1);
         renderCart();
       } catch (err) {
         alert("Gagal memproses rentang: " + err);
@@ -321,7 +377,6 @@
       const keys = Object.keys(cart);
       let grandTotal = 0;
 
-      // Optimasi DOM: batasi visual maksimal 40 baris agar HP tetap ringan
       const displayKeys = keys.slice(0, 40);
 
       for (let code of displayKeys) {
@@ -343,7 +398,6 @@
         `;
       }
 
-      // Hitung unit keseluruhan jika melebihi 40
       for (let i = 40; i < keys.length; i++) {
         grandTotal += cart[keys[i]];
       }
@@ -428,7 +482,7 @@
       } catch (err) {
         console.error(err);
         alert("⚠️ Gagal mengirim data. Periksa jaringan internet ponsel.");
-        setStatus("Error: " + err);
+        setStatus("Error kirim: " + err);
       } finally {
         btnKirim.disabled = false;
         btnKirim.innerText = "🚀 KIRIM KE PC UTAMA";
