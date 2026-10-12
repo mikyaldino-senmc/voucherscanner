@@ -23,7 +23,7 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* TOP BAR */
+    /* HEADER */
     .header-bar {
       height: 48px; background: rgba(11, 19, 41, 0.95);
       border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;
@@ -32,10 +32,8 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* KONTEN SCROLLABLE */
+    /* KONTEN */
     .content-area { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 95px; }
-
-    /* KARTU */
     .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
     label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
     select, input {
@@ -43,47 +41,67 @@
       background: var(--bg-main); color: white; font-size: 12px; font-weight: 600; margin-bottom: 6px; outline: none;
     }
 
-    /* AREA KAMERA & OVERLAY BIDIKAN PRESISI */
+    /* TOMBOL PILIHAN FORMAT: BARCODE VS QR (2 TOMBOL BESAR) */
+    .format-selector { display: flex; gap: 6px; margin-bottom: 8px; }
+    .btn-format {
+      flex: 1; padding: 10px 4px; border: 1.5px solid var(--border-color); border-radius: 8px;
+      background: var(--bg-main); color: var(--text-muted); font-size: 11px; font-weight: 800;
+      cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      transition: all 0.2s ease;
+    }
+    .btn-format.active {
+      background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border-color: var(--accent-glow);
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+    }
+    .btn-format .subtext { font-size: 9px; font-weight: normal; opacity: 0.85; }
+
+    /* VIEWPORT KAMERA */
     #reader-container {
       position: relative; width: 100%; height: 230px; border-radius: 10px;
-      overflow: hidden; background: #000; margin-bottom: 8px; display: flex;
-      align-items: center; justify-content: center;
+      overflow: hidden; background: #000; margin-bottom: 8px;
     }
     #reader { width: 100%; height: 100%; }
-    
-    /* Hilangkan garis border default bawaan html5-qrcode agar tidak tabrakan */
-    #reader__scan_region {
-      display: flex !important; align-items: center !important; justify-content: center !important;
-    }
+
+    /* Sembunyikan styling bawaan html5-qrcode yang bikin bingung */
+    #reader__scan_region img { display: none !important; }
     #reader video { object-fit: cover !important; border-radius: 10px; }
 
-    /* RETICLE / TARGET BIDIKAN TUNGGAL (PRESISI 100% UNTUK BARCODE & QR) */
-    .scanner-reticle {
-      position: absolute; width: 230px; height: 150px;
-      border: 2px dashed rgba(56, 189, 248, 0.6); border-radius: 12px;
-      box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.42); pointer-events: none; z-index: 10;
-      display: none;
+    /* OVERLAY BIDIKAN DINAMIS */
+    .viewfinder-box {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      pointer-events: none; z-index: 20; display: none;
+      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.45);
+      border-radius: 10px; transition: width 0.25s, height 0.25s;
     }
-    /* 4 Sudut Putih Tegas */
-    .scanner-reticle::before, .scanner-reticle::after {
-      content: ''; position: absolute; width: 18px; height: 18px; border-color: #fff; pointer-events: none;
+    /* Ukuran Tipe 1: Barcode Garis (Pipih Panjang) */
+    .viewfinder-box.mode-barcode {
+      width: 270px; height: 85px; border: 2px solid #38bdf8;
     }
-    .scanner-reticle::before { top: -2px; left: -2px; border-top: 3px solid #fff; border-left: 3px solid #fff; border-top-left-radius: 10px; }
-    .scanner-reticle::after { bottom: -2px; right: -2px; border-bottom: 3px solid #fff; border-right: 3px solid #fff; border-bottom-right-radius: 10px; }
-    
-    /* Garis Laser Merah yang Selaras Sempurna di Tengah Reticle */
-    .laser-beam {
-      position: absolute; top: 50%; left: 4%; width: 92%; height: 2px;
-      background: #ef4444; box-shadow: 0 0 10px #ef4444; transform: translateY(-50%);
-      animation: laserSweep 1.8s ease-in-out infinite alternate;
-    }
-    @keyframes laserSweep {
-      0% { top: 15%; opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { top: 85%; opacity: 0.6; }
+    /* Ukuran Tipe 2: QR Code (Kotak Presisi) */
+    .viewfinder-box.mode-qr {
+      width: 190px; height: 190px; border: 2px solid #10b981;
     }
 
-    /* TOMBOL MODE SCAN */
+    /* 4 Sudut Pemikat */
+    .viewfinder-box::before, .viewfinder-box::after {
+      content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none;
+    }
+    .viewfinder-box::before { top: -2px; left: -2px; border-top: 3.5px solid #fff; border-left: 3.5px solid #fff; border-top-left-radius: 8px; }
+    .viewfinder-box::after { bottom: -2px; right: -2px; border-bottom: 3.5px solid #fff; border-right: 3.5px solid #fff; border-bottom-right-radius: 8px; }
+
+    /* Garis Laser */
+    .laser-line {
+      position: absolute; left: 4%; width: 92%; height: 2px;
+      background: #ef4444; box-shadow: 0 0 10px #ef4444;
+      animation: laserSweep 1.6s ease-in-out infinite alternate;
+    }
+    @keyframes laserSweep {
+      0% { top: 15%; opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { top: 85%; opacity: 0.5; }
+    }
+
+    /* PILIHAN MODE KERJA (SAMPLE / RAPID / RANGE) */
     .mode-pills { display: flex; gap: 4px; margin-bottom: 8px; }
     .mode-pill { flex: 1; padding: 6px 2px; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; font-size: 9.5px; font-weight: 800; text-align: center; cursor: pointer; }
     .mode-pill.active { background: var(--accent); color: white; border-color: var(--accent-glow); }
@@ -102,7 +120,7 @@
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
     .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 10px; padding: 4px 8px; border-radius: 6px; }
 
-    /* FLOATING ACTION BOTTOM BAR */
+    /* FLOATING BOTTOM BAR */
     .bottom-floating-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: rgba(11, 19, 41, 0.98); backdrop-filter: blur(14px);
@@ -132,7 +150,6 @@
     <div class="badge-outlet" id="headerOutletBadge">Gudang Utama</div>
   </div>
 
-  <!-- KONTEN SCROLLABLE -->
   <div class="content-area">
 
     <!-- 1. PENGATURAN MODE TRANSAKSI -->
@@ -176,15 +193,28 @@
       </div>
     </div>
 
-    <!-- 2. SCANNER & KAMERA VIEWPORT -->
+    <!-- 2. PEMILIHAN JENIS KODE (BARCODE BALOK VS QR CODE) -->
     <div class="card">
-      <div class="mode-pills">
-        <div class="mode-pill active" id="pillMode1" onclick="setScanMode(1)">1. SAMPLE + MULTI</div>
-        <div class="mode-pill" id="pillMode2" onclick="setScanMode(2)">2. TEMBAK CEPAT</div>
-        <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">3. RENTANG SERI</div>
+      <label>1. PILIH JENIS KODE FISIK VOUCHER:</label>
+      <div class="format-selector">
+        <div class="btn-format active" id="btnFmtBarcode" onclick="selectFormat('BARCODE')">
+          <span>📊 BARCODE BALOK (1D)</span>
+          <span class="subtext">Axis, XL, Smartfren, Tsel Tengah</span>
+        </div>
+        <div class="btn-format" id="btnFmtQR" onclick="selectFormat('QR')">
+          <span>🔲 QR CODE KOTAK (2D)</span>
+          <span class="subtext">Tsel QR, by.U, Tri, Smartfren QR</span>
+        </div>
       </div>
 
-      <!-- KOTAK RENTANG JIKA MODE 3 AKTIF -->
+      <label>2. METODE PENGHITUNGAN:</label>
+      <div class="mode-pills">
+        <div class="mode-pill active" id="pillMode1" onclick="setScanMode(1)">SAMPLE + MULTI</div>
+        <div class="mode-pill" id="pillMode2" onclick="setScanMode(2)">TEMBAK CEPAT</div>
+        <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">RENTANG SERI</div>
+      </div>
+
+      <!-- KOTAK RENTANG -->
       <div id="rangePanel" style="display: none; margin-bottom: 6px;">
         <div style="font-size: 10px; font-weight: 800; color: var(--accent-glow); margin-bottom: 4px;" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
         <div style="display: flex; gap: 4px;">
@@ -194,11 +224,11 @@
         <button class="btn btn-primary" style="padding: 6px; font-size: 10.5px;" onclick="generateRangeItems()">➕ Masukkan Rentang</button>
       </div>
 
-      <!-- KAMERA & BIDIKAN RETICLE ELEGAN -->
+      <!-- KAMERA & OVERLAY TARGET TEPAT -->
       <div id="reader-container">
         <div id="reader"></div>
-        <div class="scanner-reticle" id="scannerReticle">
-          <div class="laser-beam"></div>
+        <div class="viewfinder-box mode-barcode" id="viewfinder">
+          <div class="laser-line"></div>
         </div>
       </div>
 
@@ -221,14 +251,14 @@
           </tr>
         </thead>
         <tbody id="cartTable">
-          <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan. Buka kamera di atas.</td></tr>
+          <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>
         </tbody>
       </table>
     </div>
 
   </div>
 
-  <!-- FLOATING ACTION BOTTOM BAR -->
+  <!-- FLOATING BOTTOM BAR -->
   <div class="bottom-floating-bar">
     <div class="total-counter">
       <div class="title">TOTAL UNIT</div>
@@ -246,15 +276,40 @@
     let isScanning = false;
     let cart = {}; 
     let currentMode = 1;
+    let currentFormat = 'BARCODE'; // 'BARCODE' atau 'QR'
     let lastCode = "";
     let lastTime = 0;
     let rangeStep = 1;
 
-    function showToast(msg, dur=2200) {
+    function showToast(msg, dur=2000) {
       const t = document.getElementById("status-toast");
       t.innerText = msg;
       t.style.display = "block";
       setTimeout(() => { t.style.display = "none"; }, dur);
+    }
+
+    // =========================================================================
+    // FITUR PILIHAN FORMAT: MENGUBAH SENSOR & BINGKAI SECARA REAL-TIME
+    // =========================================================================
+    async function selectFormat(fmt) {
+      currentFormat = fmt;
+      document.getElementById("btnFmtBarcode").className = (fmt === 'BARCODE') ? "btn-format active" : "btn-format";
+      document.getElementById("btnFmtQR").className = (fmt === 'QR') ? "btn-format active" : "btn-format";
+
+      const vf = document.getElementById("viewfinder");
+      if (fmt === 'BARCODE') {
+        vf.className = "viewfinder-box mode-barcode";
+        showToast("Mode Barcode Balok: Bidikan Pipih Melebar (Fokus 1D)");
+      } else {
+        vf.className = "viewfinder-box mode-qr";
+        showToast("Mode QR Kotak: Bidikan Persegi Sempurna (Fokus 2D)");
+      }
+
+      // Jika kamera sedang menyala, restart kamera agar rasio qrbox library berganti seketika
+      if (isScanning) {
+        await stopCamera();
+        await startCamera();
+      }
     }
 
     function switchTrxType() {
@@ -298,7 +353,7 @@
       if (!rawText) return null;
       let text = String(rawText).trim();
 
-      // Ekstraksi jika URL web (QR Code Telkomsel, by.U, IM3, Smartfren)
+      // Ekstraksi QR Code URL
       if (text.includes("http://") || text.includes("https://")) {
         try {
           const url = new URL(text);
@@ -311,54 +366,67 @@
       }
 
       let clean = text.replace(/[\s\-]/g, "");
-      
-      // Blacklist Barcode Percetakan Kiri Telkomsel (310... / 320...)
-      if (clean.length === 12 && (clean.startsWith("310") || clean.startsWith("320"))) return null;
+
+      // Abaikan Barcode Percetakan Kiri Telkomsel (310... / 320...) jika mode Barcode
+      if (currentFormat === 'BARCODE' && clean.length === 12 && (clean.startsWith("310") || clean.startsWith("320"))) {
+        return null;
+      }
 
       const pure = clean.match(/\d{8,25}/);
       return pure ? pure[0] : clean;
     }
 
     async function handleScannerClick() {
-      const btn = document.getElementById("btnScanner");
-      const reticle = document.getElementById("scannerReticle");
-
       if (isScanning) {
-        if (html5QrCode) {
-          await html5QrCode.stop();
-          isScanning = false;
-          reticle.style.display = "none";
-          btn.innerText = "📷 Buka Kamera Scanner";
-          btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
-        }
-        return;
+        await stopCamera();
+      } else {
+        await startCamera();
       }
+    }
 
+    async function startCamera() {
+      const btn = document.getElementById("btnScanner");
+      const vf = document.getElementById("viewfinder");
       btn.innerText = "⏳ Membuka Kamera...";
+
       try {
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
 
-        // FOKUS FLEKSIBEL: Rasio 230x150 mencakup Barcode Balok & QR Kotak dengan sempurna
+        // Konfigurasi QrBox sesuai jenis format yang dipilih
+        const boxConfig = (currentFormat === 'BARCODE') 
+          ? { width: 270, height: 85 } 
+          : { width: 190, height: 190 };
+
         await html5QrCode.start(
           { facingMode: "environment" },
           { 
             fps: 25, 
-            qrbox: { width: 230, height: 150 },
-            aspectRatio: 1.333333
+            qrbox: boxConfig
           },
           onScanSuccess,
           () => {}
         );
 
         isScanning = true;
-        reticle.style.display = "block";
+        vf.style.display = "block";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#ef4444";
-        showToast("Posisikan Barcode atau QR Code tepat di dalam kotak bidik.");
       } catch (e) {
         btn.innerText = "📷 Buka Kamera Scanner";
         btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
         alert("Gagal membuka kamera: " + e);
+      }
+    }
+
+    async function stopCamera() {
+      const btn = document.getElementById("btnScanner");
+      const vf = document.getElementById("viewfinder");
+      if (html5QrCode) {
+        await html5QrCode.stop();
+        isScanning = false;
+        vf.style.display = "none";
+        btn.innerText = "📷 Buka Kamera Scanner";
+        btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
       }
     }
 
