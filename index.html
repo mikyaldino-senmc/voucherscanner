@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#0b1329">
-  <title>Nikola Voucher Scanner Pro</title>
+  <title>Nikola Scanner Pro v2.5</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -21,19 +24,19 @@
     }
 
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    body { background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
 
     /* HEADER */
     .header-bar {
-      height: 48px; background: rgba(11, 19, 41, 0.95);
+      height: 48px; background: rgba(11, 19, 41, 0.98);
       border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;
-      padding: 0 12px; flex-shrink: 0; z-index: 50;
+      padding: 0 12px; position: sticky; top: 0; z-index: 50;
     }
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
     /* KONTEN */
-    .content-area { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 95px; }
+    .content-area { flex: 1; padding: 10px; padding-bottom: 95px; }
     .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
     label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
     select, input {
@@ -47,7 +50,6 @@
       flex: 1; padding: 10px 4px; border: 1.5px solid var(--border-color); border-radius: 8px;
       background: var(--bg-main); color: var(--text-muted); font-size: 11px; font-weight: 800;
       cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px;
-      transition: all 0.2s ease;
     }
     .btn-format.active {
       background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border-color: var(--accent-glow);
@@ -55,53 +57,25 @@
     }
     .btn-format .subtext { font-size: 9px; font-weight: normal; opacity: 0.85; }
 
-    /* VIEWPORT KAMERA */
+    /* VIEWPORT KAMERA ALAMI (TIDAK CROP, 100% PRESISI) */
     #reader-container {
-      position: relative; width: 100%; height: 230px; border-radius: 10px;
+      position: relative; width: 100%; min-height: 220px; border-radius: 10px;
       overflow: hidden; background: #000; margin-bottom: 8px;
     }
-    #reader { width: 100%; height: 100%; }
+    #reader { width: 100%; }
+    
+    /* STYLING KOTAK BIDIK RESMI BAWAAN LIBRARY (AGAR TEPAT SASARAN) */
+    #reader__scan_region {
+      display: flex !important; align-items: center !important; justify-content: center !important;
+    }
+    /* Warna kotak sensor aktif */
+    #reader__scan_region svg rect {
+      stroke: #38bdf8 !important;
+      stroke-width: 3px !important;
+    }
+    #reader img { display: none !important; }
 
-    /* Sembunyikan styling bawaan html5-qrcode yang bikin bingung */
-    #reader__scan_region img { display: none !important; }
-    #reader video { object-fit: cover !important; border-radius: 10px; }
-
-    /* OVERLAY BIDIKAN DINAMIS */
-    .viewfinder-box {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      pointer-events: none; z-index: 20; display: none;
-      box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.45);
-      border-radius: 10px; transition: width 0.25s, height 0.25s;
-    }
-    /* Ukuran Tipe 1: Barcode Garis (Pipih Panjang) */
-    .viewfinder-box.mode-barcode {
-      width: 270px; height: 85px; border: 2px solid #38bdf8;
-    }
-    /* Ukuran Tipe 2: QR Code (Kotak Presisi) */
-    .viewfinder-box.mode-qr {
-      width: 190px; height: 190px; border: 2px solid #10b981;
-    }
-
-    /* 4 Sudut Pemikat */
-    .viewfinder-box::before, .viewfinder-box::after {
-      content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none;
-    }
-    .viewfinder-box::before { top: -2px; left: -2px; border-top: 3.5px solid #fff; border-left: 3.5px solid #fff; border-top-left-radius: 8px; }
-    .viewfinder-box::after { bottom: -2px; right: -2px; border-bottom: 3.5px solid #fff; border-right: 3.5px solid #fff; border-bottom-right-radius: 8px; }
-
-    /* Garis Laser */
-    .laser-line {
-      position: absolute; left: 4%; width: 92%; height: 2px;
-      background: #ef4444; box-shadow: 0 0 10px #ef4444;
-      animation: laserSweep 1.6s ease-in-out infinite alternate;
-    }
-    @keyframes laserSweep {
-      0% { top: 15%; opacity: 0.5; }
-      50% { opacity: 1; }
-      100% { top: 85%; opacity: 0.5; }
-    }
-
-    /* PILIHAN MODE KERJA (SAMPLE / RAPID / RANGE) */
+    /* TOMBOL MODE HITUNG */
     .mode-pills { display: flex; gap: 4px; margin-bottom: 8px; }
     .mode-pill { flex: 1; padding: 6px 2px; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; font-size: 9.5px; font-weight: 800; text-align: center; cursor: pointer; }
     .mode-pill.active { background: var(--accent); color: white; border-color: var(--accent-glow); }
@@ -146,7 +120,7 @@
 
   <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">⚡ NIKOLA VOUCHER PRO</div>
+    <div class="brand-title">⚡ NIKOLA PRO v2.5</div>
     <div class="badge-outlet" id="headerOutletBadge">Gudang Utama</div>
   </div>
 
@@ -195,7 +169,7 @@
 
     <!-- 2. PEMILIHAN JENIS KODE (BARCODE BALOK VS QR CODE) -->
     <div class="card">
-      <label>1. PILIH JENIS KODE FISIK VOUCHER:</label>
+      <label>1. PILIH FORMAT KODE YANG AKAN DI-SCAN:</label>
       <div class="format-selector">
         <div class="btn-format active" id="btnFmtBarcode" onclick="selectFormat('BARCODE')">
           <span>📊 BARCODE BALOK (1D)</span>
@@ -224,12 +198,9 @@
         <button class="btn btn-primary" style="padding: 6px; font-size: 10.5px;" onclick="generateRangeItems()">➕ Masukkan Rentang</button>
       </div>
 
-      <!-- KAMERA & OVERLAY TARGET TEPAT -->
+      <!-- KAMERA -->
       <div id="reader-container">
         <div id="reader"></div>
-        <div class="viewfinder-box mode-barcode" id="viewfinder">
-          <div class="laser-line"></div>
-        </div>
       </div>
 
       <button class="btn btn-primary" id="btnScanner" style="width: 100%; margin-top: 4px;" onclick="handleScannerClick()">📷 Buka Kamera Scanner</button>
@@ -251,7 +222,7 @@
           </tr>
         </thead>
         <tbody id="cartTable">
-          <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>
+          <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan. Buka kamera di atas.</td></tr>
         </tbody>
       </table>
     </div>
@@ -281,31 +252,22 @@
     let lastTime = 0;
     let rangeStep = 1;
 
-    function showToast(msg, dur=2000) {
+    function showToast(msg, dur=2200) {
       const t = document.getElementById("status-toast");
       t.innerText = msg;
       t.style.display = "block";
       setTimeout(() => { t.style.display = "none"; }, dur);
     }
 
-    // =========================================================================
-    // FITUR PILIHAN FORMAT: MENGUBAH SENSOR & BINGKAI SECARA REAL-TIME
-    // =========================================================================
     async function selectFormat(fmt) {
+      if (currentFormat === fmt) return;
       currentFormat = fmt;
       document.getElementById("btnFmtBarcode").className = (fmt === 'BARCODE') ? "btn-format active" : "btn-format";
       document.getElementById("btnFmtQR").className = (fmt === 'QR') ? "btn-format active" : "btn-format";
 
-      const vf = document.getElementById("viewfinder");
-      if (fmt === 'BARCODE') {
-        vf.className = "viewfinder-box mode-barcode";
-        showToast("Mode Barcode Balok: Bidikan Pipih Melebar (Fokus 1D)");
-      } else {
-        vf.className = "viewfinder-box mode-qr";
-        showToast("Mode QR Kotak: Bidikan Persegi Sempurna (Fokus 2D)");
-      }
+      showToast(fmt === 'BARCODE' ? "Mode Barcode Balok (Pipih)" : "Mode QR Code (Kotak)");
 
-      // Jika kamera sedang menyala, restart kamera agar rasio qrbox library berganti seketika
+      // Restart kamera secara mulus agar rasio sensor langsung berganti
       if (isScanning) {
         await stopCamera();
         await startCamera();
@@ -386,29 +348,35 @@
 
     async function startCamera() {
       const btn = document.getElementById("btnScanner");
-      const vf = document.getElementById("viewfinder");
       btn.innerText = "⏳ Membuka Kamera...";
 
       try {
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
 
-        // Konfigurasi QrBox sesuai jenis format yang dipilih
-        const boxConfig = (currentFormat === 'BARCODE') 
-          ? { width: 270, height: 85 } 
-          : { width: 190, height: 190 };
+        // FUNGSI KALKULASI RASIO SENSOR PRESISI SESUAI FORMAT:
+        // Barcode: Pipih Panjang (260 x 85)
+        // QR Code: Persegi Kotak Pas (200 x 200)
+        const qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+          if (currentFormat === 'BARCODE') {
+            const w = Math.min(270, Math.floor(viewfinderWidth * 0.85));
+            return { width: w, height: 85 };
+          } else {
+            const edge = Math.min(210, Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.72));
+            return { width: edge, height: edge };
+          }
+        };
 
         await html5QrCode.start(
           { facingMode: "environment" },
           { 
             fps: 25, 
-            qrbox: boxConfig
+            qrbox: qrboxFunction
           },
           onScanSuccess,
           () => {}
         );
 
         isScanning = true;
-        vf.style.display = "block";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#ef4444";
       } catch (e) {
@@ -420,11 +388,11 @@
 
     async function stopCamera() {
       const btn = document.getElementById("btnScanner");
-      const vf = document.getElementById("viewfinder");
       if (html5QrCode) {
-        await html5QrCode.stop();
+        try {
+          await html5QrCode.stop();
+        } catch(e){}
         isScanning = false;
-        vf.style.display = "none";
         btn.innerText = "📷 Buka Kamera Scanner";
         btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
       }
@@ -511,7 +479,7 @@
       let grandTotal = 0;
 
       if (keys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan. Buka kamera di atas.</td></tr>`;
         document.getElementById("totalUnit").innerText = "0";
         return;
       }
