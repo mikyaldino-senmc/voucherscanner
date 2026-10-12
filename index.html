@@ -32,7 +32,7 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* CONTAINER SCROLLABLE */
+    /* KONTEN SCROLLABLE */
     .content-area { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 95px; }
 
     /* KARTU */
@@ -43,13 +43,44 @@
       background: var(--bg-main); color: white; font-size: 12px; font-weight: 600; margin-bottom: 6px; outline: none;
     }
 
-    /* KAMERA VIEWPORT (KETINGGIAN DIBATASI MAKS 190PX AGAR TIDAK MENUTUPI LAYAR) */
-    #reader-container { position: relative; width: 100%; height: 185px; border-radius: 10px; overflow: hidden; background: #000; margin-bottom: 8px; }
+    /* AREA KAMERA & OVERLAY BIDIKAN PRESISI */
+    #reader-container {
+      position: relative; width: 100%; height: 230px; border-radius: 10px;
+      overflow: hidden; background: #000; margin-bottom: 8px; display: flex;
+      align-items: center; justify-content: center;
+    }
     #reader { width: 100%; height: 100%; }
-    .laser-line {
-      position: absolute; top: 50%; left: 8%; width: 84%; height: 2px;
-      background: #ef4444; box-shadow: 0 0 10px #ef4444; z-index: 10;
-      pointer-events: none; transform: translateY(-50%);
+    
+    /* Hilangkan garis border default bawaan html5-qrcode agar tidak tabrakan */
+    #reader__scan_region {
+      display: flex !important; align-items: center !important; justify-content: center !important;
+    }
+    #reader video { object-fit: cover !important; border-radius: 10px; }
+
+    /* RETICLE / TARGET BIDIKAN TUNGGAL (PRESISI 100% UNTUK BARCODE & QR) */
+    .scanner-reticle {
+      position: absolute; width: 230px; height: 150px;
+      border: 2px dashed rgba(56, 189, 248, 0.6); border-radius: 12px;
+      box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.42); pointer-events: none; z-index: 10;
+      display: none;
+    }
+    /* 4 Sudut Putih Tegas */
+    .scanner-reticle::before, .scanner-reticle::after {
+      content: ''; position: absolute; width: 18px; height: 18px; border-color: #fff; pointer-events: none;
+    }
+    .scanner-reticle::before { top: -2px; left: -2px; border-top: 3px solid #fff; border-left: 3px solid #fff; border-top-left-radius: 10px; }
+    .scanner-reticle::after { bottom: -2px; right: -2px; border-bottom: 3px solid #fff; border-right: 3px solid #fff; border-bottom-right-radius: 10px; }
+    
+    /* Garis Laser Merah yang Selaras Sempurna di Tengah Reticle */
+    .laser-beam {
+      position: absolute; top: 50%; left: 4%; width: 92%; height: 2px;
+      background: #ef4444; box-shadow: 0 0 10px #ef4444; transform: translateY(-50%);
+      animation: laserSweep 1.8s ease-in-out infinite alternate;
+    }
+    @keyframes laserSweep {
+      0% { top: 15%; opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { top: 85%; opacity: 0.6; }
     }
 
     /* TOMBOL MODE SCAN */
@@ -71,7 +102,7 @@
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
     .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 10px; padding: 4px 8px; border-radius: 6px; }
 
-    /* FLOATING ACTION BOTTOM BAR (SELALU MELAYANG DI BAWAH DENGAN TOMBOL KIRIM) */
+    /* FLOATING ACTION BOTTOM BAR */
     .bottom-floating-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: rgba(11, 19, 41, 0.98); backdrop-filter: blur(14px);
@@ -163,16 +194,18 @@
         <button class="btn btn-primary" style="padding: 6px; font-size: 10.5px;" onclick="generateRangeItems()">➕ Masukkan Rentang</button>
       </div>
 
-      <!-- KAMERA -->
+      <!-- KAMERA & BIDIKAN RETICLE ELEGAN -->
       <div id="reader-container">
         <div id="reader"></div>
-        <div class="laser-line" id="laserLine" style="display: none;"></div>
+        <div class="scanner-reticle" id="scannerReticle">
+          <div class="laser-beam"></div>
+        </div>
       </div>
 
       <button class="btn btn-primary" id="btnScanner" style="width: 100%; margin-top: 4px;" onclick="handleScannerClick()">📷 Buka Kamera Scanner</button>
     </div>
 
-    <!-- 3. KERANJANG SEMENTARA (LANGSUNG TERLIHAT DI BAWAH KAMERA) -->
+    <!-- 3. KERANJANG SEMENTARA -->
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
         <span style="font-size: 11px; font-weight: 800; color: var(--text-main);">📋 DAFTAR VOUCHER TERSCAN</span>
@@ -195,7 +228,7 @@
 
   </div>
 
-  <!-- FLOATING ACTION BOTTOM BAR (SELALU TERLIHAT DI BAWAH LAYAR) -->
+  <!-- FLOATING ACTION BOTTOM BAR -->
   <div class="bottom-floating-bar">
     <div class="total-counter">
       <div class="title">TOTAL UNIT</div>
@@ -265,6 +298,7 @@
       if (!rawText) return null;
       let text = String(rawText).trim();
 
+      // Ekstraksi jika URL web (QR Code Telkomsel, by.U, IM3, Smartfren)
       if (text.includes("http://") || text.includes("https://")) {
         try {
           const url = new URL(text);
@@ -277,6 +311,7 @@
       }
 
       let clean = text.replace(/[\s\-]/g, "");
+      
       // Blacklist Barcode Percetakan Kiri Telkomsel (310... / 320...)
       if (clean.length === 12 && (clean.startsWith("310") || clean.startsWith("320"))) return null;
 
@@ -286,13 +321,13 @@
 
     async function handleScannerClick() {
       const btn = document.getElementById("btnScanner");
-      const laser = document.getElementById("laserLine");
+      const reticle = document.getElementById("scannerReticle");
 
       if (isScanning) {
         if (html5QrCode) {
           await html5QrCode.stop();
           isScanning = false;
-          laser.style.display = "none";
+          reticle.style.display = "none";
           btn.innerText = "📷 Buka Kamera Scanner";
           btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
         }
@@ -303,18 +338,23 @@
       try {
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
 
+        // FOKUS FLEKSIBEL: Rasio 230x150 mencakup Barcode Balok & QR Kotak dengan sempurna
         await html5QrCode.start(
           { facingMode: "environment" },
-          { fps: 24, qrbox: { width: 260, height: 85 } },
+          { 
+            fps: 25, 
+            qrbox: { width: 230, height: 150 },
+            aspectRatio: 1.333333
+          },
           onScanSuccess,
           () => {}
         );
 
         isScanning = true;
-        laser.style.display = "block";
+        reticle.style.display = "block";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#ef4444";
-        showToast("Kamera siap! Dekatkan barcode ke garis merah.");
+        showToast("Posisikan Barcode atau QR Code tepat di dalam kotak bidik.");
       } catch (e) {
         btn.innerText = "📷 Buka Kamera Scanner";
         btn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
