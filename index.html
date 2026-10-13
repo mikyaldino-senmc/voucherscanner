@@ -424,18 +424,25 @@
     // AMBIL DATA STOK TERKINI DARI DESKTOP VIA GOOGLE SHEETS
     // =========================================================================
     async function fetchKatalogFromCloud() {
-      showToast("Mengambil stok terkini dari PC...");
-      try {
-        const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
-        if (resp.ok) {
-          masterKatalog = await resp.json();
-          renderKatalogDropdown();
-          showToast(`✅ ${masterKatalog.length} produk termuat dari Desktop.`);
-        }
-      } catch (e) {
-        showToast("Gagal memuat katalog: " + e.message);
-      }
+  showToast("Mengambil stok terkini dari PC...");
+  try {
+    const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
+    const rawText = await resp.text();
+    
+    // Validasi apakah respon benar-benar format JSON
+    if (!rawText.trim().startsWith("[") && !rawText.trim().startsWith("{")) {
+      showToast("⚠️ Katalog sedang dipersiapkan oleh PC, coba beberapa saat lagi.");
+      console.warn("Respon non-JSON dari Apps Script:", rawText);
+      return;
     }
+
+    masterKatalog = JSON.parse(rawText);
+    renderKatalogDropdown();
+    showToast(`✅ ${masterKatalog.length} produk termuat dari Desktop.`);
+  } catch (e) {
+    showToast("Catatan: " + e.message);
+  }
+}
 
     function renderKatalogDropdown() {
       const sel = document.getElementById("selKatalogLive");
