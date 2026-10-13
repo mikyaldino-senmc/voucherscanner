@@ -36,7 +36,7 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* NAVIGASI 2 TAB (POSISI DIBALIK) */
+    /* NAVIGASI 2 TAB (POSISI DIBALIK: MASTER DI KIRI, KULAKAN DI KANAN) */
     .nav-tabs-top { display: flex; background: #0f172a; padding: 6px 10px; border-bottom: 1px solid var(--border-color); gap: 6px; }
     .nav-tab-btn { flex: 1; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); transition: all 0.2s ease; }
     .nav-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 3px 10px rgba(2, 132, 199, 0.4); }
@@ -143,7 +143,7 @@
     <div class="badge-outlet" id="headerOutletBadge">Toko NMC</div>
   </div>
 
-  <!-- NAVIGASI 2 TAB (DIBALIK: MASTER DI KIRI, KULAKAN DI KANAN) -->
+  <!-- NAVIGASI 2 TAB (POSISI DIBALIK: MASTER DI KIRI, KULAKAN DI KANAN) -->
   <div class="nav-tabs-top">
     <div class="nav-tab-btn active" id="tabMainNewProd" onclick="switchMainTab('NEW_PROD')">📝 DAFTAR MASTER BARU</div>
     <div class="nav-tab-btn" id="tabMainScan" onclick="switchMainTab('SCAN')">📦 SCAN KULAKAN / MUTASI</div>
@@ -152,7 +152,7 @@
   <div class="content-area">
 
     <!-- =========================================================================
-         TAB 1 (KIRI - AKTIF): DAFTARKAN PRODUK MASTER BARU
+         TAB 1 (KIRI - DEFAULT): DAFTARKAN PRODUK MASTER BARU
          ========================================================================= -->
     <div id="viewDaftarBaru">
       <div class="card">
@@ -255,7 +255,7 @@
         </div>
       </div>
 
-      <!-- CEK STOK LIVE DARI DESKTOP (FITUR UTAMA) -->
+      <!-- CEK STOK LIVE DARI DESKTOP -->
       <div class="card" style="border-left: 3px solid var(--accent-glow);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <span style="font-size: 11px; font-weight: 900; color: var(--accent-glow);">📊 CEK STOK LIVE DARI DESKTOP</span>
@@ -264,7 +264,7 @@
 
         <label>PILIH PRODUK (DARI MASTER DESKTOP):</label>
         <select id="selKatalogLive" onchange="onSelectKatalogLive()">
-          <option value="">-- Memuat Katalog Stok dari Desktop... --</option>
+          <option value="">-- Tekan Refresh Stok untuk memuat --</option>
         </select>
 
         <!-- KOTAK INDIKATOR STOK REAL-TIME DI PONSEL -->
@@ -395,7 +395,6 @@
   </div>
 
   <script>
-    // URL Google Apps Script Web App Anda
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec";
 
     let html5QrCode = null;
@@ -413,7 +412,7 @@
     let rangeStep = 1;
     let isScanningForNewItem = false;
 
-    function showToast(msg, dur=2200) {
+    function showToast(msg, dur=2400) {
       const t = document.getElementById("status-toast");
       t.innerText = msg;
       t.style.display = "block";
@@ -424,25 +423,31 @@
     // AMBIL DATA STOK TERKINI DARI DESKTOP VIA GOOGLE SHEETS
     // =========================================================================
     async function fetchKatalogFromCloud() {
-  showToast("Mengambil stok terkini dari PC...");
-  try {
-    const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
-    const rawText = await resp.text();
-    
-    // Validasi apakah respon benar-benar format JSON
-    if (!rawText.trim().startsWith("[") && !rawText.trim().startsWith("{")) {
-      showToast("⚠️ Katalog sedang dipersiapkan oleh PC, coba beberapa saat lagi.");
-      console.warn("Respon non-JSON dari Apps Script:", rawText);
-      return;
-    }
+      showToast("Mengambil katalog stok dari PC...");
+      try {
+        const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
+        const rawText = await resp.text();
+        
+        let data = [];
+        try {
+          data = JSON.parse(rawText);
+        } catch(err) {
+          console.warn("Respon bukan JSON:", rawText);
+          showToast("⚠️ Server sedang memproses data. Coba beberapa detik lagi.");
+          return;
+        }
 
-    masterKatalog = JSON.parse(rawText);
-    renderKatalogDropdown();
-    showToast(`✅ ${masterKatalog.length} produk termuat dari Desktop.`);
-  } catch (e) {
-    showToast("Catatan: " + e.message);
-  }
-}
+        if (Array.isArray(data)) {
+          masterKatalog = data;
+          renderKatalogDropdown();
+          showToast(`✅ ${masterKatalog.length} produk termuat dari Desktop.`);
+        } else {
+          showToast("Katalog sedang disinkronkan oleh desktop.");
+        }
+      } catch (e) {
+        showToast("Catatan koneksi: " + e.message);
+      }
+    }
 
     function renderKatalogDropdown() {
       const sel = document.getElementById("selKatalogLive");
@@ -509,7 +514,7 @@
       isScanningForNewItem = true;
       switchMainTab('SCAN');
       if (!isScanning) handleScannerClick();
-      showToast("Scan voucher untuk mengisi nomor seri.");
+      showToast("Scan voucher untuk menyalin nomor seri.");
     }
 
     async function selectFormat(fmt) {
