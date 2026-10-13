@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#0b1329">
-  <title>Nikola Scanner Pro v5.0</title>
+  <title>Nikola Inventory Scanner Pro</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -36,12 +36,12 @@
     .brand-title { font-size: 13px; font-weight: 900; color: var(--accent-glow); display: flex; align-items: center; gap: 6px; }
     .badge-outlet { background: rgba(56, 189, 248, 0.15); color: var(--accent-glow); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3); }
 
-    /* NAVIGASI 2 TAB UTAMA */
+    /* NAVIGASI 2 TAB (POSISI DIBALIK) */
     .nav-tabs-top { display: flex; background: #0f172a; padding: 6px 10px; border-bottom: 1px solid var(--border-color); gap: 6px; }
-    .nav-tab-btn { flex: 1; padding: 9px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); transition: all 0.2s ease; }
+    .nav-tab-btn { flex: 1; padding: 10px 4px; text-align: center; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-muted); background: var(--bg-card); transition: all 0.2s ease; }
     .nav-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent-glow); box-shadow: 0 3px 10px rgba(2, 132, 199, 0.4); }
 
-    /* AREA KONTEN */
+    /* KONTEN */
     .content-area { flex: 1; padding: 10px; padding-bottom: 100px; }
     .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
     label { font-size: 10px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -57,7 +57,6 @@
     #reader { width: 100% !important; border: none !important; }
     #reader video { width: 100% !important; height: auto !important; border-radius: 8px; display: block; object-fit: cover; }
     #reader__header_message, #reader__status_span, #reader img { display: none !important; }
-    #reader__scan_region { min-height: auto !important; }
 
     /* LASER GUIDE */
     .laser-guide {
@@ -76,12 +75,12 @@
     .btn-zoom {
       flex: 1; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--border-color);
       background: var(--bg-main); color: var(--text-main); font-size: 10.5px; font-weight: 800;
-      cursor: pointer; text-align: center; transition: all 0.2s ease;
+      cursor: pointer; text-align: center;
     }
     .btn-zoom.active { background: var(--warning); color: #000; border-color: #fde047; font-weight: 900; }
 
-    /* TOMBOL FORMAT */
-    .format-selector { display: flex; gap: 6px; margin-top: 4px; margin-bottom: 8px; }
+    /* TOMBOL FORMAT & MODE */
+    .format-selector { display: flex; gap: 6px; margin-bottom: 8px; }
     .btn-format {
       flex: 1; padding: 9px 4px; border: 1.5px solid var(--border-color); border-radius: 8px;
       background: var(--bg-main); color: var(--text-muted); font-size: 11px; font-weight: 800;
@@ -90,18 +89,23 @@
     .btn-format.active { background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border-color: var(--accent-glow); }
     .btn-format .subtext { font-size: 9px; font-weight: normal; opacity: 0.85; }
 
-    /* TOMBOL MODE HITUNG */
     .mode-pills { display: flex; gap: 4px; margin-bottom: 8px; }
     .mode-pill { flex: 1; padding: 7px 2px; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; font-size: 9.5px; font-weight: 800; text-align: center; cursor: pointer; }
     .mode-pill.active { background: var(--accent); color: white; border-color: var(--accent-glow); }
+
+    /* STOK MONITOR BADGES */
+    .stock-badge-container { display: flex; gap: 4px; margin-top: 4px; margin-bottom: 8px; }
+    .stock-badge { flex: 1; background: #0f172a; border-radius: 6px; padding: 6px 4px; text-align: center; border: 1px solid var(--border-color); }
+    .stock-badge .loc { font-size: 8.5px; color: var(--text-muted); font-weight: 700; }
+    .stock-badge .val { font-size: 13px; font-weight: 900; color: #38bdf8; }
 
     /* TABEL BATCH */
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th { padding: 6px 4px; text-align: left; color: var(--text-muted); font-size: 9.5px; font-weight: 800; border-bottom: 1px solid var(--border-color); }
     td { padding: 6px 4px; border-bottom: 1px solid var(--border-color); }
     .badge-code { background: var(--bg-elevated); color: var(--accent-glow); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; font-weight: bold; }
-    .qty-input { width: 50px; text-align: center; padding: 4px; background: var(--bg-main); border: 1px solid var(--accent); color: var(--accent-glow); font-weight: 900; border-radius: 4px; margin: 0; }
-    .qty-btn { background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-color); padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin: 1px; cursor: pointer; }
+    .qty-input { width: 45px; text-align: center; padding: 4px; background: var(--bg-main); border: 1px solid var(--accent); color: var(--accent-glow); font-weight: 900; border-radius: 4px; margin: 0; }
+    .qty-btn { background: var(--bg-elevated); color: var(--text-main); border: 1px solid var(--border-color); padding: 2px 5px; border-radius: 4px; font-size: 9.5px; font-weight: 700; margin: 1px; cursor: pointer; }
 
     /* TOMBOL UTAMA */
     .btn { padding: 11px; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -131,168 +135,29 @@
 </head>
 <body>
 
-  <div id="status-toast">Siap memindai...</div>
+  <div id="status-toast">Menghubungkan ke Cloud...</div>
 
   <!-- HEADER -->
   <div class="header-bar">
-    <div class="brand-title">⚡ NIKOLA SCANNER PRO v5.0</div>
-    <div class="badge-outlet" id="headerOutletBadge">Kulakan: Toko NMC</div>
+    <div class="brand-title">⚡ NIKOLA CLOUD INVENTORY</div>
+    <div class="badge-outlet" id="headerOutletBadge">Toko NMC</div>
   </div>
 
-  <!-- NAVIGASI DUA TAB UTAMA -->
+  <!-- NAVIGASI 2 TAB (DIBALIK: MASTER DI KIRI, KULAKAN DI KANAN) -->
   <div class="nav-tabs-top">
-    <div class="nav-tab-btn active" id="tabMainScan" onclick="switchMainTab('SCAN')">📷 SCAN KULAKAN / MUTASI</div>
-    <div class="nav-tab-btn" id="tabMainNewProd" onclick="switchMainTab('NEW_PROD')">📝 DAFTAR MASTER BARU</div>
+    <div class="nav-tab-btn active" id="tabMainNewProd" onclick="switchMainTab('NEW_PROD')">📝 DAFTAR MASTER BARU</div>
+    <div class="nav-tab-btn" id="tabMainScan" onclick="switchMainTab('SCAN')">📦 SCAN KULAKAN / MUTASI</div>
   </div>
 
   <div class="content-area">
 
     <!-- =========================================================================
-         TAB 1: SCAN KULAKAN & MUTASI STOK
+         TAB 1 (KIRI - AKTIF): DAFTARKAN PRODUK MASTER BARU
          ========================================================================= -->
-    <div id="viewScanTransaksi">
-      
-      <!-- KAMERA -->
-      <div class="card" id="camera-card">
-        <div id="reader-wrapper">
-          <div id="reader"></div>
-          <div class="laser-guide" id="laserGuide"></div>
-        </div>
-        <button class="btn btn-primary" id="btnScanner" style="width: 100%; margin-top: 6px;" onclick="handleScannerClick()">
-          📷 Buka Kamera Scanner
-        </button>
-
-        <div class="zoom-toolbar" id="zoomControls">
-          <button class="btn-zoom" id="btnZoom1" onclick="applyZoom(1.0)">1x Normal</button>
-          <button class="btn-zoom active" id="btnZoom2" onclick="applyZoom(2.0)">🔍 2x Makro Voucher</button>
-          <button class="btn-zoom" id="btnZoom3" onclick="applyZoom(3.0)">🔍 3x Dekat</button>
-        </div>
-      </div>
-
-      <!-- PENGATURAN KULAKAN (KUNCI INTEGRASI AGAR TIDAK ERROR DI MASTER) -->
-      <div class="card" style="border-left: 3px solid var(--accent-glow);">
-        <div style="font-size: 11.5px; font-weight: 900; color: var(--accent-glow); margin-bottom: 6px;">
-          🏷️ INFORMASI PAKET VOUCHER YANG DI-SCAN
-        </div>
-
-        <div style="display: flex; gap: 6px;">
-          <div style="flex: 1;">
-            <label>JENIS TRANSAKSI:</label>
-            <select id="trxType" onchange="switchTrxType()">
-              <option value="KULAKAN">Stok Masuk (Kulakan Gudang)</option>
-              <option value="TRANSFER">Transfer Mutasi Cabang</option>
-            </select>
-          </div>
-          <div style="flex: 1;" id="boxAlokasi">
-            <label>ALOKASI TOKO:</label>
-            <select id="alokasiKulakan" onchange="updateHeaderBadge()">
-              <option value="Toko NMC">Toko NMC</option>
-              <option value="Toko NACC">Toko NACC</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- FORM TRANSFER -->
-        <div id="transferOpt" style="display: none;">
-          <div style="display: flex; gap: 6px;">
-            <div style="flex: 1;">
-              <label>DARI:</label>
-              <select id="asal">
-                <option value="Gudang Utama">Gudang Utama</option>
-                <option value="Toko NMC">Toko NMC</option>
-                <option value="Toko NACC">Toko NACC</option>
-              </select>
-            </div>
-            <div style="flex: 1;">
-              <label>KE CABANG:</label>
-              <select id="tujuan" onchange="updateHeaderBadge()">
-                <option value="Toko NMC">Toko NMC</option>
-                <option value="Toko NACC">Toko NACC</option>
-                <option value="Gudang Utama">Gudang Utama</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- TARGET PAKET & HARGA AGAR MASTER PC MENGENALI OTOMATIS -->
-        <div id="boxPaketMapping">
-          <label>NAMA PAKET PRODUK (SKU DI DESKTOP):</label>
-          <input type="text" id="scanTargetNama" placeholder="Contoh: Telkomsel 5 GB 3 Hari / Tri 8 GB" value="Telkomsel 5 GB 3 Hari">
-
-          <div style="display: flex; gap: 6px;">
-            <div style="flex: 1;">
-              <label>HARGA MODAL KULAKAN (RP):</label>
-              <input type="number" id="scanTargetModal" placeholder="Contoh: 10000" value="10000">
-            </div>
-            <div style="flex: 1;">
-              <label>HARGA JUAL KASIR (RP):</label>
-              <input type="number" id="scanTargetJual" placeholder="Contoh: 12000" value="12000">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- METODE SCAN -->
+    <div id="viewDaftarBaru">
       <div class="card">
-        <label>JENIS KODE BARCODE:</label>
-        <div class="format-selector">
-          <div class="btn-format active" id="btnFmtBarcode" onclick="selectFormat('BARCODE')">
-            <span>📊 BARCODE BALOK (1D)</span>
-            <span class="subtext">Voucher Gesek, Tri, Axis, Telkomsel</span>
-          </div>
-          <div class="btn-format" id="btnFmtQR" onclick="selectFormat('QR')">
-            <span>🔲 QR CODE KOTAK (2D)</span>
-            <span class="subtext">Tsel QR, by.U, Smartfren QR</span>
-          </div>
-        </div>
-
-        <label>MODE INPUT:</label>
-        <div class="mode-pills">
-          <div class="mode-pill active" id="pillMode1" onclick="setScanMode(1)">SAMPEL + MULTI</div>
-          <div class="mode-pill" id="pillMode2" onclick="setScanMode(2)">TEMBAK CEPAT</div>
-          <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">RENTANG SERI (MASAL)</div>
-        </div>
-
-        <!-- PANEL RENTANG SERI -->
-        <div id="rangePanel" style="display: none; background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid var(--accent-glow); margin-top: 6px;">
-          <div style="font-size: 10px; font-weight: 800; color: var(--accent-glow); margin-bottom: 4px;" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
-          <div style="display: flex; gap: 4px;">
-            <input type="text" id="snStart" placeholder="SN Awal..." readonly>
-            <input type="text" id="snEnd" placeholder="SN Akhir..." readonly>
-          </div>
-          <button class="btn btn-primary" style="padding: 7px; font-size: 11px; width: 100%;" onclick="generateRangeItems()">➕ Masukkan Semua Rentang Lembaran</button>
-        </div>
-      </div>
-
-      <!-- DAFTAR VOUCHER HASIL SCAN -->
-      <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 11px; font-weight: 800; color: var(--text-main);">📋 DAFTAR VOUCHER TERSCAN</span>
-          <button class="btn-danger" onclick="clearCart()">Kosongkan</button>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Nomor Seri / Barcode</th>
-              <th style="text-align: center;">Qty</th>
-              <th style="text-align: right;">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="cartTable">
-            <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- =========================================================================
-         TAB 2: DAFTARKAN PRODUK BARU
-         ========================================================================= -->
-    <div id="viewDaftarBaru" style="display: none;">
-      <div class="card">
-        <div style="font-size: 13px; font-weight: 900; color: var(--accent-glow); margin-bottom: 3px;">📝 DAFTARKAN PRODUK MASTER BARU</div>
-        <div style="font-size: 10.5px; color: var(--text-muted); margin-bottom: 12px;">Standardisasi nama otomatis: Operator + Kuota (GB) + Masa Aktif (Hari).</div>
+        <div style="font-size: 13px; font-weight: 900; color: var(--accent-glow); margin-bottom: 3px;">📝 DAFTARKAN MASTER BARANG BARU</div>
+        <div style="font-size: 10.5px; color: var(--text-muted); margin-bottom: 12px;">Digunakan untuk mendaftarkan paket baru yang belum ada di katalog desktop.</div>
 
         <label>BARCODE / SERIAL NUMBER VOUCHER:</label>
         <div style="display: flex; gap: 6px;">
@@ -363,15 +228,163 @@
         <input type="number" id="newProdQty" value="1" min="1">
 
         <button class="btn btn-success" style="margin-top: 10px;" onclick="submitNewProduct()">
-          💾 DAFTARKAN LANGSUNG KE MASTER DESKTOP
+          💾 SIMPAN KE MASTER DESKTOP PC
         </button>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         TAB 2 (KANAN): SCAN KULAKAN & MUTASI STOK + CEK STOK LIVE DESKTOP
+         ========================================================================= -->
+    <div id="viewScanTransaksi" style="display: none;">
+      
+      <!-- KAMERA SCANNER -->
+      <div class="card" id="camera-card">
+        <div id="reader-wrapper">
+          <div id="reader"></div>
+          <div class="laser-guide" id="laserGuide"></div>
+        </div>
+        <button class="btn btn-primary" id="btnScanner" style="width: 100%; margin-top: 6px;" onclick="handleScannerClick()">
+          📷 Buka Kamera Scanner
+        </button>
+
+        <div class="zoom-toolbar" id="zoomControls">
+          <button class="btn-zoom" id="btnZoom1" onclick="applyZoom(1.0)">1x Normal</button>
+          <button class="btn-zoom active" id="btnZoom2" onclick="applyZoom(2.0)">🔍 2x Makro Voucher</button>
+          <button class="btn-zoom" id="btnZoom3" onclick="applyZoom(3.0)">🔍 3x Dekat</button>
+        </div>
+      </div>
+
+      <!-- CEK STOK LIVE DARI DESKTOP (FITUR UTAMA) -->
+      <div class="card" style="border-left: 3px solid var(--accent-glow);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 11px; font-weight: 900; color: var(--accent-glow);">📊 CEK STOK LIVE DARI DESKTOP</span>
+          <button class="btn-primary" style="padding: 3px 8px; font-size: 9.5px;" onclick="fetchKatalogFromCloud()">🔄 Refresh Stok</button>
+        </div>
+
+        <label>PILIH PRODUK (DARI MASTER DESKTOP):</label>
+        <select id="selKatalogLive" onchange="onSelectKatalogLive()">
+          <option value="">-- Memuat Katalog Stok dari Desktop... --</option>
+        </select>
+
+        <!-- KOTAK INDIKATOR STOK REAL-TIME DI PONSEL -->
+        <div class="stock-badge-container">
+          <div class="stock-badge">
+            <div class="loc">GUDANG UTAMA</div>
+            <div class="val" id="badgeStokGdg">0</div>
+          </div>
+          <div class="stock-badge">
+            <div class="loc">TOKO NMC</div>
+            <div class="val" id="badgeStokNmc">0</div>
+          </div>
+          <div class="stock-badge">
+            <div class="loc">TOKO NACC</div>
+            <div class="val" id="badgeStokNacc">0</div>
+          </div>
+          <div class="stock-badge" style="border-color: var(--accent-glow);">
+            <div class="loc">TOTAL SEMUA</div>
+            <div class="val" id="badgeStokTot" style="color: #38bdf8;">0</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 6px;">
+          <div style="flex: 1;">
+            <label>JENIS TRANSAKSI:</label>
+            <select id="trxType" onchange="switchTrxType()">
+              <option value="KULAKAN">Stok Masuk (Kulakan Gudang)</option>
+              <option value="TRANSFER">Transfer Mutasi Cabang</option>
+            </select>
+          </div>
+          <div style="flex: 1;" id="boxAlokasi">
+            <label>ALOKASI TOKO:</label>
+            <select id="alokasiKulakan" onchange="updateHeaderBadge()">
+              <option value="Toko NMC">Toko NMC</option>
+              <option value="Toko NACC">Toko NACC</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- FORM TRANSFER MUTASI -->
+        <div id="transferOpt" style="display: none;">
+          <div style="display: flex; gap: 6px;">
+            <div style="flex: 1;">
+              <label>DARI:</label>
+              <select id="asal">
+                <option value="Gudang Utama">Gudang Utama</option>
+                <option value="Toko NMC">Toko NMC</option>
+                <option value="Toko NACC">Toko NACC</option>
+              </select>
+            </div>
+            <div style="flex: 1;">
+              <label>KE CABANG:</label>
+              <select id="tujuan" onchange="updateHeaderBadge()">
+                <option value="Toko NMC">Toko NMC</option>
+                <option value="Toko NACC">Toko NACC</option>
+                <option value="Gudang Utama">Gudang Utama</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- METODE SCAN -->
+      <div class="card">
+        <label>JENIS KODE BARCODE:</label>
+        <div class="format-selector">
+          <div class="btn-format active" id="btnFmtBarcode" onclick="selectFormat('BARCODE')">
+            <span>📊 BARCODE BALOK (1D)</span>
+            <span class="subtext">Voucher Gesek, Tri, Axis, Tsel</span>
+          </div>
+          <div class="btn-format" id="btnFmtQR" onclick="selectFormat('QR')">
+            <span>🔲 QR CODE KOTAK (2D)</span>
+            <span class="subtext">Tsel QR, by.U, Smartfren QR</span>
+          </div>
+        </div>
+
+        <label>MODE INPUT:</label>
+        <div class="mode-pills">
+          <div class="mode-pill active" id="pillMode1" onclick="setScanMode(1)">SAMPEL + MULTI</div>
+          <div class="mode-pill" id="pillMode2" onclick="setScanMode(2)">TEMBAK CEPAT</div>
+          <div class="mode-pill" id="pillMode3" onclick="setScanMode(3)">RENTANG SERI (MASAL)</div>
+        </div>
+
+        <!-- PANEL RENTANG SERI -->
+        <div id="rangePanel" style="display: none; background: #0f172a; padding: 8px; border-radius: 8px; border: 1px solid var(--accent-glow); margin-top: 6px;">
+          <div style="font-size: 10px; font-weight: 800; color: var(--accent-glow); margin-bottom: 4px;" id="rangeStepText">Langkah 1: Scan Lembar PERTAMA (Awal)</div>
+          <div style="display: flex; gap: 4px;">
+            <input type="text" id="snStart" placeholder="SN Awal..." readonly>
+            <input type="text" id="snEnd" placeholder="SN Akhir..." readonly>
+          </div>
+          <button class="btn btn-primary" style="padding: 7px; font-size: 11px; width: 100%;" onclick="generateRangeItems()">➕ Masukkan Semua Rentang Lembaran</button>
+        </div>
+      </div>
+
+      <!-- DAFTAR VOUCHER TERSCAN -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 11px; font-weight: 800; color: var(--text-main);">📋 DAFTAR VOUCHER TERSCAN</span>
+          <button class="btn-danger" onclick="clearCart()">Kosongkan</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nomor Seri / Barcode</th>
+              <th style="text-align: center;">Qty</th>
+              <th style="text-align: right;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="cartTable">
+            <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 15px;">Belum ada voucher yang di-scan.</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
   </div>
 
-  <!-- FLOATING ACTION BOTTOM BAR -->
-  <div class="bottom-floating-bar" id="floatingBar">
+  <!-- FLOATING BOTTOM BAR -->
+  <div class="bottom-floating-bar" id="floatingBar" style="display: none;">
     <div class="total-counter">
       <div class="title">TOTAL UNIT</div>
       <div class="value"><span id="totalUnit">0</span> <span style="font-size: 11px; color: white;">Pcs</span></div>
@@ -382,7 +395,7 @@
   </div>
 
   <script>
-    // Masukkan Google Apps Script Web App URL Anda di sini
+    // URL Google Apps Script Web App Anda
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec";
 
     let html5QrCode = null;
@@ -391,6 +404,7 @@
     let currentVideoTrack = null;
     let activeZoomLevel = 2.0;
 
+    let masterKatalog = [];
     let cart = {}; 
     let currentMode = 1;
     let currentFormat = 'BARCODE';
@@ -406,36 +420,81 @@
       setTimeout(() => { t.style.display = "none"; }, dur);
     }
 
+    // =========================================================================
+    // AMBIL DATA STOK TERKINI DARI DESKTOP VIA GOOGLE SHEETS
+    // =========================================================================
+    async function fetchKatalogFromCloud() {
+      showToast("Mengambil stok terkini dari PC...");
+      try {
+        const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
+        if (resp.ok) {
+          masterKatalog = await resp.json();
+          renderKatalogDropdown();
+          showToast(`✅ ${masterKatalog.length} produk termuat dari Desktop.`);
+        }
+      } catch (e) {
+        showToast("Gagal memuat katalog: " + e.message);
+      }
+    }
+
+    function renderKatalogDropdown() {
+      const sel = document.getElementById("selKatalogLive");
+      sel.innerHTML = '<option value="">-- Pilih Produk Master Desktop --</option>';
+      masterKatalog.forEach((item, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.text = `${item.nama_barang} (Total: ${item.total_stok} pcs)`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function onSelectKatalogLive() {
+      const idx = document.getElementById("selKatalogLive").value;
+      if (idx === "") {
+        document.getElementById("badgeStokGdg").innerText = "0";
+        document.getElementById("badgeStokNmc").innerText = "0";
+        document.getElementById("badgeStokNacc").innerText = "0";
+        document.getElementById("badgeStokTot").innerText = "0";
+        return;
+      }
+      const prod = masterKatalog[idx];
+      document.getElementById("badgeStokGdg").innerText = prod.stok_gudang;
+      document.getElementById("badgeStokNmc").innerText = prod.stok_nmc;
+      document.getElementById("badgeStokNacc").innerText = prod.stok_nacc;
+      document.getElementById("badgeStokTot").innerText = prod.total_stok;
+    }
+
     function autoGenerateName() {
       const op = document.getElementById("selOperator").value;
       const gb = document.getElementById("selKuota").value;
       const hr = document.getElementById("selHari").value;
-      const res = `${op} ${gb} ${hr}`;
-      document.getElementById("newProdName").value = res;
-      // Sinkronkan juga ke target scan kulakan
-      document.getElementById("scanTargetNama").value = res;
+      document.getElementById("newProdName").value = `${op} ${gb} ${hr}`;
     }
 
+    // =========================================================================
+    // NAVIGASI DUA TAB UTAMA
+    // =========================================================================
     function switchMainTab(tab) {
-      const vScan = document.getElementById("viewScanTransaksi");
       const vNew = document.getElementById("viewDaftarBaru");
-      const bScan = document.getElementById("tabMainScan");
+      const vScan = document.getElementById("viewScanTransaksi");
       const bNew = document.getElementById("tabMainNewProd");
+      const bScan = document.getElementById("tabMainScan");
       const fBar = document.getElementById("floatingBar");
 
-      if (tab === 'SCAN') {
-        vScan.style.display = "block";
-        vNew.style.display = "none";
-        bScan.className = "nav-tab-btn active";
-        bNew.className = "nav-tab-btn";
-        fBar.style.display = "flex";
-      } else {
-        vScan.style.display = "none";
+      if (tab === 'NEW_PROD') {
         vNew.style.display = "block";
-        bScan.className = "nav-tab-btn";
+        vScan.style.display = "none";
         bNew.className = "nav-tab-btn active";
+        bScan.className = "nav-tab-btn";
         fBar.style.display = "none";
         autoGenerateName();
+      } else {
+        vNew.style.display = "none";
+        vScan.style.display = "block";
+        bNew.className = "nav-tab-btn";
+        bScan.className = "nav-tab-btn active";
+        fBar.style.display = "flex";
+        if (masterKatalog.length === 0) fetchKatalogFromCloud();
       }
     }
 
@@ -496,9 +555,6 @@
       document.getElementById("rangeStepText").innerText = "Langkah 1: Scan Lembar PERTAMA (Awal)";
     }
 
-    // =========================================================================
-    // SANITASI NOMOR SERI & PEMBERSIH URL
-    // =========================================================================
     function parseVoucherCode(rawText) {
       if (!rawText) return null;
       let text = String(rawText).trim();
@@ -534,9 +590,6 @@
       }
     }
 
-    // =========================================================================
-    // KONTROL ZOOM KAMERA
-    // =========================================================================
     async function applyZoom(level) {
       activeZoomLevel = level;
       document.getElementById("btnZoom1").className = (level === 1.0) ? "btn-zoom active" : "btn-zoom";
@@ -550,13 +603,11 @@
           const minZ = capabilities.zoom.min || 1.0;
           const maxZ = capabilities.zoom.max || 5.0;
           const targetZ = Math.min(Math.max(level, minZ), maxZ);
-          await currentVideoTrack.applyConstraints({
-            advanced: [{ zoom: targetZ }]
-          });
+          await currentVideoTrack.applyConstraints({ advanced: [{ zoom: targetZ }] });
           showToast(`🔍 Zoom: ${targetZ.toFixed(1)}x`);
         }
       } catch(err) {
-        console.warn("Zoom constraint:", err);
+        console.warn("Zoom error:", err);
       }
     }
 
@@ -569,9 +620,6 @@
       }
     }
 
-    // =========================================================================
-    // START / STOP KAMERA
-    // =========================================================================
     async function startCamera() {
       if (isTransitioning || isScanning) return;
       isTransitioning = true;
@@ -596,27 +644,14 @@
           fps: 25,
           qrbox: (viewfinderWidth, viewfinderHeight) => {
             if (currentFormat === 'BARCODE') {
-              return {
-                width: Math.floor(viewfinderWidth * 0.85),
-                height: Math.floor(viewfinderHeight * 0.28)
-              };
+              return { width: Math.floor(viewfinderWidth * 0.85), height: Math.floor(viewfinderHeight * 0.28) };
             } else {
-              return {
-                width: Math.floor(viewfinderWidth * 0.65),
-                height: Math.floor(viewfinderHeight * 0.65)
-              };
+              return { width: Math.floor(viewfinderWidth * 0.65), height: Math.floor(viewfinderHeight * 0.65) };
             }
           }
         };
 
-        const cameraConfig = { facingMode: "environment" };
-
-        await html5QrCode.start(
-          cameraConfig,
-          scanConfig,
-          onScanSuccess,
-          () => {}
-        );
+        await html5QrCode.start({ facingMode: "environment" }, scanConfig, onScanSuccess, () => {});
 
         isScanning = true;
         laser.className = "laser-guide active";
@@ -632,7 +667,7 @@
           }
         } catch(e) {}
 
-        showToast("Kamera aktif! Arahkan ke barcode.");
+        showToast("Kamera aktif!");
       } catch (e) {
         isScanning = false;
         btn.innerText = "📷 Buka Kamera Scanner";
@@ -797,7 +832,7 @@
     function clearCart() { cart = {}; renderCart(); showToast("Daftar dibersihkan."); }
 
     // =========================================================================
-    // PENGIRIMAN BATCH TRANSAKSI KULAKAN / TRANSFER
+    // KIRIM KULAKAN / MUTASI KE PC UTAMA
     // =========================================================================
     async function sendBatchData() {
       const keys = Object.keys(cart);
@@ -805,15 +840,23 @@
 
       const totalU = document.getElementById("totalUnit").innerText;
       const mode = document.getElementById("trxType").value;
-      const targetNama = document.getElementById("scanTargetNama").value.trim();
-      const targetModal = parseInt(document.getElementById("scanTargetModal").value) || 0;
-      const targetJual = parseInt(document.getElementById("scanTargetJual").value) || 0;
+      const selIdx = document.getElementById("selKatalogLive").value;
 
-      if (mode === "KULAKAN" && !targetNama) {
-        return alert("Harap isi Nama Paket Voucher (SKU) agar Desktop mengenali jenis produknya!");
+      let namaProduk = "";
+      let modalProduk = 0;
+      let jualProduk = 0;
+
+      if (selIdx !== "" && masterKatalog[selIdx]) {
+        namaProduk = masterKatalog[selIdx].nama_barang;
+        modalProduk = masterKatalog[selIdx].harga_modal;
+        jualProduk = masterKatalog[selIdx].harga_jual;
       }
 
-      if (!confirm(`Kirim ${totalU} voucher (${targetNama || 'Transfer'}) ke PC Utama sekarang?`)) return;
+      if (mode === "KULAKAN" && !namaProduk) {
+        return alert("Pilih Produk Master Desktop terlebih dahulu pada menu dropdown!");
+      }
+
+      if (!confirm(`Kirim ${totalU} voucher (${namaProduk || 'Transfer'}) ke PC Utama sekarang?`)) return;
 
       const btnKirim = document.getElementById("btnKirim");
       btnKirim.disabled = true;
@@ -823,9 +866,9 @@
       const itemsPayload = keys.map(k => ({ 
         barcode: parseVoucherCode(k) || k, 
         qty: cart[k], 
-        modal: targetModal,
-        nama: targetNama,
-        jual: targetJual
+        modal: modalProduk,
+        nama: namaProduk,
+        jual: jualProduk
       }));
 
       const now = new Date();
@@ -849,8 +892,9 @@
           body: JSON.stringify(payload)
         });
 
-        alert(`✅ SUKSES TERKIRIM!\nSebanyak ${totalU} voucher berhasil dikirim ke antrean dan akan segera disinkronkan oleh PC Desktop.`);
+        alert(`✅ SUKSES TERKIRIM!\n${totalU} voucher berhasil dikirim ke antrean dan akan segera disinkronkan oleh PC Desktop.`);
         clearCart();
+        setTimeout(fetchKatalogFromCloud, 2000);
       } catch (err) {
         alert("⚠️ Gagal kirim: " + err);
       } finally {
@@ -860,7 +904,7 @@
     }
 
     // =========================================================================
-    // PENDAFTARAN PRODUK MASTER BARU
+    // DAFTARKAN PRODUK MASTER BARU (TAB 1)
     // =========================================================================
     async function submitNewProduct() {
       const rawBarcode = document.getElementById("newProdBarcode").value.trim();
@@ -891,7 +935,7 @@
         waktu: waktuStr,
         jenis: "DAFTAR_BARU",
         asal: "",
-        tujuan: document.getElementById("alokasiKulakan").value,
+        tujuan: "Toko NMC",
         items: [{
           barcode: barcode,
           nama: name,
@@ -909,17 +953,18 @@
           body: JSON.stringify(payload)
         });
 
-        alert(`✅ BERHASIL DIDAFTARKAN!\nProduk '${name}' (${qty} pcs) dikirim dan akan segera masuk ke Master Barang Desktop.`);
+        alert(`✅ BERHASIL DIDAFTARKAN!\nProduk '${name}' (${qty} pcs) dikirim ke antrean dan akan segera dicatat di Master PC.`);
         document.getElementById("newProdBarcode").value = "";
         document.getElementById("newProdQty").value = "1";
-        switchMainTab('SCAN');
+        setTimeout(fetchKatalogFromCloud, 2000);
       } catch (err) {
         alert("⚠️ Gagal mendaftarkan produk: " + err);
       }
     }
 
-    updateHeaderBadge();
+    // Inisialisasi awal saat halaman dibuka
     autoGenerateName();
+    fetchKatalogFromCloud();
   </script>
 </body>
 </html>
