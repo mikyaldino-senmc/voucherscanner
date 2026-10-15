@@ -29,12 +29,6 @@ body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; p
 .onboard-title { font-size: 20px; font-weight: 900; color: var(--bri-blue); }
 .onboard-sub { font-size: 12px; color: var(--text-gray); margin-top: 6px; }
 .onboard-form { background: #F8FAFC; padding: 18px; border-radius: 18px; border: 1px solid var(--border); }
-.store-selector-group { display: flex; gap: 8px; margin-bottom: 12px; }
-.store-btn {
-  flex: 1; padding: 12px 6px; border-radius: 12px; border: 1.5px solid var(--border);
-  background: #FFFFFF; font-size: 11px; font-weight: 800; color: var(--text-gray); text-align: center; cursor: pointer;
-}
-.store-btn.active { background: var(--bri-blue-light); color: var(--bri-blue); border-color: var(--bri-blue); }
 
 /* HEADER HERO */
 .hero-container {
@@ -54,7 +48,6 @@ body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; p
   width: 32px; height: 32px; background: rgba(255,255,255,0.25); border-radius: 50%;
   display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900;
 }
-.outlet-switcher-link { font-size: 10.5px; font-weight: 700; opacity: 0.9; cursor: pointer; text-decoration: underline; }
 
 /* FLOATING BALANCE CARD */
 .balance-card-carousel {
@@ -69,13 +62,13 @@ body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; p
 
 /* FAST ACTION GRID */
 .menu-section { padding: 0 16px; margin-bottom: 16px; }
-.section-header { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-.fintech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; }
+.section-header { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.fintech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; margin-bottom: 14px; }
 .grid-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
 .grid-icon-circle {
   width: 52px; height: 52px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
   font-size: 22px; margin-bottom: 6px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); position: relative;
-  background: var(--bri-blue-light); color: var(--bri-blue); transition: transform 0.1s;
+  transition: transform 0.1s;
 }
 .grid-item:active .grid-icon-circle { transform: scale(0.92); }
 .grid-label { font-size: 10.5px; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
@@ -95,11 +88,8 @@ body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; p
 /* BILAH BAWAH */
 .bottom-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
-  height: 84px;
-  padding-bottom: 22px;
-  background: #FFFFFF;
-  border-top: 1px solid var(--border);
-  display: flex; justify-content: space-around; align-items: center;
+  height: 84px; padding-bottom: 22px; background: #FFFFFF;
+  border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center;
   z-index: 100; box-shadow: var(--shadow-float);
 }
 .b-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--text-gray); font-size: 9.5px; font-weight: 800; width: 60px; }
@@ -119,9 +109,7 @@ body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; p
   z-index: 200; display: none; flex-direction: column; overflow-y: auto;
 }
 .workspace-header {
-  height: 70px;
-  padding: 22px 16px 0 16px;
-  background: #FFFFFF; border-bottom: 1px solid var(--border);
+  height: 70px; padding: 22px 16px 0 16px; background: #FFFFFF; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; position: sticky; top: 0; z-index: 50; gap: 14px;
 }
 .btn-back { background: none; border: none; font-size: 18px; font-weight: 800; color: var(--text-dark); cursor: pointer; }
@@ -139,30 +127,31 @@ select, input {
 .btn-success { background: #10B981; color: white; }
 .btn-danger { background: #FEE2E2; color: #EF4444; border: 1px solid #FECACA; font-size: 10px; padding: 4px 8px; border-radius: 6px; width: auto; cursor: pointer; }
 
-.stock-badge-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 12px 0; }
-.stock-badge { background: #F8FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; }
-.stock-badge .loc { font-size: 8px; color: var(--text-gray); font-weight: 800; }
-.stock-badge .val { font-size: 14px; font-weight: 900; color: var(--text-dark); }
-.stock-badge.highlight { background: var(--bri-blue-light); border-color: var(--bri-blue); }
-.stock-badge.highlight .val { color: var(--bri-blue); }
-
-/* AREA KAMERA */
-#camera-panel, #pos-camera-panel {
+/* =========================================================================
+   PERBAIKAN AREA KAMERA & VIDEO ANTI LAYAR HITAM
+   ========================================================================= */
+.camera-panel-box {
   background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden;
 }
 .reader-box {
-  position: relative; width: 100%; min-height: 250px; background: #000; border-radius: 10px; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
+  position: relative; width: 100%; min-height: 240px; height: 240px; background: #000000;
+  border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;
 }
-#reader, #reader-pos {
-  width: 100% !important; border: none !important; min-height: 250px !important;
+
+/* Selektor Universal untuk Elemen Video html5-qrcode */
+#reader-masuk, #reader-mutasi, #reader-member {
+  width: 100% !important; height: 100% !important; min-height: 240px !important; border: none !important;
 }
-#reader video, #reader-pos video {
-  width: 100% !important; height: auto !important; min-height: 250px !important; object-fit: cover !important;
-  border-radius: 8px !important; display: block !important;
+#reader-masuk video, #reader-mutasi video, #reader-member video {
+  width: 100% !important; height: 100% !important; min-height: 240px !important;
+  object-fit: cover !important; border-radius: 8px !important; display: block !important;
+  background: #000000 !important;
 }
-#reader__header_message, #reader__status_span, #reader img,
-#reader-pos__header_message, #reader-pos__status_span, #reader-pos img {
+
+/* Sembunyikan elemen teks/status default html5-qrcode agar tampilan bersih */
+#reader-masuk__header_message, #reader-masuk__status_span, #reader-masuk img,
+#reader-mutasi__header_message, #reader-mutasi__status_span, #reader-mutasi img,
+#reader-member__header_message, #reader-member__status_span, #reader-member img {
   display: none !important;
 }
 
