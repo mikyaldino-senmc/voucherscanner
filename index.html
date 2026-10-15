@@ -6,7 +6,6 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="theme-color" content="#0264D6">
     <title>Nikola Companion by BRI</title>
-    <!-- Library Barcode Scanner Html5Qrcode -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         :root {
@@ -21,7 +20,7 @@
           --border: #E2E8F0;
           --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
           --shadow-card: 0 8px 20px rgba(2, 100, 214, 0.08);
-          --shadow-float: 0 -4px 16px rgba(0,0,0,0.05);
+          --shadow-float: 0 -4px 16px rgba(0,0,0,0.08);
         }
 
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -30,9 +29,9 @@
         /* ONBOARDING */
         #onboardingScreen {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #FFFFFF;
-          z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 32px 24px;
+          z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 48px 24px 32px 24px;
         }
-        .onboarding-hero { text-align: center; margin-top: 40px; }
+        .onboarding-hero { text-align: center; margin-top: 20px; }
         .hero-icon-box {
           width: 72px; height: 72px; background: var(--bri-blue-light); border-radius: 24px;
           display: inline-flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px;
@@ -47,15 +46,17 @@
         }
         .store-btn.active { background: var(--bri-blue-light); color: var(--bri-blue); border-color: var(--bri-blue); }
 
-        /* HEADER */
+        /* HEADER DENGAN PADDING EXTRA STATUS BAR */
         .hero-container {
           background: linear-gradient(180deg, var(--bri-blue) 0%, var(--bri-blue-dark) 100%);
-          color: #FFFFFF; padding: 16px 16px 85px 16px; border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
+          color: #FFFFFF;
+          padding: 46px 16px 85px 16px; /* Jarak aman di bawah jam & baterai */
+          border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
         }
         .top-brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .brand-logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
         .brand-logo span { font-size: 11px; font-weight: 500; opacity: 0.85; }
-        .top-icons { display: flex; gap: 14px; font-size: 17px; align-items: center; }
+        .top-icons { display: flex; gap: 14px; font-size: 18px; align-items: center; }
 
         .user-greeting { display: flex; align-items: center; justify-content: space-between; }
         .user-badge-circle { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; }
@@ -101,10 +102,14 @@
         .feed-time { font-size: 9.5px; color: var(--text-gray); margin-top: 2px; }
         .feed-cut { font-weight: 900; color: #EF4444; }
 
-        /* BOTTOM BAR */
+        /* BILAH BAWAH DENGAN JARAK AMAN TOMBOL NAVIGASI HP */
         .bottom-bar {
-          position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: #FFFFFF;
-          border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center;
+          position: fixed; bottom: 0; left: 0; right: 0;
+          height: 78px;
+          padding-bottom: 18px; /* Jarak aman di atas tombol Home/Back HP */
+          background: #FFFFFF;
+          border-top: 1px solid var(--border);
+          display: flex; justify-content: space-around; align-items: center;
           z-index: 100; box-shadow: var(--shadow-float);
         }
         .b-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--text-gray); font-size: 9.5px; font-weight: 800; width: 60px; }
@@ -114,22 +119,24 @@
         .center-scan-btn {
           width: 52px; height: 52px; background: linear-gradient(135deg, var(--bri-blue), #004BB3);
           border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-          color: white; font-weight: 900; font-size: 10.5px; margin-top: -26px; border: 4px solid #FFFFFF;
+          color: white; font-weight: 900; font-size: 10px; margin-top: -30px; border: 4px solid #FFFFFF;
           box-shadow: 0 4px 14px rgba(2, 100, 214, 0.4); cursor: pointer;
         }
 
-        /* WORKSPACES */
+        /* WORKSPACE SUB-SCREENS */
         .workspace-screen {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-canvas);
           z-index: 200; display: none; flex-direction: column; overflow-y: auto;
         }
         .workspace-header {
-          height: 54px; background: #FFFFFF; border-bottom: 1px solid var(--border);
-          display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 50; gap: 14px;
+          height: 74px;
+          padding: 30px 16px 0 16px; /* Jarak aman status bar di sub menu */
+          background: #FFFFFF; border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; position: sticky; top: 0; z-index: 50; gap: 14px;
         }
         .btn-back { background: none; border: none; font-size: 18px; font-weight: 800; color: var(--text-dark); cursor: pointer; }
         .workspace-title { font-size: 14px; font-weight: 900; color: var(--text-dark); }
-        .workspace-content { padding: 14px; padding-bottom: 90px; }
+        .workspace-content { padding: 14px; padding-bottom: 110px; }
 
         .card { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
         label { font-size: 10px; font-weight: 800; color: var(--text-gray); display: block; margin-bottom: 4px; text-transform: uppercase; }
@@ -149,7 +156,7 @@
         .stock-badge.highlight { background: var(--bri-blue-light); border-color: var(--bri-blue); }
         .stock-badge.highlight .val { color: var(--bri-blue); }
 
-        /* AREA KAMERA ANTI-LAYAR HITAM */
+        /* KAMERA ANTI HITAM */
         #camera-panel, #pos-camera-panel {
           background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden;
         }
@@ -188,7 +195,7 @@
         .pecahan-row input { width: 80px; margin-bottom: 0; text-align: center; font-weight: 800; padding: 6px; }
 
         #toast-msg {
-          position: fixed; top: 14px; left: 16px; right: 16px; background: #0F172A;
+          position: fixed; top: 50px; left: 16px; right: 16px; background: #0F172A;
           color: #F8FAFC; border-radius: 12px; padding: 10px 14px; font-size: 11.5px; font-weight: 800;
           z-index: 2000; text-align: center; display: none;
         }
@@ -223,12 +230,12 @@
     </div>
 
     <div style="text-align: center; font-size: 10.5px; color: var(--text-gray);">
-        Nikola POS System • Version 3.9.8
+        Nikola POS System • Version 3.9.9
     </div>
 </div>
 
 <!-- BERANDA DASHBOARD -->
-<div id="homeScreen" style="padding-bottom: 85px;">
+<div id="homeScreen" style="padding-bottom: 110px;">
     <div class="hero-container">
         <div class="top-brand-bar">
             <div class="brand-logo">Nikola <span>by BRI</span></div>
@@ -328,7 +335,7 @@
     </div>
 </div>
 
-<!-- BOTTOM BAR -->
+<!-- BILAH BAWAH BERSIH & TIDAK TERPOTONG -->
 <div class="bottom-bar">
     <div class="b-item active" onclick="goHome()">
         <div class="b-icon">🏠</div>
@@ -352,7 +359,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE A: KASIR PENJUALAN MOBILE -->
+<!-- WORKSPACE SUB-SCREENS -->
 <div class="workspace-screen" id="wsPosJual">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -399,7 +406,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE B: SCAN KULAKAN / MUTASI STOK -->
 <div class="workspace-screen" id="wsVoucher">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -458,7 +464,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE C: BRILINK PRO -->
 <div class="workspace-screen" id="wsBrilink">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -511,7 +516,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE D: KAS KELUAR -->
 <div class="workspace-screen" id="wsBiaya">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -540,7 +544,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE E: HITUNG FISIK LACI -->
 <div class="workspace-screen" id="wsRekap">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -569,7 +572,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE F: MEMBER WA -->
 <div class="workspace-screen" id="wsMember">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -598,7 +600,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE G: LIVE CEK STOK -->
 <div class="workspace-screen" id="wsStok">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -612,7 +613,6 @@
     </div>
 </div>
 
-<!-- WORKSPACE H: SOP -->
 <div class="workspace-screen" id="wsSOP">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -645,6 +645,33 @@
       t.innerText = msg;
       t.style.display = "block";
       setTimeout(() => { t.style.display = "none"; }, 2500);
+    }
+
+    // =========================================================================
+    // JEMBATAN TOMBOL KEMBALI HP (INTELLIGENT BACK HANDLER)
+    // =========================================================================
+    function handleNativeBack() {
+      if (isScanning) { stopCamera(); return "true"; }
+      if (isPosScanning) { stopPosCamera(); return "true"; }
+
+      const onb = document.getElementById("onboardingScreen");
+      if (onb && onb.style.display === "flex") {
+        return "false";
+      }
+
+      const allWs = document.querySelectorAll(".workspace-screen");
+      let wsClosed = false;
+      allWs.forEach(w => {
+        if (w.style.display === "flex" || w.style.display === "block") {
+          w.style.display = "none";
+          wsClosed = true;
+        }
+      });
+
+      if (wsClosed) {
+        return "true"; // Berhasil menutup sub-menu, kembali ke beranda
+      }
+      return "false"; // Sudah di beranda, izinkan Android memunculkan dialog keluar
     }
 
     async function sendSafePayload(payload) {
@@ -764,15 +791,9 @@
       document.querySelectorAll(".workspace-screen").forEach(w => w.style.display = "none");
     }
 
-    // =========================================================================
-    // PEMINDAI KAMERA ANTI-ERROR
-    // =========================================================================
     async function handleScannerClick() {
-      if (isScanning) {
-        await stopCamera();
-      } else {
-        await startCamera();
-      }
+      if (isScanning) await stopCamera();
+      else await startCamera();
     }
 
     async function startCamera() {
@@ -785,7 +806,6 @@
           html5QrCode = new Html5Qrcode("reader");
         }
 
-        // Pakai facingMode: "environment" langsung tanpa getCameras yang rawan undefined
         await html5QrCode.start(
           { facingMode: "environment" },
           { fps: 20, qrbox: { width: 250, height: 130 } },
@@ -800,7 +820,6 @@
       } catch (e) {
         console.error("Gagal start camera:", e);
         try {
-          // Fallback coba kamera depan jika belakang gagal
           await html5QrCode.start(
             { facingMode: "user" },
             { fps: 20, qrbox: { width: 250, height: 130 } },
@@ -844,13 +863,9 @@
       renderCart();
     }
 
-    // POS KASIR KAMERA JUAL
     async function togglePosCamera() {
-      if (isPosScanning) {
-        await stopPosCamera();
-      } else {
-        await startPosCamera();
-      }
+      if (isPosScanning) await stopPosCamera();
+      else await startPosCamera();
     }
 
     async function startPosCamera() {
@@ -947,7 +962,6 @@
       goHome();
     }
 
-    // BRILINK
     function hitungKalkulatorBRILink() {
       const jns = document.getElementById("briJenisTrx").value;
       const nom = parseInt(document.getElementById("briNominal").value) || 0;
@@ -1014,7 +1028,6 @@
       goHome();
     }
 
-    // BIAYA
     async function simpanBiayaKasir() {
       const kat = document.getElementById("katBiayaSelect").value;
       const nom = parseInt(document.getElementById("inpNominalBiaya").value) || 0;
@@ -1042,7 +1055,6 @@
       goHome();
     }
 
-    // REKAP LACI
     function hitungTotalLaci() {
       let total = 0;
       document.querySelectorAll(".inp-pecahan").forEach(inp => {
@@ -1055,7 +1067,6 @@
       document.getElementById("lblTotalFisikLaci").innerText = "Rp " + total.toLocaleString('id-ID');
     }
 
-    // VOUCHER CART
     function renderCart() {
       const tbody = document.getElementById("cartTable");
       tbody.innerHTML = "";
@@ -1098,7 +1109,6 @@
       goHome();
     }
 
-    // KATALOG
     async function fetchKatalogFromCloud() {
       showToast("Menghubungkan ke PC Desktop...");
       try {
@@ -1165,7 +1175,6 @@
       });
     }
 
-    // MEMBER
     async function daftarMemberBaru() {
       const p = document.getElementById("regMemberPhone").value.trim();
       const n = document.getElementById("regMemberName").value.trim();
