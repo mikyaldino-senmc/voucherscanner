@@ -20,7 +20,7 @@
           --border: #E2E8F0;
           --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
           --shadow-card: 0 8px 20px rgba(2, 100, 214, 0.08);
-          --shadow-float: 0 -4px 16px rgba(0,0,0,0.08);
+          --shadow-float: 0 -4px 16px rgba(0,0,0,0.06);
         }
 
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -29,7 +29,7 @@
         /* ONBOARDING */
         #onboardingScreen {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #FFFFFF;
-          z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 48px 24px 32px 24px;
+          z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 50px 24px 32px 24px;
         }
         .onboarding-hero { text-align: center; margin-top: 20px; }
         .hero-icon-box {
@@ -46,11 +46,11 @@
         }
         .store-btn.active { background: var(--bri-blue-light); color: var(--bri-blue); border-color: var(--bri-blue); }
 
-        /* HEADER DENGAN PADDING EXTRA STATUS BAR */
+        /* HEADER HERO DENGAN JARAK AMAN STATUS BAR ATAS */
         .hero-container {
           background: linear-gradient(180deg, var(--bri-blue) 0%, var(--bri-blue-dark) 100%);
           color: #FFFFFF;
-          padding: 46px 16px 85px 16px; /* Jarak aman di bawah jam & baterai */
+          padding: 38px 16px 85px 16px; /* Jarak aman di bawah jam HP */
           border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
         }
         .top-brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -102,11 +102,13 @@
         .feed-time { font-size: 9.5px; color: var(--text-gray); margin-top: 2px; }
         .feed-cut { font-weight: 900; color: #EF4444; }
 
-        /* BILAH BAWAH DENGAN JARAK AMAN TOMBOL NAVIGASI HP */
+        /* =========================================================
+           BILAH BAWAH DITINGGIKAN (BEBAS DARI TOMBOL ANDROID)
+           ========================================================= */
         .bottom-bar {
           position: fixed; bottom: 0; left: 0; right: 0;
-          height: 78px;
-          padding-bottom: 18px; /* Jarak aman di atas tombol Home/Back HP */
+          height: 84px; /* Ditinggikan agar menu berada di atas tombol HP */
+          padding-bottom: 22px;
           background: #FFFFFF;
           border-top: 1px solid var(--border);
           display: flex; justify-content: space-around; align-items: center;
@@ -117,26 +119,26 @@
         .b-icon { font-size: 18px; }
 
         .center-scan-btn {
-          width: 52px; height: 52px; background: linear-gradient(135deg, var(--bri-blue), #004BB3);
+          width: 54px; height: 54px; background: linear-gradient(135deg, var(--bri-blue), #004BB3);
           border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-          color: white; font-weight: 900; font-size: 10px; margin-top: -30px; border: 4px solid #FFFFFF;
+          color: white; font-weight: 900; font-size: 10px; margin-top: -36px; border: 4px solid #FFFFFF;
           box-shadow: 0 4px 14px rgba(2, 100, 214, 0.4); cursor: pointer;
         }
 
-        /* WORKSPACE SUB-SCREENS */
+        /* WORKSPACES */
         .workspace-screen {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-canvas);
           z-index: 200; display: none; flex-direction: column; overflow-y: auto;
         }
         .workspace-header {
-          height: 74px;
-          padding: 30px 16px 0 16px; /* Jarak aman status bar di sub menu */
+          height: 70px;
+          padding: 22px 16px 0 16px; /* Jarak aman status bar di sub-layar */
           background: #FFFFFF; border-bottom: 1px solid var(--border);
           display: flex; align-items: center; position: sticky; top: 0; z-index: 50; gap: 14px;
         }
         .btn-back { background: none; border: none; font-size: 18px; font-weight: 800; color: var(--text-dark); cursor: pointer; }
         .workspace-title { font-size: 14px; font-weight: 900; color: var(--text-dark); }
-        .workspace-content { padding: 14px; padding-bottom: 110px; }
+        .workspace-content { padding: 14px; padding-bottom: 120px; }
 
         .card { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
         label { font-size: 10px; font-weight: 800; color: var(--text-gray); display: block; margin-bottom: 4px; text-transform: uppercase; }
@@ -230,12 +232,12 @@
     </div>
 
     <div style="text-align: center; font-size: 10.5px; color: var(--text-gray);">
-        Nikola POS System • Version 3.9.9
+        Nikola POS System • Version 4.0.0
     </div>
 </div>
 
 <!-- BERANDA DASHBOARD -->
-<div id="homeScreen" style="padding-bottom: 110px;">
+<div id="homeScreen" style="padding-bottom: 120px;">
     <div class="hero-container">
         <div class="top-brand-bar">
             <div class="brand-logo">Nikola <span>by BRI</span></div>
@@ -335,7 +337,7 @@
     </div>
 </div>
 
-<!-- BILAH BAWAH BERSIH & TIDAK TERPOTONG -->
+<!-- BILAH BAWAH DENGAN JARAK AMAN TOMBOL HP -->
 <div class="bottom-bar">
     <div class="b-item active" onclick="goHome()">
         <div class="b-icon">🏠</div>
@@ -648,30 +650,44 @@
     }
 
     // =========================================================================
-    // JEMBATAN TOMBOL KEMBALI HP (INTELLIGENT BACK HANDLER)
+    // NAVIGASI BALIK CERDAS (INTELLIGENT BACK HANDLER)
     // =========================================================================
-    function handleNativeBack() {
-      if (isScanning) { stopCamera(); return "true"; }
-      if (isPosScanning) { stopPosCamera(); return "true"; }
-
-      const onb = document.getElementById("onboardingScreen");
-      if (onb && onb.style.display === "flex") {
-        return "false";
+    function goHome() {
+      closeAllWorkspaces();
+      // Beritahu sistem Android native bahwa kasir sudah di Beranda
+      if (window.AndroidNative && window.AndroidNative.onWorkspaceStateChanged) {
+        window.AndroidNative.onWorkspaceStateChanged(false);
       }
+    }
 
-      const allWs = document.querySelectorAll(".workspace-screen");
-      let wsClosed = false;
-      allWs.forEach(w => {
-        if (w.style.display === "flex" || w.style.display === "block") {
-          w.style.display = "none";
-          wsClosed = true;
-        }
-      });
+    function closeAllWorkspaces() {
+      if (isScanning) stopCamera();
+      if (isPosScanning) stopPosCamera();
+      document.querySelectorAll(".workspace-screen").forEach(w => w.style.display = "none");
+    }
 
-      if (wsClosed) {
-        return "true"; // Berhasil menutup sub-menu, kembali ke beranda
+    function openWorkspace(id) {
+      closeAllWorkspaces();
+      if (id === 'POS_JUAL') document.getElementById("wsPosJual").style.display = "flex";
+      else if (id === 'VOUCHER') document.getElementById("wsVoucher").style.display = "flex";
+      else if (id === 'MUTASI') {
+        document.getElementById("wsVoucher").style.display = "flex";
+        document.getElementById("trxType").value = "TRANSFER";
       }
-      return "false"; // Sudah di beranda, izinkan Android memunculkan dialog keluar
+      else if (id === 'BRILINK') document.getElementById("wsBrilink").style.display = "flex";
+      else if (id === 'BIAYA') document.getElementById("wsBiaya").style.display = "flex";
+      else if (id === 'REKAP') document.getElementById("wsRekap").style.display = "flex";
+      else if (id === 'MEMBER') document.getElementById("wsMember").style.display = "flex";
+      else if (id === 'STOK') {
+        document.getElementById("wsStok").style.display = "flex";
+        renderStockSummaryView();
+      }
+      else if (id === 'SOP') document.getElementById("wsSOP").style.display = "flex";
+
+      // Beritahu Android native bahwa kasir sedang berada di sub-menu
+      if (window.AndroidNative && window.AndroidNative.onWorkspaceStateChanged) {
+        window.AndroidNative.onWorkspaceStateChanged(true);
+      }
     }
 
     async function sendSafePayload(payload) {
@@ -760,35 +776,6 @@
     function toggleSaldo() {
       isSaldoHidden = !isSaldoHidden;
       document.getElementById("displaySaldoKasir").innerText = isSaldoHidden ? "••••••••" : "Terhubung PC";
-    }
-
-    function goHome() {
-      closeAllWorkspaces();
-    }
-
-    function openWorkspace(id) {
-      closeAllWorkspaces();
-      if (id === 'POS_JUAL') document.getElementById("wsPosJual").style.display = "flex";
-      else if (id === 'VOUCHER') document.getElementById("wsVoucher").style.display = "flex";
-      else if (id === 'MUTASI') {
-        document.getElementById("wsVoucher").style.display = "flex";
-        document.getElementById("trxType").value = "TRANSFER";
-      }
-      else if (id === 'BRILINK') document.getElementById("wsBrilink").style.display = "flex";
-      else if (id === 'BIAYA') document.getElementById("wsBiaya").style.display = "flex";
-      else if (id === 'REKAP') document.getElementById("wsRekap").style.display = "flex";
-      else if (id === 'MEMBER') document.getElementById("wsMember").style.display = "flex";
-      else if (id === 'STOK') {
-        document.getElementById("wsStok").style.display = "flex";
-        renderStockSummaryView();
-      }
-      else if (id === 'SOP') document.getElementById("wsSOP").style.display = "flex";
-    }
-
-    function closeAllWorkspaces() {
-      if (isScanning) stopCamera();
-      if (isPosScanning) stopPosCamera();
-      document.querySelectorAll(".workspace-screen").forEach(w => w.style.display = "none");
     }
 
     async function handleScannerClick() {
