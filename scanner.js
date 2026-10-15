@@ -1,226 +1,148 @@
 // =========================================================================
-// MODUL PEMINDAI KAMERA ANTI LAYAR HITAM (SMART LENS SELECTOR)
+// MODUL PEMINDAI KAMERA UNIVERSAL (SINGLE ENGINE - ANTI CRASH & ANTI LOCK)
 // =========================================================================
 
-let scanMasukQr = null;
-let scanMutasiQr = null;
-let scanMemberQr = null;
+let currentScanner = null;
+let currentScannerTarget = null;
 
-let isScanMasukRunning = false;
-let isScanMutasiRunning = false;
-let isScanMemberRunning = false;
+// FUNGSI PELEPAS SENSOR KAMERA (WAJIB BERSIH SEBELUM BUKA KAMERA LAIN)
+async function stopCurrentScanner() {
+  if (currentScanner) {
+    try {
+      if (currentScanner.isScanning) {
+        await currentScanner.stop();
+      }
+      currentScanner.clear();
+    } catch (e) {
+      console.warn("Info stop camera:", e);
+    }
+    currentScanner = null;
+    currentScannerTarget = null;
+  }
+
+  // Kembalikan semua tombol dan laser ke kondisi awal
+  const buttons = [
+    { id: "btnCamMasuk", text: "📷 Nyalakan Scanner Kamera" },
+    { id: "btnCamMutasi", text: "📷 Nyalakan Scanner Kamera" },
+    { id: "btnCamMember", text: "📷 Nyalakan Scanner Kartu" }
+  ];
+
+  buttons.forEach(b => {
+    const el = document.getElementById(b.id);
+    if (el) {
+      el.innerText = b.text;
+      el.style.background = "var(--bri-blue)";
+    }
+  });
+
+  ["laserMasuk", "laserMutasi", "laserMember"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = "laser-guide";
+  });
+}
 
 function stopAllCameras() {
-  stopScannerMasuk();
-  stopScannerMutasi();
-  stopScannerMember();
+  stopCurrentScanner();
 }
 
-// FUNGSI PINTAR: Memilih ID Kamera Belakang Utama (Menghindari Lensa Hitam)
-async function getBestBackCameraId() {
-  try {
-    const devices = await Html5Qrcode.getCameras();
-    if (!devices || devices.length === 0) return { facingMode: "environment" };
+// MESIN UTAMA PEMBUKA KAMERA (DIGUNAKAN OLEH MASUK, MUTASI, & MEMBER)
+async function startUniversalCamera(targetDivId, laserId, btnId, onScanSuccess) {
+  const btn = document.getElementById(btnId);
+  const laser = document.getElementById(laserId);
 
-    // Cari kamera yang memiliki label "back" atau "rear" atau "belakang"
-    const backCam = devices.find(d => {
-      const label = d.label.toLowerCase();
-      return label.includes("back") || label.includes("rear") || label.includes("belakang") || label.includes("0");
-    });
+  if (btn) btn.innerText = "⏳ Membuka Sensor Kamera...";
 
-    if (backCam) {
-      return backCam.id;
-    }
-    // Jika tidak ada label khusus, gunakan kamera pertama
-    return devices[0].id;
-  } catch (e) {
-    // Fallback default jika getCameras dibatasi browser
-    return { facingMode: "environment" };
-  }
-}
-
-// 1. SCANNER BARANG MASUK
-async function toggleScannerMasuk() {
-  if (isScanMasukRunning) stopScannerMasuk();
-  else startScannerMasuk();
-}
-
-async function startScannerMasuk() {
-  const btn = document.getElementById("btnCamMasuk");
-  const laser = document.getElementById("laserMasuk");
-  btn.innerText = "⏳ Membuka Sensor Kamera...";
+  // 1. Lepas dan matikan kamera sebelumnya agar hardware tidak terkunci
+  await stopCurrentScanner();
 
   try {
-    if (!scanMasukQr) scanMasukQr = new Html5Qrcode("reader-masuk");
-    const camConfig = await getBestBackCameraId();
+    const scanner = new Html5Qrcode(targetDivId);
+    currentScanner = scanner;
+    currentScannerTarget = targetDivId;
 
-    await scanMasukQr.start(
-      camConfig,
-      {
-        fps: 25,
-        qrbox: { width: 260, height: 140 },
-        aspectRatio: 1.777778
-      },
-      (text) => {
-        let clean = extractDigits(text);
-        handleScannedBarcodeMasuk(clean);
-        showToast("Terbaca: " + clean);
-        if (navigator.vibrate) navigator.vibrate(80);
-      },
-      () => {}
-    );
-    isScanMasukRunning = true;
-    laser.className = "laser-guide active";
-    btn.innerText = "⏹ Tutup Kamera";
-    btn.style.background = "#EF4444";
-  } catch (e) {
-    console.error("Camera Error:", e);
-    // Coba Fallback kedua jika gagal
+    const qrConfig = {
+      fps: 20,
+      qrbox: { width: 250, height: 140 }
+    };
+
+    // 2. Jalankan Kamera Belakang Utama
     try {
-      await scanMasukQr.start(
+      await scanner.start(
         { facingMode: "environment" },
-        { fps: 20, qrbox: { width: 250, height: 130 } },
-        (text) => {
-          let clean = extractDigits(text);
-          handleScannedBarcodeMasuk(clean);
-        },
+        qrConfig,
+        onScanSuccess,
         () => {}
       );
-      isScanMasukRunning = true;
-      laser.className = "laser-guide active";
+    } catch (errEnv) {
+      console.warn("Lensa belakang sibuk, mencoba inisialisasi ulang...", errEnv);
+      // Fallback cadangan: Coba kamera standar jika facingMode environment ditolak
+      await scanner.start(
+        { facingMode: "user" },
+        qrConfig,
+        onScanSuccess,
+        () => {}
+      );
+    }
+
+    if (laser) laser.className = "laser-guide active";
+    if (btn) {
       btn.innerText = "⏹ Tutup Kamera";
       btn.style.background = "#EF4444";
-      return;
-    } catch (errFallback) {
-      btn.innerText = "📷 Nyalakan Scanner Kamera";
-      btn.style.background = "var(--bri-blue)";
-      alert("Kamera belum dapat dibuka. Pastikan izin kamera HP sudah diaktifkan di Info Aplikasi.");
     }
+  } catch (errFinal) {
+    console.error("Gagal membuka kamera:", errFinal);
+    await stopCurrentScanner();
+    alert("Kamera belum dapat dibuka. Pastikan izin kamera aktif di Pengaturan HP.");
   }
 }
 
-async function stopScannerMasuk() {
-  const btn = document.getElementById("btnCamMasuk");
-  const laser = document.getElementById("laserMasuk");
-  try {
-    if (scanMasukQr && scanMasukQr.isScanning) await scanMasukQr.stop();
-  } catch (e) {}
-  isScanMasukRunning = false;
-  if (laser) laser.className = "laser-guide";
-  if (btn) {
-    btn.innerText = "📷 Nyalakan Scanner Kamera";
-    btn.style.background = "var(--bri-blue)";
+// =========================================================================
+// 1. PENGENDALI SCANNER BARANG MASUK (KULAKAN)
+// =========================================================================
+async function toggleScannerMasuk() {
+  if (currentScanner && currentScannerTarget === "reader-masuk") {
+    await stopCurrentScanner();
+  } else {
+    await startUniversalCamera("reader-masuk", "laserMasuk", "btnCamMasuk", (text) => {
+      let clean = extractDigits(text);
+      handleScannedBarcodeMasuk(clean);
+      showToast("Terbaca: " + clean);
+      if (navigator.vibrate) navigator.vibrate(80);
+    });
   }
 }
 
-// 2. SCANNER MUTASI
+// =========================================================================
+// 2. PENGENDALI SCANNER MUTASI CABANG (GUDANG -> TOKO)
+// =========================================================================
 async function toggleScannerMutasi() {
-  if (isScanMutasiRunning) stopScannerMutasi();
-  else startScannerMutasi();
-}
-
-async function startScannerMutasi() {
-  const btn = document.getElementById("btnCamMutasi");
-  const laser = document.getElementById("laserMutasi");
-  btn.innerText = "⏳ Membuka Sensor Kamera...";
-
-  try {
-    if (!scanMutasiQr) scanMutasiQr = new Html5Qrcode("reader-mutasi");
-    const camConfig = await getBestBackCameraId();
-
-    await scanMutasiQr.start(
-      camConfig,
-      {
-        fps: 25,
-        qrbox: { width: 260, height: 140 },
-        aspectRatio: 1.777778
-      },
-      (text) => {
-        let clean = extractDigits(text);
-        handleScannedBarcodeMutasi(clean);
-        if (navigator.vibrate) navigator.vibrate(80);
-      },
-      () => {}
-    );
-    isScanMutasiRunning = true;
-    laser.className = "laser-guide active";
-    btn.innerText = "⏹ Tutup Kamera";
-    btn.style.background = "#EF4444";
-  } catch (e) {
-    btn.innerText = "📷 Nyalakan Scanner Kamera";
-    btn.style.background = "var(--bri-blue)";
-    alert("Kamera belum dapat dibuka.");
+  if (currentScanner && currentScannerTarget === "reader-mutasi") {
+    await stopCurrentScanner();
+  } else {
+    await startUniversalCamera("reader-mutasi", "laserMutasi", "btnCamMutasi", (text) => {
+      let clean = extractDigits(text);
+      handleScannedBarcodeMutasi(clean);
+      if (navigator.vibrate) navigator.vibrate(80);
+    });
   }
 }
 
-async function stopScannerMutasi() {
-  const btn = document.getElementById("btnCamMutasi");
-  const laser = document.getElementById("laserMutasi");
-  try {
-    if (scanMutasiQr && scanMutasiQr.isScanning) await scanMutasiQr.stop();
-  } catch (e) {}
-  isScanMutasiRunning = false;
-  if (laser) laser.className = "laser-guide";
-  if (btn) {
-    btn.innerText = "📷 Nyalakan Scanner Kamera";
-    btn.style.background = "var(--bri-blue)";
-  }
-}
-
-// 3. SCANNER KARTU MEMBER
+// =========================================================================
+// 3. PENGENDALI SCANNER KARTU MEMBER
+// =========================================================================
 async function toggleScannerMember() {
-  if (isScanMemberRunning) stopScannerMember();
-  else startScannerMember();
-}
-
-async function startScannerMember() {
-  const btn = document.getElementById("btnCamMember");
-  const laser = document.getElementById("laserMember");
-  btn.innerText = "⏳ Membuka Sensor Kamera...";
-
-  try {
-    if (!scanMemberQr) scanMemberQr = new Html5Qrcode("reader-member");
-    const camConfig = await getBestBackCameraId();
-
-    await scanMemberQr.start(
-      camConfig,
-      {
-        fps: 25,
-        qrbox: { width: 260, height: 140 },
-        aspectRatio: 1.777778
-      },
-      (text) => {
-        let clean = text.trim();
-        handleScannedBarcodeMember(clean);
-        if (navigator.vibrate) navigator.vibrate(80);
-      },
-      () => {}
-    );
-    isScanMemberRunning = true;
-    laser.className = "laser-guide active";
-    btn.innerText = "⏹ Tutup Kamera";
-    btn.style.background = "#EF4444";
-  } catch (e) {
-    btn.innerText = "📷 Nyalakan Scanner Kartu";
-    btn.style.background = "var(--bri-blue)";
-    alert("Kamera belum dapat dibuka.");
+  if (currentScanner && currentScannerTarget === "reader-member") {
+    await stopCurrentScanner();
+  } else {
+    await startUniversalCamera("reader-member", "laserMember", "btnCamMember", (text) => {
+      let clean = text.trim();
+      handleScannedBarcodeMember(clean);
+      if (navigator.vibrate) navigator.vibrate(80);
+    });
   }
 }
 
-async function stopScannerMember() {
-  const btn = document.getElementById("btnCamMember");
-  const laser = document.getElementById("laserMember");
-  try {
-    if (scanMemberQr && scanMemberQr.isScanning) await scanMemberQr.stop();
-  } catch (e) {}
-  isScanMemberRunning = false;
-  if (laser) laser.className = "laser-guide";
-  if (btn) {
-    btn.innerText = "📷 Nyalakan Scanner Kartu";
-    btn.style.background = "var(--bri-blue)";
-  }
-}
-
+// PEMBERSIH DIGIT BARCODE / NOMOR SERI
 function extractDigits(rawStr) {
   let s = String(rawStr).replace(/[\s\-]/g, "");
   let match = s.match(/\d{8,25}/);
