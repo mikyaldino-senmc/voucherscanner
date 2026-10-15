@@ -1,651 +1,658 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta name="theme-color" content="#0264D6">
-  <title>Nikola Companion by BRI</title>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <style>
-    :root {
-      --bri-blue: #0264D6;
-      --bri-blue-dark: #004BB3;
-      --bri-blue-light: #EBF3FC;
-      --bri-orange: #F37021;
-      --bg-canvas: #F5F7FA;
-      --bg-white: #FFFFFF;
-      --text-dark: #1E293B;
-      --text-gray: #64748B;
-      --border: #E2E8F0;
-      --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
-      --shadow-card: 0 8px 20px rgba(2, 100, 214, 0.08);
-      --shadow-float: 0 -4px 16px rgba(0,0,0,0.05);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="theme-color" content="#0264D6">
+    <title>Nikola Companion by BRI</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+          --bri-blue: #0264D6;
+          --bri-blue-dark: #004BB3;
+          --bri-blue-light: #EBF3FC;
+          --bri-orange: #F37021;
+          --bg-canvas: #F8FAFC;
+          --bg-white: #FFFFFF;
+          --text-dark: #0F172A;
+          --text-gray: #64748B;
+          --border: #E2E8F0;
+          --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+          --shadow-card: 0 8px 20px rgba(2, 100, 214, 0.08);
+          --shadow-float: 0 -4px 16px rgba(0,0,0,0.05);
+        }
 
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-    /* 1. ONBOARDING & LOGIN SCREEN */
-    #onboardingScreen {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #FFFFFF;
-      z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 32px 24px;
-    }
-    .onboarding-hero { text-align: center; margin-top: 40px; }
-    .hero-icon-box {
-      width: 72px; height: 72px; background: var(--bri-blue-light); border-radius: 24px;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px;
-    }
-    .onboard-title { font-size: 20px; font-weight: 900; color: var(--bri-blue); }
-    .onboard-sub { font-size: 12px; color: var(--text-gray); margin-top: 6px; }
-    .onboard-form { background: #F8FAFC; padding: 18px; border-radius: 18px; border: 1px solid var(--border); }
-    .store-selector-group { display: flex; gap: 8px; margin-bottom: 12px; }
-    .store-btn {
-      flex: 1; padding: 12px 6px; border-radius: 12px; border: 1.5px solid var(--border);
-      background: #FFFFFF; font-size: 11px; font-weight: 800; color: var(--text-gray); text-align: center; cursor: pointer;
-    }
-    .store-btn.active { background: var(--bri-blue-light); color: var(--bri-blue); border-color: var(--bri-blue); }
+        /* ONBOARDING */
+        #onboardingScreen {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #FFFFFF;
+          z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 32px 24px;
+        }
+        .onboarding-hero { text-align: center; margin-top: 40px; }
+        .hero-icon-box {
+          width: 72px; height: 72px; background: var(--bri-blue-light); border-radius: 24px;
+          display: inline-flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px;
+        }
+        .onboard-title { font-size: 20px; font-weight: 900; color: var(--bri-blue); }
+        .onboard-sub { font-size: 12px; color: var(--text-gray); margin-top: 6px; }
+        .onboard-form { background: #F8FAFC; padding: 18px; border-radius: 18px; border: 1px solid var(--border); }
+        .store-selector-group { display: flex; gap: 8px; margin-bottom: 12px; }
+        .store-btn {
+          flex: 1; padding: 12px 6px; border-radius: 12px; border: 1.5px solid var(--border);
+          background: #FFFFFF; font-size: 11px; font-weight: 800; color: var(--text-gray); text-align: center; cursor: pointer;
+        }
+        .store-btn.active { background: var(--bri-blue-light); color: var(--bri-blue); border-color: var(--bri-blue); }
 
-    /* 2. HERO HEADER BIRU BRI */
-    .hero-container {
-      background: linear-gradient(180deg, var(--bri-blue) 0%, var(--bri-blue-dark) 100%);
-      color: #FFFFFF; padding: 16px 16px 85px 16px; border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
-    }
-    .top-brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .brand-logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
-    .brand-logo span { font-size: 11px; font-weight: 500; opacity: 0.85; }
-    .top-icons { display: flex; gap: 12px; font-size: 16px; align-items: center; }
+        /* HEADER HERO */
+        .hero-container {
+          background: linear-gradient(180deg, var(--bri-blue) 0%, var(--bri-blue-dark) 100%);
+          color: #FFFFFF; padding: 16px 16px 85px 16px; border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
+        }
+        .top-brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .brand-logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+        .brand-logo span { font-size: 11px; font-weight: 500; opacity: 0.85; }
+        .top-icons { display: flex; gap: 14px; font-size: 17px; align-items: center; }
 
-    .user-greeting { display: flex; align-items: center; justify-content: space-between; }
-    .user-badge-circle { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; }
-    .avatar-char {
-      width: 32px; height: 32px; background: rgba(255,255,255,0.25); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900;
-    }
-    .outlet-switcher-link { font-size: 10.5px; font-weight: 700; opacity: 0.9; cursor: pointer; text-decoration: underline; }
+        .user-greeting { display: flex; align-items: center; justify-content: space-between; }
+        .user-badge-circle { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; }
+        .avatar-char {
+          width: 32px; height: 32px; background: rgba(255,255,255,0.25); border-radius: 50%;
+          display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900;
+        }
+        .outlet-switcher-link { font-size: 10.5px; font-weight: 700; opacity: 0.9; cursor: pointer; text-decoration: underline; }
 
-    /* 3. KARTU SALDO TERPADU (FLOATING CARD) */
-    .balance-card-carousel {
-      background: #FFFFFF; border-radius: 18px; padding: 16px 18px; margin: -68px 16px 16px 16px;
-      box-shadow: var(--shadow-card); z-index: 20; position: relative; border: 1px solid rgba(0,0,0,0.03);
-    }
-    .rekening-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .rek-number { font-size: 11px; font-weight: 700; color: var(--text-gray); }
-    .rek-badge { font-size: 9.5px; font-weight: 800; color: var(--bri-blue); background: var(--bri-blue-light); padding: 2px 8px; border-radius: 6px; }
-    .balance-amount { font-size: 22px; font-weight: 900; color: var(--text-dark); display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-    .eye-icon { font-size: 14px; color: var(--text-gray); cursor: pointer; }
+        /* FLOATING CARD */
+        .balance-card-carousel {
+          background: #FFFFFF; border-radius: 18px; padding: 16px 18px; margin: -68px 16px 16px 16px;
+          box-shadow: var(--shadow-card); z-index: 20; position: relative; border: 1px solid rgba(0,0,0,0.03);
+        }
+        .rekening-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .rek-number { font-size: 11px; font-weight: 700; color: var(--text-gray); }
+        .rek-badge { font-size: 9.5px; font-weight: 800; color: var(--bri-blue); background: var(--bri-blue-light); padding: 2px 8px; border-radius: 6px; }
+        .balance-amount { font-size: 22px; font-weight: 900; color: var(--text-dark); display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+        .eye-icon { font-size: 14px; color: var(--text-gray); cursor: pointer; }
 
-    /* 4. FAST MENU (8 MENU TERSTRUKTUR DENGAN COLOR CODING) */
-    .menu-section { padding: 0 16px; margin-bottom: 16px; }
-    .section-header { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .fintech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; }
-    .grid-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
-    .grid-icon-circle {
-      width: 52px; height: 52px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin-bottom: 6px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); position: relative;
-      background: var(--bri-blue-light); color: var(--bri-blue); transition: transform 0.1s;
-    }
-    .grid-item:active .grid-icon-circle { transform: scale(0.92); }
-    .grid-label { font-size: 10.5px; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
+        /* FAST MENU */
+        .menu-section { padding: 0 16px; margin-bottom: 16px; }
+        .section-header { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .fintech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; }
+        .grid-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
+        .grid-icon-circle {
+          width: 52px; height: 52px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+          font-size: 22px; margin-bottom: 6px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); position: relative;
+          background: var(--bri-blue-light); color: var(--bri-blue); transition: transform 0.1s;
+        }
+        .grid-item:active .grid-icon-circle { transform: scale(0.92); }
+        .grid-label { font-size: 10.5px; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
 
-    /* FEED TRANSAKSI OTOMATIS */
-    .section-card {
-      background: #FFFFFF; border-radius: 16px; padding: 14px 16px; margin: 0 16px 14px 16px;
-      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-    }
-    .card-title-head { font-size: 12px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #F1F5F9; font-size: 11.5px; }
-    .feed-item:last-child { border-bottom: none; }
-    .feed-target { font-weight: 800; color: var(--text-dark); }
-    .feed-time { font-size: 9.5px; color: var(--text-gray); margin-top: 2px; }
-    .feed-cut { font-weight: 900; color: #EF4444; }
+        /* FEED PPOB */
+        .section-card {
+          background: #FFFFFF; border-radius: 16px; padding: 14px 16px; margin: 0 16px 14px 16px;
+          box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+        }
+        .card-title-head { font-size: 12px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #F1F5F9; font-size: 11.5px; }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-target { font-weight: 800; color: var(--text-dark); }
+        .feed-time { font-size: 9.5px; color: var(--text-gray); margin-top: 2px; }
+        .feed-cut { font-weight: 900; color: #EF4444; }
 
-    /* 5. BOTTOM NAVIGATION BAR */
-    .bottom-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: #FFFFFF;
-      border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center;
-      z-index: 100; box-shadow: var(--shadow-float);
-    }
-    .b-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--text-gray); font-size: 9.5px; font-weight: 800; width: 60px; }
-    .b-item.active { color: var(--bri-blue); }
-    .b-icon { font-size: 18px; }
+        /* BOTTOM BAR */
+        .bottom-bar {
+          position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: #FFFFFF;
+          border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center;
+          z-index: 100; box-shadow: var(--shadow-float);
+        }
+        .b-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--text-gray); font-size: 9.5px; font-weight: 800; width: 60px; }
+        .b-item.active { color: var(--bri-blue); }
+        .b-icon { font-size: 18px; }
 
-    .center-scan-btn {
-      width: 52px; height: 52px; background: linear-gradient(135deg, var(--bri-blue), #004BB3);
-      border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      color: white; font-weight: 900; font-size: 10.5px; margin-top: -26px; border: 4px solid #FFFFFF;
-      box-shadow: 0 4px 14px rgba(2, 100, 214, 0.4); cursor: pointer;
-    }
+        .center-scan-btn {
+          width: 52px; height: 52px; background: linear-gradient(135deg, var(--bri-blue), #004BB3);
+          border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          color: white; font-weight: 900; font-size: 10.5px; margin-top: -26px; border: 4px solid #FFFFFF;
+          box-shadow: 0 4px 14px rgba(2, 100, 214, 0.4); cursor: pointer;
+        }
 
-    /* 6. SUB-SCREEN WORKSPACES */
-    .workspace-screen {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-canvas);
-      z-index: 200; display: none; flex-direction: column; overflow-y: auto;
-    }
-    .workspace-header {
-      height: 54px; background: #FFFFFF; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 50; gap: 14px;
-    }
-    .btn-back { background: none; border: none; font-size: 18px; font-weight: 800; color: var(--text-dark); cursor: pointer; }
-    .workspace-title { font-size: 14px; font-weight: 900; color: var(--text-dark); }
-    .workspace-content { padding: 14px; padding-bottom: 90px; }
+        /* WORKSPACE SUB-SCREENS */
+        .workspace-screen {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-canvas);
+          z-index: 200; display: none; flex-direction: column; overflow-y: auto;
+        }
+        .workspace-header {
+          height: 54px; background: #FFFFFF; border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 50; gap: 14px;
+        }
+        .btn-back { background: none; border: none; font-size: 18px; font-weight: 800; color: var(--text-dark); cursor: pointer; }
+        .workspace-title { font-size: 14px; font-weight: 900; color: var(--text-dark); }
+        .workspace-content { padding: 14px; padding-bottom: 90px; }
 
-    /* FORM & CARDS */
-    .card { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
-    label { font-size: 10px; font-weight: 800; color: var(--text-gray); display: block; margin-bottom: 4px; text-transform: uppercase; }
-    select, input {
-      width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
-      background: #F8FAFC; color: var(--text-dark); font-size: 12px; font-weight: 600; margin-bottom: 10px; outline: none;
-    }
-    .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
-    .btn-primary { background: var(--bri-blue); color: white; }
-    .btn-success { background: #10B981; color: white; }
-    .btn-danger { background: #FEE2E2; color: #EF4444; border: 1px solid #FECACA; font-size: 10px; padding: 4px 8px; border-radius: 6px; width: auto; cursor: pointer; }
+        .card { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+        label { font-size: 10px; font-weight: 800; color: var(--text-gray); display: block; margin-bottom: 4px; text-transform: uppercase; }
+        select, input {
+          width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
+          background: #F8FAFC; color: var(--text-dark); font-size: 12px; font-weight: 600; margin-bottom: 10px; outline: none;
+        }
+        .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+        .btn-primary { background: var(--bri-blue); color: white; }
+        .btn-success { background: #10B981; color: white; }
+        .btn-danger { background: #FEE2E2; color: #EF4444; border: 1px solid #FECACA; font-size: 10px; padding: 4px 8px; border-radius: 6px; width: auto; cursor: pointer; }
 
-    /* SMART MATH PREVIEW BOX (KALKULATOR BRILINK) */
-    .smart-calc-box {
-      background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 12px;
-    }
-    .smart-calc-row { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; }
-    .smart-calc-total { font-size: 14px; font-weight: 900; color: #16A34A; border-top: 1px dashed #86EFAC; padding-top: 6px; margin-top: 6px; }
+        /* STOCK BADGES */
+        .stock-badge-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 12px 0; }
+        .stock-badge { background: #F8FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; }
+        .stock-badge .loc { font-size: 8px; color: var(--text-gray); font-weight: 800; }
+        .stock-badge .val { font-size: 14px; font-weight: 900; color: var(--text-dark); }
+        .stock-badge.highlight { background: var(--bri-blue-light); border-color: var(--bri-blue); }
+        .stock-badge.highlight .val { color: var(--bri-blue); }
 
-    /* 4 BADGE INDIKATOR STOK */
-    .stock-badge-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 12px 0; }
-    .stock-badge { background: #F8FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; }
-    .stock-badge .loc { font-size: 8px; color: var(--text-gray); font-weight: 800; }
-    .stock-badge .val { font-size: 14px; font-weight: 900; color: var(--text-dark); }
-    .stock-badge.highlight { background: var(--bri-blue-light); border-color: var(--bri-blue); }
-    .stock-badge.highlight .val { color: var(--bri-blue); }
+        /* CAMERA */
+        #camera-panel, #pos-camera-panel { background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden; }
+        .reader-box { position: relative; width: 100%; min-height: 220px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .laser-guide {
+          position: absolute; top: 50%; left: 5%; width: 90%; height: 2px;
+          background: #EF4444; box-shadow: 0 0 12px #EF4444; pointer-events: none; z-index: 15;
+          transform: translateY(-50%); display: none;
+        }
+        .laser-guide.active { display: block; animation: laserSweep 1.3s ease-in-out infinite alternate; }
+        @keyframes laserSweep { 0% { transform: translateY(-25px); opacity: 0.6; } 100% { transform: translateY(25px); opacity: 0.95; } }
 
-    /* KAMERA VIEWPORT */
-    #camera-panel { background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden; display: none; }
-    #reader-wrapper { position: relative; width: 100%; min-height: 220px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    #reader { width: 100% !important; border: none !important; }
-    #reader video { width: 100% !important; height: auto !important; object-fit: cover; }
-    #reader__header_message, #reader__status_span, #reader img { display: none !important; }
+        /* TABEL */
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { padding: 8px 4px; text-align: left; color: var(--text-gray); font-size: 9.5px; font-weight: 800; border-bottom: 1px solid var(--border); }
+        td { padding: 8px 4px; border-bottom: 1px solid #F1F5F9; }
+        .badge-code { background: #F1F5F9; color: var(--bri-blue); padding: 3px 6px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: bold; }
+        .qty-input { width: 45px; text-align: center; padding: 4px; background: #FFFFFF; border: 1px solid var(--bri-blue); color: var(--bri-blue); font-weight: 900; border-radius: 6px; margin: 0; }
 
-    .laser-guide {
-      position: absolute; top: 50%; left: 5%; width: 90%; height: 2px;
-      background: #EF4444; box-shadow: 0 0 12px #EF4444; pointer-events: none; z-index: 15;
-      transform: translateY(-50%); display: none;
-    }
-    .laser-guide.active { display: block; animation: laserSweep 1.3s ease-in-out infinite alternate; }
-    @keyframes laserSweep { 0% { transform: translateY(-25px); opacity: 0.6; } 100% { transform: translateY(25px); opacity: 0.95; } }
+        /* CASH DRAWER RECONCILE */
+        .pecahan-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
+        .pecahan-row input { width: 80px; margin-bottom: 0; text-align: center; font-weight: 800; padding: 6px; }
 
-    /* TABEL */
-    table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    th { padding: 8px 4px; text-align: left; color: var(--text-gray); font-size: 9.5px; font-weight: 800; border-bottom: 1px solid var(--border); }
-    td { padding: 8px 4px; border-bottom: 1px solid #F1F5F9; }
-    .badge-code { background: #F1F5F9; color: var(--bri-blue); padding: 3px 6px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: bold; }
-    .qty-input { width: 45px; text-align: center; padding: 4px; background: #FFFFFF; border: 1px solid var(--bri-blue); color: var(--bri-blue); font-weight: 900; border-radius: 6px; margin: 0; }
-
-    #toast-msg {
-      position: fixed; top: 14px; left: 16px; right: 16px; background: #0F172A;
-      color: #F8FAFC; border-radius: 12px; padding: 10px 14px; font-size: 11.5px; font-weight: 800;
-      z-index: 2000; text-align: center; display: none;
-    }
-  </style>
+        #toast-msg {
+          position: fixed; top: 14px; left: 16px; right: 16px; background: #0F172A;
+          color: #F8FAFC; border-radius: 12px; padding: 10px 14px; font-size: 11.5px; font-weight: 800;
+          z-index: 2000; text-align: center; display: none;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="toast-msg">Notifikasi...</div>
+<div id="toast-msg">Notifikasi...</div>
 
-  <!-- =========================================================================
-       1. LAYAR LOGIN & ONBOARDING OUTLET KASIR
-       ========================================================================= -->
-  <div id="onboardingScreen">
+<!-- =========================================================================
+     1. ONBOARDING & LOGIN OUTLET
+     ========================================================================= -->
+<div id="onboardingScreen">
     <div class="onboarding-hero">
-      <div class="hero-icon-box">⚡</div>
-      <div class="onboard-title">NIKOLA MOBILE POS</div>
-      <div class="onboard-sub">Sistem Operasional Kasir Cabang Terpadu</div>
+        <div class="hero-icon-box">⚡</div>
+        <div class="onboard-title">NIKOLA MOBILE POS</div>
+        <div class="onboard-sub">Sistem Operasional Kasir Cabang Terpadu</div>
     </div>
 
     <div class="onboard-form">
-      <label>PILIH OUTLET CABANG:</label>
-      <div class="store-selector-group">
-        <div class="store-btn active" id="btnPickNMC" onclick="selectStore('Toko NMC')">🏪 TOKO NMC</div>
-        <div class="store-btn" id="btnPickNACC" onclick="selectStore('Toko NACC')">🏬 TOKO NACC</div>
-      </div>
+        <label>PILIH OUTLET CABANG:</label>
+        <div class="store-selector-group">
+            <div class="store-btn active" id="btnPickNMC" onclick="selectStore('Toko NMC')">🏪 TOKO NMC</div>
+            <div class="store-btn" id="btnPickNACC" onclick="selectStore('Toko NACC')">🏬 TOKO NACC</div>
+        </div>
 
-      <label>NAMA PETUGAS KASIR:</label>
-      <input type="text" id="inpKasirName" placeholder="Contoh: Budi Kasir" value="Kasir Utama">
+        <label>NAMA PETUGAS KASIR:</label>
+        <input type="text" id="inpKasirName" placeholder="Contoh: Budi Kasir" value="Kasir Utama">
 
-      <label>PIN AKSES TOKO (4 ANGKA):</label>
-      <input type="password" id="inpKasirPIN" placeholder="PIN 4 Angka..." maxlength="4" value="1234">
+        <label>PIN AKSES TOKO (4 ANGKA):</label>
+        <input type="password" id="inpKasirPIN" placeholder="PIN 4 Angka..." maxlength="4" value="1234">
 
-      <button class="btn btn-primary" onclick="submitOnboarding()">🚀 AKTIFKAN KASIR</button>
+        <button class="btn btn-primary" onclick="submitOnboarding()">🚀 AKTIFKAN KASIR</button>
     </div>
 
     <div style="text-align: center; font-size: 10.5px; color: var(--text-gray);">
-      Nikola POS System • Version 3.8.0
+        Nikola POS System • Version 3.9.0 (Safe Desktop Sync)
     </div>
-  </div>
+</div>
 
-
-  <!-- =========================================================================
-       2. DASHBOARD UTAMA (QITA BY BRI STYLE)
-       ========================================================================= -->
-  <div id="homeScreen" style="padding-bottom: 85px;">
-    
-    <!-- TOP BANNER -->
+<!-- =========================================================================
+     2. BERANDA DASHBOARD (QITA BY BRI STYLE)
+     ========================================================================= -->
+<div id="homeScreen" style="padding-bottom: 85px;">
     <div class="hero-container">
-      <div class="top-brand-bar">
-        <div class="brand-logo">Nikola <span>by BRI</span></div>
-        <div class="top-icons">
-          <span title="Sinkron Ulang PC" onclick="fetchKatalogFromCloud()">🔄</span>
-          <span title="Bantuan SOP" onclick="openWorkspace('SOP')">📖</span>
-          <span title="Ganti Toko" onclick="logoutKasir()">🚪</span>
+        <div class="top-brand-bar">
+            <div class="brand-logo">Nikola <span>by BRI</span></div>
+            <div class="top-icons">
+                <span title="Sinkron Ulang PC" onclick="fetchKatalogFromCloud()">🔄</span>
+                <span title="Bantuan SOP" onclick="openWorkspace('SOP')">📖</span>
+                <span title="Ganti Toko" onclick="logoutKasir()">🚪</span>
+            </div>
         </div>
-      </div>
 
-      <div class="user-greeting">
-        <div class="user-badge-circle">
-          <div class="avatar-char" id="userAvatarChar">N</div>
-          <div>
-            <div style="font-size: 9.5px; opacity: 0.8;">Petugas Kasir</div>
-            <div id="displayKasirName">Hai, Kasir Toko NMC</div>
-          </div>
+        <div class="user-greeting">
+            <div class="user-badge-circle">
+                <div class="avatar-char" id="userAvatarChar">N</div>
+                <div>
+                    <div style="font-size: 9.5px; opacity: 0.8;">Petugas Kasir</div>
+                    <div id="displayKasirName">Hai, Kasir Toko NMC</div>
+                </div>
+            </div>
+            <div class="outlet-switcher-link" onclick="logoutKasir()">Ganti Toko</div>
         </div>
-        <div class="outlet-switcher-link" onclick="logoutKasir()">Ganti Toko</div>
-      </div>
     </div>
 
-    <!-- KARTU SALDO TERPADU (FLOATING CAROUSEL) -->
+    <!-- FLOATING BALANCE CARD -->
     <div class="balance-card-carousel">
-      <div class="rekening-header">
-        <div class="rek-number">
-          <span id="labelTokoHeader">TOKO NMC</span> • 5576-0103-7750
+        <div class="rekening-header">
+            <div class="rek-number">
+                <span id="labelTokoHeader">TOKO NMC</span> • KASIR CABANG
+            </div>
+            <div class="rek-badge" id="lblSyncStatus">● SIAP ONLINE</div>
         </div>
-        <div class="rek-badge">● SINKRON AKTIF</div>
-      </div>
 
-      <div style="font-size: 10px; color: var(--text-gray); font-weight: 700;">Saldo Terpadu Toko</div>
-      <div class="balance-amount">
-        <span id="displaySaldoKasir">Rp 2.191.639</span>
-        <span class="eye-icon" onclick="toggleSaldo()">👁</span>
-      </div>
+        <div style="font-size: 10px; color: var(--text-gray); font-weight: 700;">Status Operasional Kasir</div>
+        <div class="balance-amount">
+            <span id="displaySaldoKasir">Terhubung PC</span>
+            <span class="eye-icon" onclick="toggleSaldo()">👁</span>
+        </div>
 
-      <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-gray); margin-top: 6px;">
-        <span>Order Quota: <b style="color: var(--bri-blue);" id="saldoOQSub">Rp 1.741.639</b></span>
-        <span>Digipos: <b style="color: #EF4444;" id="saldoDigiposSub">Rp 450.000</b></span>
-      </div>
+        <div style="display: flex; justify-content: space-between; font-size: 9.5px; font-weight: 800; color: var(--text-gray); margin-top: 6px;">
+            <span>Order Quota: <b style="color: var(--bri-blue);" id="saldoOQSub">Ready</b></span>
+            <span>Digipos SMS: <b style="color: #EF4444;" id="saldoDigiposSub">Ready</b></span>
+        </div>
     </div>
 
-    <!-- GRID 8 MENU UTAMA KASIR -->
+    <!-- FAST ACTION GRID (8 MENU OPERASIONAL) -->
     <div class="menu-section">
-      <div class="section-header">
-        <span>LAYANAN OPERASIONAL & ANTI-ERROR</span>
-        <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;" id="badgeActiveStore">Toko NMC</span>
-      </div>
+        <div class="section-header">
+            <span>TERMINAL KASIR CEPAT</span>
+            <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;" id="badgeActiveStore">Toko NMC</span>
+        </div>
 
-      <div class="fintech-grid">
-        <!-- 1. Scan Voucher -->
-        <div class="grid-item" onclick="openWorkspace('VOUCHER')">
-          <div class="grid-icon-circle">📷</div>
-          <div class="grid-label">Scan Voucher</div>
+        <div class="fintech-grid">
+            <!-- 1. Jual Cepat (POS Kasir Keliling) -->
+            <div class="grid-item" onclick="openWorkspace('POS_JUAL')">
+                <div class="grid-icon-circle" style="background: #DCFCE7; color: #16A34A;">🛒</div>
+                <div class="grid-label">Kasir Jual</div>
+            </div>
+            <!-- 2. Scan Kulakan -->
+            <div class="grid-item" onclick="openWorkspace('VOUCHER')">
+                <div class="grid-icon-circle">📷</div>
+                <div class="grid-label">Scan Kulakan</div>
+            </div>
+            <!-- 3. Mutasi Cabang -->
+            <div class="grid-item" onclick="openWorkspace('MUTASI')">
+                <div class="grid-icon-circle" style="background: #EDE9FE; color: #7C3AED;">🔄</div>
+                <div class="grid-label">Mutasi Stok</div>
+            </div>
+            <!-- 4. Live Cek Stok -->
+            <div class="grid-item" onclick="openWorkspace('STOK')">
+                <div class="grid-icon-circle" style="background: #FEF3C7; color: #D97706;">📊</div>
+                <div class="grid-label">Live Stok</div>
+            </div>
+            <!-- 5. Transaksi BRILink Aman -->
+            <div class="grid-item" onclick="openWorkspace('BRILINK')">
+                <div class="grid-icon-circle" style="background: #E0F2FE; color: #0284C7;">💳</div>
+                <div class="grid-label">BRILink Pro</div>
+            </div>
+            <!-- 6. Member Loyalitas & WA -->
+            <div class="grid-item" onclick="openWorkspace('MEMBER')">
+                <div class="grid-icon-circle" style="background: #FCE7F3; color: #DB2777;">👥</div>
+                <div class="grid-label">Member WA</div>
+            </div>
+            <!-- 7. Kas Keluar & Setor Owner -->
+            <div class="grid-item" onclick="openWorkspace('BIAYA')">
+                <div class="grid-icon-circle" style="background: #FEE2E2; color: #EF4444;">💸</div>
+                <div class="grid-label">Kas Keluar</div>
+            </div>
+            <!-- 8. Rekap Fisik Kasir (Pecahan Laci) -->
+            <div class="grid-item" onclick="openWorkspace('REKAP')">
+                <div class="grid-icon-circle" style="background: #F1F5F9; color: #374151;">📋</div>
+                <div class="grid-label">Hitung Laci</div>
+            </div>
         </div>
-        <!-- 2. Master Baru -->
-        <div class="grid-item" onclick="openWorkspace('MASTER')">
-          <div class="grid-icon-circle" style="background: #FEF3C7; color: #D97706;">📝</div>
-          <div class="grid-label">Master Baru</div>
-        </div>
-        <!-- 3. Mutasi Cabang -->
-        <div class="grid-item" onclick="openWorkspace('MUTASI')">
-          <div class="grid-icon-circle" style="background: #EDE9FE; color: #7C3AED;">🔄</div>
-          <div class="grid-label">Mutasi Cabang</div>
-        </div>
-        <!-- 4. Live Stok -->
-        <div class="grid-item" onclick="openWorkspace('STOK')">
-          <div class="grid-icon-circle" style="background: #DCFCE7; color: #16A34A;">📊</div>
-          <div class="grid-label">Cek Stok</div>
-        </div>
-        <!-- 5. Transaksi BRILink Pintar (Anti-Salah) -->
-        <div class="grid-item" onclick="openWorkspace('BRILINK')">
-          <div class="grid-icon-circle" style="background: #E0F2FE; color: #0284C7;">💳</div>
-          <div class="grid-label">BRILink Pro</div>
-        </div>
-        <!-- 6. Member Loyalitas & WA -->
-        <div class="grid-item" onclick="openWorkspace('MEMBER')">
-          <div class="grid-icon-circle" style="background: #FCE7F3; color: #DB2777;">👥</div>
-          <div class="grid-label">Member WA</div>
-        </div>
-        <!-- 7. Biaya Operasional & Setor Owner -->
-        <div class="grid-item" onclick="openWorkspace('BIAYA')">
-          <div class="grid-icon-circle" style="background: #FEE2E2; color: #EF4444;">💸</div>
-          <div class="grid-label">Kas Keluar</div>
-        </div>
-        <!-- 8. Rekap Laci Kasir -->
-        <div class="grid-item" onclick="openWorkspace('REKAP')">
-          <div class="grid-icon-circle" style="background: #F1F5F9; color: #374151;">📋</div>
-          <div class="grid-label">Rekap Kas</div>
-        </div>
-      </div>
     </div>
 
-    <!-- FEED TRANSAKSI PPOB OTOMATIS -->
+    <!-- FEED TRANSAKSI PPOB TERAKHIR -->
     <div class="section-card">
-      <div class="card-title-head">
-        <span>Feed Transaksi PPOB Otomatis</span>
-        <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;">Real-time</span>
-      </div>
-      <div id="ppobFeedList">
-        <div class="feed-item">
-          <div>
-            <div class="feed-target">Telkomsel 50.000 ➔ 085374324275</div>
-            <div class="feed-time">Order Quota • SN: 04305000001187088660</div>
-          </div>
-          <div class="feed-cut">-Rp 49.465</div>
+        <div class="card-title-head">
+            <span>Log Notifikasi PPOB Terakhir</span>
+            <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;">Real-time</span>
         </div>
-        <div class="feed-item">
-          <div>
-            <div class="feed-target">HOT PROMO ➔ 081378628253</div>
-            <div class="feed-time">SMS 3636 • SN: 04305600001187062116</div>
-          </div>
-          <div class="feed-cut">-Rp 23.000</div>
+        <div id="ppobFeedList">
+            <div class="feed-item">
+                <div>
+                    <div class="feed-target">Sistem Siap Merekam Otomatis</div>
+                    <div class="feed-time">Menunggu Notifikasi Masuk...</div>
+                </div>
+                <div class="feed-cut" style="color: #10B981;">AKTIF</div>
+            </div>
         </div>
-      </div>
     </div>
+</div>
 
-  </div>
-
-  <!-- FLOATING BOTTOM BAR -->
-  <div class="bottom-bar">
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
     <div class="b-item active" onclick="goHome()">
-      <div class="b-icon">🏠</div>
-      <div>Beranda</div>
+        <div class="b-icon">🏠</div>
+        <div>Beranda</div>
     </div>
     <div class="b-item" onclick="openWorkspace('STOK')">
-      <div class="b-icon">📊</div>
-      <div>Portofolio</div>
+        <div class="b-icon">📊</div>
+        <div>Stok Ready</div>
     </div>
-    <div class="center-scan-btn" onclick="openWorkspace('VOUCHER')">
-      <span>📷</span>
-      <span>SCAN</span>
+    <div class="center-scan-btn" onclick="openWorkspace('POS_JUAL')">
+        <span>🛒</span>
+        <span>KASIR</span>
     </div>
     <div class="b-item" onclick="openWorkspace('MEMBER')">
-      <div class="b-icon">👥</div>
-      <div>Member</div>
+        <div class="b-icon">👥</div>
+        <div>Member</div>
     </div>
-    <div class="b-item" onclick="openWorkspace('PENGATURAN')">
-      <div class="b-icon">⚙️</div>
-      <div>Pengaturan</div>
+    <div class="b-item" onclick="openWorkspace('REKAP')">
+        <div class="b-icon">📋</div>
+        <div>Tutup Shift</div>
     </div>
-  </div>
+</div>
 
-
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 1: SCAN VOUCHER & KULAKAN (FITUR 1)
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsVoucher">
+<!-- =========================================================================
+     WORKSPACE A: KASIR PENJUALAN BERGERAK (MOBILE POS CHECKOUT)
+     ========================================================================= -->
+<div class="workspace-screen" id="wsPosJual">
     <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Scan Voucher & Kulakan</div>
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Kasir Penjualan Langsung</div>
     </div>
     <div class="workspace-content">
-      <div id="camera-panel">
-        <div id="reader-wrapper">
-          <div id="reader"></div>
-          <div class="laser-guide" id="laserGuide"></div>
-        </div>
-        <button class="btn btn-primary" id="btnScanner" style="margin-top: 6px;" onclick="handleScannerClick()">
-          📷 Nyalakan Kamera Pemindai
-        </button>
-      </div>
-
-      <div class="card">
-        <label>PILIH PRODUK (DARI MASTER DESKTOP):</label>
-        <select id="selKatalogLive" onchange="onSelectKatalogLive()">
-          <option value="">-- Tekan Sinkron untuk Memuat --</option>
-        </select>
-
-        <div class="stock-badge-container">
-          <div class="stock-badge"><div class="loc">GUDANG</div><div class="val" id="badgeStokGdg">0</div></div>
-          <div class="stock-badge"><div class="loc">TOKO NMC</div><div class="val" id="badgeStokNmc">0</div></div>
-          <div class="stock-badge"><div class="loc">TOKO NACC</div><div class="val" id="badgeStokNacc">0</div></div>
-          <div class="stock-badge highlight"><div class="loc">TOTAL SEMUA</div><div class="val" id="badgeStokTot">0</div></div>
+        <div id="pos-camera-panel">
+            <div class="reader-box">
+                <div id="reader-pos"></div>
+                <div class="laser-guide" id="posLaser"></div>
+            </div>
+            <button class="btn btn-primary" id="btnPosCam" style="margin-top: 6px;" onclick="togglePosCamera()">
+                📷 Nyalakan Pemindai Barcode Produk
+            </button>
         </div>
 
-        <div style="display: flex; gap: 8px;">
-          <div style="flex: 1;">
-            <label>JENIS TRANSAKSI:</label>
-            <select id="trxType">
-              <option value="KULAKAN">Stok Masuk (Kulakan Gudang)</option>
-              <option value="TRANSFER">Transfer Mutasi Cabang</option>
+        <div class="card">
+            <label>PILIH PRODUK MANUAL (ATAU SCAN):</label>
+            <select id="selPosProduct" onchange="onPosProductSelected()">
+                <option value="">-- Pilih Produk Master --</option>
             </select>
-          </div>
-          <div style="flex: 1;">
-            <label>ALOKASI TOKO:</label>
-            <input type="text" id="displayTokoAlokasi" value="Toko NMC" readonly>
-          </div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 11px; font-weight: 800;">DAFTAR SCAN SEMENTARA</span>
-          <button class="btn-danger" onclick="clearCart()">Kosongkan</button>
+            <div style="display: flex; gap: 8px;">
+                <div style="flex: 1;">
+                    <label>HARGA JUAL (RP):</label>
+                    <input type="number" id="inpPosHargaJual" readonly>
+                </div>
+                <div style="flex: 1;">
+                    <label>JUMLAH (QTY):</label>
+                    <input type="number" id="inpPosQty" value="1" min="1">
+                </div>
+            </div>
+
+            <label>METODE PEMBAYARAN:</label>
+            <select id="selPosMetode">
+                <option value="TUNAI">Uang Tunai (Masuk Laci Kasir)</option>
+                <option value="NON_TUNAI">QRIS / Transfer Bank Toko</option>
+            </select>
+
+            <button class="btn btn-success" onclick="simpanPenjualanMobile()">
+                💸 Selesaikan Penjualan (Potong Stok Desktop)
+            </button>
         </div>
-        <table>
-          <thead><tr><th>Nomor Seri</th><th style="text-align: center;">Qty</th><th style="text-align: right;">Aksi</th></tr></thead>
-          <tbody id="cartTable"><tr><td colspan="3" style="text-align: center; color: var(--text-gray); padding: 15px;">Belum ada voucher.</td></tr></tbody>
-        </table>
-      </div>
-      <button class="btn btn-success" onclick="sendBatchData()">🚀 KIRIM KE PC DESKTOP</button>
     </div>
-  </div>
+</div>
 
-
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 2: BRILINK PRO (DENGAN KALKULATOR ANTI-SALAH)
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsBrilink">
+<!-- =========================================================================
+     WORKSPACE B: SCAN KULAKAN & MUTASI STOK
+     ========================================================================= -->
+<div class="workspace-screen" id="wsVoucher">
     <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Transaksi Kasir BRILink (Anti-Salah)</div>
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Scan Kulakan / Mutasi Stok</div>
     </div>
     <div class="workspace-content">
-      <div class="card">
-        <label>JENIS TRANSAKSI:</label>
-        <select id="briJenisTrx" onchange="hitungKalkulatorBRILink()">
-          <option value="Transfer Tunai">Transfer Tunai (Kirim Uang)</option>
-          <option value="Tarik Tunai">Tarik Tunai (Nasabah Ambil Uang)</option>
-          <option value="Setor Tunai">Setor Tunai (Kas Masuk Kasir)</option>
-          <option value="BAGI HASIL">Bagi Hasil / Fee Agen</option>
-          <option value="Admin Bank">Admin Bank</option>
-        </select>
-
-        <label>NOMINAL TRANSAKSI (RP):</label>
-        <input type="number" id="briNominal" placeholder="Contoh: 500000" oninput="hitungKalkulatorBRILink()">
-
-        <div style="display: flex; gap: 8px;">
-          <div style="flex: 1;">
-            <label>JASA KASIR (RP):</label>
-            <input type="number" id="briJasaKasir" value="5000" oninput="hitungKalkulatorBRILink()">
-          </div>
-          <div style="flex: 1;">
-            <label>ADMIN BANK (RP):</label>
-            <input type="number" id="briAdminBank" value="3000" oninput="hitungKalkulatorBRILink()">
-          </div>
+        <div id="camera-panel">
+            <div class="reader-box">
+                <div id="reader"></div>
+                <div class="laser-guide" id="laserGuide"></div>
+            </div>
+            <button class="btn btn-primary" id="btnScanner" style="margin-top: 6px;" onclick="handleScannerClick()">
+                📷 Nyalakan Kamera Pemindai
+            </button>
         </div>
 
-        <label>NAMA NASABAH / KETERANGAN:</label>
-        <input type="text" id="briDeskripsi" placeholder="Contoh: Ibu Ani / Bayar Kuliah">
+        <div class="card">
+            <label>PILIH PRODUK MASTER:</label>
+            <select id="selKatalogLive" onchange="onSelectKatalogLive()">
+                <option value="">-- Memuat Produk Desktop... --</option>
+            </select>
 
-        <!-- KOTAK KALKULATOR CERDAS PENUNTUN KASIR -->
-        <div class="smart-calc-box" id="calcGuidanceBox">
-          <div class="smart-calc-row">
-            <span>Uang Tunai dari Nasabah:</span>
-            <b id="lblUangDiterima" style="color: #0284C7;">Rp 0</b>
-          </div>
-          <div class="smart-calc-row">
-            <span>Potong Saldo Bank Toko:</span>
-            <b id="lblPotongBank" style="color: #DC2626;">Rp 0</b>
-          </div>
-          <div class="smart-calc-row smart-calc-total">
-            <span>Laba Bersih Kasir:</span>
-            <b id="lblLabaKasir">Rp 0</b>
-          </div>
+            <div class="stock-badge-container">
+                <div class="stock-badge"><div class="loc">GUDANG</div><div class="val" id="badgeStokGdg">0</div></div>
+                <div class="stock-badge"><div class="loc">TOKO NMC</div><div class="val" id="badgeStokNmc">0</div></div>
+                <div class="stock-badge"><div class="loc">TOKO NACC</div><div class="val" id="badgeStokNacc">0</div></div>
+                <div class="stock-badge highlight"><div class="loc">TOTAL</div><div class="val" id="badgeStokTot">0</div></div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <div style="flex: 1;">
+                    <label>JENIS TRANSAKSI:</label>
+                    <select id="trxType">
+                        <option value="KULAKAN">Stok Masuk (Kulakan Gudang)</option>
+                        <option value="TRANSFER">Transfer Mutasi Cabang</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>LOKASI CABANG:</label>
+                    <input type="text" id="displayTokoAlokasi" value="Toko NMC" readonly>
+                </div>
+            </div>
         </div>
 
-        <button class="btn btn-primary" onclick="simpanTrxBrilinkAman()">💾 Simpan & Sinkron ke Desktop</button>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 3: PENGELUARAN OPERASIONAL & SETOR OWNER
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsBiaya">
-    <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Catat Kas Keluar / Setor Owner</div>
-    </div>
-    <div class="workspace-content">
-      <div class="card" style="border-left: 4px solid #EF4444;">
-        <label>KATEGORI PENGELUARAN:</label>
-        <select id="katBiayaSelect">
-          <option value="OPERASIONAL">Beban Operasional (Galon/Listrik/Kresek)</option>
-          <option value="SETOR_OWNER">SETORAN KAS KE OWNER (AMBIL UANG TOKO)</option>
-          <option value="BENSIN">Bensin & Transportasi Toko</option>
-          <option value="MAKAN">Konsumsi Karyawan Shift</option>
-        </select>
-
-        <label>NOMINAL UANG KELUAR (RP):</label>
-        <input type="number" id="inpNominalBiaya" placeholder="Contoh: 20000">
-
-        <label>KETERANGAN PENGELUARAN:</label>
-        <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli galon Aqua 1 buah">
-
-        <button class="btn btn-danger" style="width: 100%; padding: 12px; font-weight: 800;" onclick="simpanBiayaKasir()">
-          💸 Catat Kas Keluar
-        </button>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 4: MEMBER LOYALITAS & WHATSAPP GATEWAY (FITUR 4)
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsMember">
-    <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Member Loyalitas & WhatsApp</div>
-    </div>
-    <div class="workspace-content">
-      <div class="card" style="border-left: 4px solid #DB2777;">
-        <div style="font-size: 12px; font-weight: 800; color: #DB2777; margin-bottom: 6px;">DAFTARKAN MEMBER BARU</div>
-        <label>NOMOR WHATSAPP PELANGGAN:</label>
-        <input type="text" id="regMemberPhone" placeholder="Contoh: 081234567890">
-
-        <label>NAMA LENGKAP PELANGGAN:</label>
-        <input type="text" id="regMemberName" placeholder="Contoh: Ibu Rina Sukma">
-
-        <button class="btn btn-primary" onclick="daftarMemberBaru()">➕ Simpan & Buat Member ID</button>
-      </div>
-
-      <div class="card">
-        <div style="font-size: 12px; font-weight: 800; color: var(--bri-blue); margin-bottom: 6px;">KIRIM STRUK DIGITAL WHATSAPP</div>
-        <label>NOMOR TUJUAN WA:</label>
-        <input type="text" id="waSendPhone" placeholder="08xxxxxxxxxx">
-        <label>PESAN NOTA:</label>
-        <input type="text" id="waSendMsg" value="Terima kasih telah berbelanja di Nikola Cell. Transaksi Anda telah berhasil diproses.">
-        <button class="btn btn-success" onclick="simulasiKirimWA()">📲 Kirim Nota via WhatsApp</button>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 5: REKAP KASIR (HITUNG LACI HARIAN)
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsRekap">
-    <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Rekonsiliasi Kas Laci Harian</div>
-    </div>
-    <div class="workspace-content">
-      <div class="card">
-        <div style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">UANG FISIK LACI KASIR</div>
-        <label>TOTAL UANG FISIK DI LACI (RP):</label>
-        <input type="number" id="inpFisikKasir" placeholder="Contoh: 1500000" oninput="hitungSelisihLaci()">
-
-        <div style="background: #F8FAFC; padding: 12px; border-radius: 10px; margin-top: 6px; border: 1px solid var(--border);">
-          <div style="font-size: 10.5px; color: var(--text-gray);">Target Kas Buku: <b id="valKasSistem">Rp 1.500.000</b></div>
-          <div style="font-size: 13px; font-weight: 900; margin-top: 4px;" id="valStatusSelisih">Status: Belum Input</div>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 800;">DAFTAR SCAN SEMENTARA</span>
+                <button class="btn-danger" onclick="clearCart()">Kosongkan</button>
+            </div>
+            <table>
+                <thead><tr><th>Nomor Seri</th><th style="text-align: center;">Qty</th><th style="text-align: right;">Aksi</th></tr></thead>
+                <tbody id="cartTable"><tr><td colspan="3" style="text-align: center; color: var(--text-gray); padding: 15px;">Belum ada voucher.</td></tr></tbody>
+            </table>
         </div>
-      </div>
+        <button class="btn btn-success" onclick="sendBatchData()">🚀 KIRIM KE PC DESKTOP</button>
     </div>
-  </div>
+</div>
 
-
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 6: BUKU PANDUAN KASIR (SOP)
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsSOP">
+<!-- =========================================================================
+     WORKSPACE C: BRILINK PRO (KALKULATOR CERDAS ANTI-SALAH)
+     ========================================================================= -->
+<div class="workspace-screen" id="wsBrilink">
     <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Buku Saku SOP Kasir Nikola</div>
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Transaksi BRILink Cepat</div>
     </div>
     <div class="workspace-content">
-      <div class="card">
-        <div style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px;">1. Standar Operasional Kulakan Voucher</div>
-        <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Pastikan fisik lembaran voucher dihitung ulang sebelum scan. Pastikan alokasi toko sudah sesuai cabang Anda.</p>
-        <div style="font-weight: 800; font-size: 12.5px; margin: 12px 0 6px 0;">2. Transaksi BRILink Aman & Bebas Salah</div>
-        <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Selalu terima uang fisik nasabah sebelum menekan tombol kirim di mesin EDC atau aplikasi BRILink.</p>
-      </div>
-    </div>
-  </div>
+        <div class="card">
+            <label>JENIS TRANSAKSI:</label>
+            <select id="briJenisTrx" onchange="hitungKalkulatorBRILink()">
+                <option value="Transfer Tunai">Transfer Tunai (Nasabah Bawa Kas)</option>
+                <option value="Tarik Tunai">Tarik Tunai (Kasir Beri Uang Kas)</option>
+                <option value="Setor Tunai">Setor Tunai (Kasir Terima Uang)</option>
+                <option value="Admin Bank">Admin Bank</option>
+            </select>
 
+            <label>NOMINAL TRANSAKSI (RP):</label>
+            <input type="number" id="briNominal" placeholder="Contoh: 500000" oninput="hitungKalkulatorBRILink()">
 
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 7: LIVE STOK 4 CABANG
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsStok">
-    <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Live Stok Seluruh Cabang</div>
-    </div>
-    <div class="workspace-content">
-      <button class="btn btn-primary" onclick="fetchKatalogFromCloud()" style="margin-bottom: 12px;">🔄 Tarik Data Terkini dari PC</button>
-      <div id="stockListContainer" class="card">
-        <div style="text-align: center; color: var(--text-gray); padding: 20px;">Tekan tombol di atas untuk memuat data.</div>
-      </div>
-    </div>
-  </div>
+            <div style="display: flex; gap: 8px;">
+                <div style="flex: 1;">
+                    <label>JASA KASIR (RP):</label>
+                    <input type="number" id="briJasaKasir" value="5000" oninput="hitungKalkulatorBRILink()">
+                </div>
+                <div style="flex: 1;">
+                    <label>ADMIN BANK (RP):</label>
+                    <input type="number" id="briAdminBank" value="3000" oninput="hitungKalkulatorBRILink()">
+                </div>
+            </div>
 
+            <label>NAMA NASABAH / KETERANGAN:</label>
+            <input type="text" id="briDeskripsi" placeholder="Contoh: Ibu Rina / Bayar Tagihan">
 
-  <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 8: MASTER BARU
-       ========================================================================= -->
-  <div class="workspace-screen" id="wsMaster">
-    <div class="workspace-header">
-      <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Daftar Paket Master Baru</div>
-    </div>
-    <div class="workspace-content">
-      <div class="card">
-        <label>BARCODE / SERIAL NUMBER:</label>
-        <input type="text" id="newProdBarcode" placeholder="Scan atau ketik nomor seri...">
-        <label>NAMA PAKET LENGKAP:</label>
-        <input type="text" id="newProdName" placeholder="Contoh: Telkomsel 5 GB 3 Hari">
-        <div style="display: flex; gap: 8px;">
-          <div style="flex: 1;"><label>MODAL (RP):</label><input type="number" id="newProdModal" value="10000"></div>
-          <div style="flex: 1;"><label>JUAL (RP):</label><input type="number" id="newProdJual" value="12000"></div>
+            <!-- PREVIEW PANDUAN KASIR -->
+            <div style="background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; margin-bottom: 4px;">
+                    <span>Uang Diterima dari Nasabah:</span>
+                    <b id="lblUangDiterima" style="color: #0284C7;">Rp 0</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; margin-bottom: 4px;">
+                    <span>Potong Saldo Bank Toko:</span>
+                    <b id="lblPotongBank" style="color: #DC2626;">Rp 0</b>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; color: #16A34A; border-top: 1px dashed #86EFAC; padding-top: 6px; margin-top: 6px;">
+                    <span>Laba Bersih Toko:</span>
+                    <b id="lblLabaKasir">Rp 0</b>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="simpanTrxBrilinkAman()">💾 Catat Transaksi BRILink</button>
         </div>
-        <button class="btn btn-success" onclick="submitNewProduct()">💾 Simpan ke Master PC</button>
-      </div>
     </div>
-  </div>
+</div>
 
+<!-- =========================================================================
+     WORKSPACE D: KAS KELUAR & SETOR OWNER
+     ========================================================================= -->
+<div class="workspace-screen" id="wsBiaya">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Kas Keluar & Setor Owner</div>
+    </div>
+    <div class="workspace-content">
+        <div class="card" style="border-left: 4px solid #EF4444;">
+            <label>KATEGORI PENGELUARAN:</label>
+            <select id="katBiayaSelect">
+                <option value="OPERASIONAL">Beban Operasional (Listrik/Kresek/Air)</option>
+                <option value="SETOR_OWNER">SETORAN KAS KE OWNER (AMBIL UANG LACI)</option>
+                <option value="BENSIN">Transportasi & Pengadaan Toko</option>
+                <option value="MAKAN">Konsumsi Karyawan Shift</option>
+            </select>
 
-  <!-- SCRIPT LOGIKA KASIR LENGKAP -->
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhblDW2qeSfEEz-DHGip8MKJkk0mcE67PjHD5eGDGOpNfnznWZOFZ_ThBbCfSoJgc6/exec";
+            <label>NOMINAL PENGELUARAN (RP):</label>
+            <input type="number" id="inpNominalBiaya" placeholder="Contoh: 25000">
 
+            <label>KETERANGAN PENGELUARAN:</label>
+            <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli galon & bensin">
+
+            <button class="btn btn-danger" style="width: 100%; padding: 12px; font-weight: 800;" onclick="simpanBiayaKasir()">
+                💸 Catat Pengeluaran
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================================
+     WORKSPACE E: HITUNG FISIK UANG LACI (EOD REKAP HARIAN)
+     ========================================================================= -->
+<div class="workspace-screen" id="wsRekap">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Hitung Fisik Uang Laci (EOD)</div>
+    </div>
+    <div class="workspace-content">
+        <div class="card">
+            <div style="font-size: 11px; font-weight: 800; color: var(--bri-blue); margin-bottom: 10px;">
+                INPUT LEMBAR PECAHAN UANG LACI (TUTUP SHIFT)
+            </div>
+
+            <div class="pecahan-row"><span>Rp 100.000 :</span><input type="number" class="inp-pecahan" data-val="100000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Rp 50.000 :</span><input type="number" class="inp-pecahan" data-val="50000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Rp 20.000 :</span><input type="number" class="inp-pecahan" data-val="20000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Rp 10.000 :</span><input type="number" class="inp-pecahan" data-val="10000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Rp 5.000 :</span><input type="number" class="inp-pecahan" data-val="5000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Rp 2.000 :</span><input type="number" class="inp-pecahan" data-val="2000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Rp 1.000 :</span><input type="number" class="inp-pecahan" data-val="1000" placeholder="0" oninput="hitungTotalLaci()"></div>
+            <div class="pecahan-row"><span>Koin / Receh :</span><input type="number" id="inpReceh" placeholder="0" oninput="hitungTotalLaci()"></div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-top: 10px; text-align: center;">
+                <div style="font-size: 11px; color: var(--text-gray); font-weight: 700;">TOTAL FISIK DI LACI:</div>
+                <div style="font-size: 20px; font-weight: 900; color: #10B981;" id="lblTotalFisikLaci">Rp 0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================================
+     WORKSPACE F: MEMBER DIGITAL & WA GATEWAY
+     ========================================================================= -->
+<div class="workspace-screen" id="wsMember">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Member Loyalitas & WhatsApp</div>
+    </div>
+    <div class="workspace-content">
+        <div class="card" style="border-left: 4px solid #DB2777;">
+            <div style="font-size: 12px; font-weight: 800; color: #DB2777; margin-bottom: 6px;">DAFTAR MEMBER BARU</div>
+            <label>NOMOR WHATSAPP PELANGGAN:</label>
+            <input type="text" id="regMemberPhone" placeholder="Contoh: 081234567890">
+
+            <label>NAMA LENGKAP:</label>
+            <input type="text" id="regMemberName" placeholder="Contoh: Ibu Rina Sukma">
+
+            <button class="btn btn-primary" onclick="daftarMemberBaru()">➕ Simpan & Buat Member ID</button>
+        </div>
+
+        <div class="card">
+            <div style="font-size: 12px; font-weight: 800; color: var(--bri-blue); margin-bottom: 6px;">KIRIM STRUK DIGITAL WA</div>
+            <label>NOMOR WA TUJUAN:</label>
+            <input type="text" id="waSendPhone" placeholder="08xxxxxxxxxx">
+            <label>PESAN NOTA:</label>
+            <input type="text" id="waSendMsg" value="Terima kasih telah bertransaksi di Nikola Cell.">
+            <button class="btn btn-success" onclick="simulasiKirimWA()">📲 Kirim Nota via WhatsApp</button>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================================
+     WORKSPACE G: LIVE CEK STOK
+     ========================================================================= -->
+<div class="workspace-screen" id="wsStok">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Live Stok 4 Lokasi</div>
+    </div>
+    <div class="workspace-content">
+        <button class="btn btn-primary" onclick="fetchKatalogFromCloud()" style="margin-bottom: 12px;">🔄 Tarik Data Terkini dari PC</button>
+        <div id="stockListContainer" class="card">
+            <div style="text-align: center; color: var(--text-gray); padding: 20px;">Tekan tombol di atas untuk memuat data.</div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================================
+     WORKSPACE H: SOP KASIR
+     ========================================================================= -->
+<div class="workspace-screen" id="wsSOP">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Buku Panduan Kasir Nikola</div>
+    </div>
+    <div class="workspace-content">
+        <div class="card">
+            <div style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px;">1. Standar Operasional Kulakan & Mutasi</div>
+            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Pastikan lembaran fisik voucher sesuai sebelum scan ke sistem. Alokasikan ke cabang yang benar.</p>
+            <div style="font-weight: 800; font-size: 12.5px; margin: 12px 0 6px 0;">2. Transaksi BRILink Aman & Bebas Tekor</div>
+            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Selalu terima uang tunai dari tangan nasabah terlebih dahulu sebelum menekan tombol proses transfer.</p>
+        </div>
+    </div>
+</div>
+
+<!-- LOGIKA JAVASCRIPT LENGKAP -->
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzX-uB_VVa3I0U0t6ozJ_c0S3RGd4gSSHGQaVPljKa3ipeDrbRylTe_pnsXjfAdwBXB/exec";
     let html5QrCode = null;
+    let posQrCode = null;
     let isScanning = false;
+    let isPosScanning = false;
     let masterKatalog = [];
     let cart = {};
     let isSaldoHidden = false;
@@ -659,7 +666,41 @@
       setTimeout(() => { t.style.display = "none"; }, 2500);
     }
 
-    // ONBOARDING & SESI PENYIMPANAN
+    // ONLINE / OFFLINE BUFFER QUEUE
+    async function sendSafePayload(payload) {
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(payload)
+        });
+        return true;
+      } catch (err) {
+        // Simpan ke offline cache
+        let offlineQ = JSON.parse(localStorage.getItem("NIKOLA_OFFLINE_Q") || "[]");
+        offlineQ.push(payload);
+        localStorage.setItem("NIKOLA_OFFLINE_Q", JSON.stringify(offlineQ));
+        showToast("⚠️ Offline: Transaksi diantrekan di HP.");
+        return false;
+      }
+    }
+
+    async function flushOfflineQueue() {
+      let offlineQ = JSON.parse(localStorage.getItem("NIKOLA_OFFLINE_Q") || "[]");
+      if (offlineQ.length === 0) return;
+      let remaining = [];
+      for (let p of offlineQ) {
+        try {
+          await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(p) });
+        } catch (e) {
+          remaining.push(p);
+        }
+      }
+      localStorage.setItem("NIKOLA_OFFLINE_Q", JSON.stringify(remaining));
+      if (remaining.length === 0) showToast("✅ Seluruh antrean offline berhasil terkirim!");
+    }
+
     window.onload = function() {
       const savedStore = localStorage.getItem("NIKOLA_STORE");
       const savedKasir = localStorage.getItem("NIKOLA_KASIR");
@@ -671,7 +712,8 @@
         document.getElementById("onboardingScreen").style.display = "flex";
       }
       fetchKatalogFromCloud();
-      hitungKalkulatorBRILink();
+      flushOfflineQueue();
+      setInterval(flushOfflineQueue, 30000);
     };
 
     function selectStore(st) {
@@ -686,7 +728,7 @@
       localStorage.setItem("NIKOLA_STORE", activeStore);
       localStorage.setItem("NIKOLA_KASIR", kName);
       document.getElementById("onboardingScreen").style.display = "none";
-      showToast("Selamat datang, " + kName + "!");
+      showToast("Kasir " + kName + " Aktif.");
     }
 
     function setSession(store, kasir) {
@@ -711,7 +753,7 @@
 
     function toggleSaldo() {
       isSaldoHidden = !isSaldoHidden;
-      document.getElementById("displaySaldoKasir").innerText = isSaldoHidden ? "Rp •••••••••" : "Rp 2.191.639";
+      document.getElementById("displaySaldoKasir").innerText = isSaldoHidden ? "••••••••" : "Terhubung PC";
     }
 
     function goHome() {
@@ -720,32 +762,118 @@
 
     function openWorkspace(id) {
       closeAllWorkspaces();
-      if (id === 'VOUCHER') {
-        document.getElementById("wsVoucher").style.display = "flex";
-        document.getElementById("camera-panel").style.display = "block";
-      } else if (id === 'MUTASI') {
+      if (id === 'POS_JUAL') document.getElementById("wsPosJual").style.display = "flex";
+      else if (id === 'VOUCHER') document.getElementById("wsVoucher").style.display = "flex";
+      else if (id === 'MUTASI') {
         document.getElementById("wsVoucher").style.display = "flex";
         document.getElementById("trxType").value = "TRANSFER";
-      } else if (id === 'MASTER') document.getElementById("wsMaster").style.display = "flex";
+      }
       else if (id === 'BRILINK') document.getElementById("wsBrilink").style.display = "flex";
       else if (id === 'BIAYA') document.getElementById("wsBiaya").style.display = "flex";
-      else if (id === 'MEMBER') document.getElementById("wsMember").style.display = "flex";
       else if (id === 'REKAP') document.getElementById("wsRekap").style.display = "flex";
-      else if (id === 'SOP') document.getElementById("wsSOP").style.display = "flex";
+      else if (id === 'MEMBER') document.getElementById("wsMember").style.display = "flex";
       else if (id === 'STOK') {
         document.getElementById("wsStok").style.display = "flex";
         renderStockSummaryView();
       }
+      else if (id === 'SOP') document.getElementById("wsSOP").style.display = "flex";
     }
 
     function closeAllWorkspaces() {
       if (isScanning) stopCamera();
-      const ws = document.querySelectorAll(".workspace-screen");
-      ws.forEach(w => w.style.display = "none");
+      if (isPosScanning) stopPosCamera();
+      document.querySelectorAll(".workspace-screen").forEach(w => w.style.display = "none");
     }
 
     // =========================================================================
-    // KALKULATOR BRILINK ANTI-SALAH KASIR
+    // MODUL 1: KASIR PENJUALAN MOBILE (POS CHECKOUT)
+    // =========================================================================
+    async function togglePosCamera() {
+      if (isPosScanning) await stopPosCamera();
+      else await startPosCamera();
+    }
+
+    async function startPosCamera() {
+      const btn = document.getElementById("btnPosCam");
+      const laser = document.getElementById("posLaser");
+      btn.innerText = "⏳ Membuka Kamera...";
+      try {
+        posQrCode = new Html5Qrcode("reader-pos");
+        await posQrCode.start({ facingMode: "environment" }, { fps: 25, qrbox: { width: 250, height: 120 } }, onPosScanSuccess, () => {});
+        isPosScanning = true;
+        laser.className = "laser-guide active";
+        btn.innerText = "⏹ Tutup Kamera";
+        btn.style.background = "#EF4444";
+      } catch (e) {
+        alert("Kamera tidak dapat diakses: " + e);
+        btn.innerText = "📷 Nyalakan Pemindai Barcode Produk";
+        btn.style.background = "var(--bri-blue)";
+      }
+    }
+
+    async function stopPosCamera() {
+      const btn = document.getElementById("btnPosCam");
+      const laser = document.getElementById("posLaser");
+      try { if (posQrCode) { await posQrCode.stop(); posQrCode = null; } } catch (e) {}
+      isPosScanning = false;
+      laser.className = "laser-guide";
+      btn.innerText = "📷 Nyalakan Pemindai Barcode Produk";
+      btn.style.background = "var(--bri-blue)";
+    }
+
+    function onPosScanSuccess(decodedText) {
+      let clean = String(decodedText).replace(/[\s\-]/g, "");
+      let match = clean.match(/\d{8,25}/);
+      let barcodeFound = match ? match[0] : clean;
+
+      let idx = masterKatalog.findIndex(p => p.kode_barang === barcodeFound || p.nama_barang.includes(barcodeFound));
+      if (idx >= 0) {
+        document.getElementById("selPosProduct").value = idx;
+        onPosProductSelected();
+        showToast("Ditemukan: " + masterKatalog[idx].nama_barang);
+      } else {
+        showToast("Barcode tidak cocok dengan produk master!");
+      }
+    }
+
+    function onPosProductSelected() {
+      const idx = document.getElementById("selPosProduct").value;
+      if (idx === "") return;
+      const prod = masterKatalog[idx];
+      document.getElementById("inpPosHargaJual").value = prod.harga_jual;
+    }
+
+    async function simpanPenjualanMobile() {
+      const idx = document.getElementById("selPosProduct").value;
+      if (idx === "") return alert("Pilih produk yang dijual!");
+      const prod = masterKatalog[idx];
+      const qty = parseInt(document.getElementById("inpPosQty").value) || 1;
+      const metode = document.getElementById("selPosMetode").value;
+
+      const payload = {
+        batch_id: "JUAL-MOB-" + Date.now(),
+        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        jenis: "PENJUALAN",
+        asal: activeStore,
+        tujuan: "Pelanggan",
+        metode_bayar: metode,
+        items: [{
+          barcode: prod.kode_barang,
+          nama: prod.nama_barang,
+          qty: qty,
+          modal: prod.harga_modal,
+          jual: prod.harga_jual
+        }]
+      };
+
+      await sendSafePayload(payload);
+      alert(`✅ Penjualan ${prod.nama_barang} (${qty} pcs) berhasil! Data memotong stok di PC.`);
+      document.getElementById("inpPosQty").value = "1";
+      goHome();
+    }
+
+    // =========================================================================
+    // MODUL 2: TRANSAKSI BRILINK PRO
     // =========================================================================
     function hitungKalkulatorBRILink() {
       const jns = document.getElementById("briJenisTrx").value;
@@ -762,17 +890,17 @@
         potongBank = nom + adm;
         laba = jasa - adm;
       } else if (jns === "Tarik Tunai") {
-        uangDiterima = 0; // Kasir menyerahkan uang
-        potongBank = -nom; // Bank toko bertambah
+        uangDiterima = 0;
+        potongBank = -nom;
         laba = jasa;
       } else if (jns === "Setor Tunai") {
         uangDiterima = nom;
         potongBank = -nom;
         laba = 0;
-      } else if (jns === "BAGI HASIL") {
+      } else if (jns === "Admin Bank") {
         uangDiterima = 0;
-        potongBank = -jasa;
-        laba = jasa;
+        potongBank = adm;
+        laba = -adm;
       }
 
       document.getElementById("lblUangDiterima").innerText = "Rp " + uangDiterima.toLocaleString('id-ID');
@@ -787,12 +915,10 @@
       const adm = parseInt(document.getElementById("briAdminBank").value) || 0;
       const desc = document.getElementById("briDeskripsi").value.trim() || "Nasabah Tunai";
 
-      if (nom <= 0) return alert("Nominal transaksi tidak boleh kosong!");
+      if (nom <= 0 && jns !== "Admin Bank") return alert("Nominal transaksi tidak boleh kosong!");
 
-      // FITUR PENCEGAH KESALAHAN NOL (SAFETY CHECK)
       if (nom >= 1000000) {
-        const konfirmasi = confirm(`⚠️ PERINGATAN KASIR:\nAnda menginput nominal besar: Rp ${nom.toLocaleString('id-ID')} (${jns})\n\nPastikan uang tunai nasabah sudah di tangan Anda! Lanjutkan?`);
-        if (!konfirmasi) return;
+        if (!confirm(`⚠️ PERINGATAN KASIR:\nNominal besar: Rp ${nom.toLocaleString('id-ID')} (${jns})\nLanjutkan penyimpanan?`)) return;
       }
 
       const payload = {
@@ -808,31 +934,28 @@
         deskripsi: desc
       };
 
-      try {
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
-        alert(`✅ Transaksi ${jns} Rp ${nom.toLocaleString('id-ID')} berhasil dicatat & masuk ke PC Desktop!`);
-        document.getElementById("briNominal").value = "";
-        goHome();
-      } catch (e) { alert("Gagal menyimpan transaksi BRILink."); }
+      await sendSafePayload(payload);
+      alert(`✅ Transaksi ${jns} berhasil dicatat dan masuk ke PC Desktop!`);
+      document.getElementById("briNominal").value = "";
+      document.getElementById("briDeskripsi").value = "";
+      goHome();
     }
 
     // =========================================================================
-    // CATAT BIAYA KAS KECIL & SETORAN OWNER
+    // MODUL 3: KAS KELUAR & SETOR OWNER
     // =========================================================================
     async function simpanBiayaKasir() {
       const kat = document.getElementById("katBiayaSelect").value;
       const nom = parseInt(document.getElementById("inpNominalBiaya").value) || 0;
       const ket = document.getElementById("inpKetBiaya").value.trim();
 
-      if (nom <= 0) return alert("Nominal biaya harus lebih besar dari Rp 0!");
+      if (nom <= 0) return alert("Nominal biaya harus lebih dari Rp 0!");
       if (!ket) return alert("Keterangan pengeluaran wajib diisi!");
 
       const isSetor = (kat === "SETOR_OWNER");
-      const tipe = isSetor ? "SETOR_OWNER" : "OPERASIONAL";
-
       const payload = {
         action: "sync_operation",
-        tipe_operasi: tipe,
+        tipe_operasi: isSetor ? "SETOR_OWNER" : "OPERASIONAL",
         id_trx: "EXP-" + Date.now(),
         waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
         toko: activeStore,
@@ -841,152 +964,31 @@
         deskripsi: ket
       };
 
-      try {
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
-        alert(`✅ ${isSetor ? 'Setoran ke Owner' : 'Kas Keluar'} Rp ${nom.toLocaleString('id-ID')} berhasil dicatat ke Desktop!`);
-        document.getElementById("inpNominalBiaya").value = "";
-        document.getElementById("inpKetBiaya").value = "";
-        goHome();
-      } catch (e) { alert("Gagal mencatat pengeluaran."); }
+      await sendSafePayload(payload);
+      alert(`✅ ${isSetor ? 'Setoran Owner' : 'Pengeluaran'} Rp ${nom.toLocaleString('id-ID')} berhasil dicatat!`);
+      document.getElementById("inpNominalBiaya").value = "";
+      document.getElementById("inpKetBiaya").value = "";
+      goHome();
     }
 
     // =========================================================================
-    // DAFTAR MEMBER BARU & STRUK WHATSAPP
+    // MODUL 4: REKAP KASIR (HITUNG LEMBAR FISIK LACI)
     // =========================================================================
-    async function daftarMemberBaru() {
-      const p = document.getElementById("regMemberPhone").value.trim();
-      const n = document.getElementById("regMemberName").value.trim();
-      if (!p || !n) return alert("Nomor WhatsApp dan Nama Member wajib diisi!");
-
-      const mbrId = "MBR-" + p.slice(-6);
-
-      const payload = {
-        action: "sync_operation",
-        tipe_operasi: "MEMBER_BARU",
-        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        toko: activeStore,
-        id_member: mbrId,
-        nama_member: n,
-        nomor_wa: p
-      };
-
-      try {
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
-        alert(`✅ Member Berhasil Terdaftar!\nNama: ${n}\nMember ID: ${mbrId}\nData tersinkron ke Master Desktop!`);
-        document.getElementById("waSendPhone").value = p;
-      } catch (e) { alert("Gagal mendaftarkan member."); }
-    }
-
-    function simulasiKirimWA() {
-      const p = document.getElementById("waSendPhone").value.trim();
-      const msg = document.getElementById("waSendMsg").value.trim();
-      if (!p) return alert("Nomor WhatsApp tujuan wajib diisi!");
-
-      showToast("Menghubungkan ke WhatsApp...");
-      const cleanPhone = p.startsWith("0") ? "62" + p.substring(1) : p;
-      const waUrl = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
-      window.location.href = waUrl;
-    }
-
-    // JEMBATAN KOTLIN: PENERIMAAN PPOB OTOMATIS (ORDER QUOTA & SMS 3636)
-    function onPPOBNotificationReceived(appName, saldoAkhir, modal, noTujuan, produk) {
-      if (appName.includes("Order Quota")) {
-        document.getElementById("saldoOQSub").innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
-      } else {
-        document.getElementById("saldoDigiposSub").innerText = "Rp " + modal.toLocaleString('id-ID');
-      }
-
-      const feedBox = document.getElementById("ppobFeedList");
-      const itemHtml = `
-        <div class="feed-item">
-          <div>
-            <div class="feed-target">${produk} ➔ ${noTujuan}</div>
-            <div class="feed-time">${appName} • ${new Date().toLocaleTimeString()}</div>
-          </div>
-          <div class="feed-cut">-Rp ${modal.toLocaleString('id-ID')}</div>
-        </div>
-      `;
-      feedBox.insertAdjacentHTML('afterbegin', itemHtml);
-      showToast(`⚡ ${appName} ${produk} Rp ${modal.toLocaleString('id-ID')} tercatat otomatis!`);
-    }
-
-    // REKONSILIASI KAS LACI
-    function hitungSelisihLaci() {
-      const fisik = parseInt(document.getElementById("inpFisikKasir").value) || 0;
-      const sistem = 1500000;
-      const selisih = fisik - sistem;
-      const el = document.getElementById("valStatusSelisih");
-      if (selisih === 0) {
-        el.innerText = "Status: KLOP (Rp 0)";
-        el.style.color = "#10B981";
-      } else if (selisih < 0) {
-        el.innerText = "Status: TEKOR (-Rp " + Math.abs(selisih).toLocaleString() + ")";
-        el.style.color = "#EF4444";
-      } else {
-        el.innerText = "Status: LEBIH (+Rp " + selisih.toLocaleString() + ")";
-        el.style.color = "#0284C7";
-      }
-    }
-
-    // LIVE STOK & KATALOG
-    async function fetchKatalogFromCloud() {
-      showToast("Menghubungkan ke PC Desktop...");
-      try {
-        const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
-        const rawText = await resp.text();
-        let data = JSON.parse(rawText);
-        if (Array.isArray(data)) {
-          masterKatalog = data;
-          renderKatalogDropdown();
-          renderStockSummaryView();
-          showToast(`✅ ${masterKatalog.length} produk siap.`);
-        }
-      } catch (e) {
-        showToast("Katalog offline.");
-      }
-    }
-
-    function renderKatalogDropdown() {
-      const sel = document.getElementById("selKatalogLive");
-      sel.innerHTML = '<option value="">-- Pilih Produk Master Desktop --</option>';
-      masterKatalog.forEach((item, idx) => {
-        const opt = document.createElement("option");
-        opt.value = idx;
-        opt.text = `${item.nama_barang} (Total: ${item.total_stok} pcs)`;
-        sel.appendChild(opt);
+    function hitungTotalLaci() {
+      let total = 0;
+      document.querySelectorAll(".inp-pecahan").forEach(inp => {
+        const val = parseInt(inp.getAttribute("data-val")) || 0;
+        const lembar = parseInt(inp.value) || 0;
+        total += (val * lembar);
       });
+      const receh = parseInt(document.getElementById("inpReceh").value) || 0;
+      total += receh;
+      document.getElementById("lblTotalFisikLaci").innerText = "Rp " + total.toLocaleString('id-ID');
     }
 
-    function onSelectKatalogLive() {
-      const idx = document.getElementById("selKatalogLive").value;
-      if (idx === "") return;
-      const prod = masterKatalog[idx];
-      document.getElementById("badgeStokGdg").innerText = prod.stok_gudang;
-      document.getElementById("badgeStokNmc").innerText = prod.stok_nmc;
-      document.getElementById("badgeStokNacc").innerText = prod.stok_nacc;
-      document.getElementById("badgeStokTot").innerText = prod.total_stok;
-    }
-
-    function renderStockSummaryView() {
-      const box = document.getElementById("stockListContainer");
-      if (!box || masterKatalog.length === 0) return;
-      box.innerHTML = "";
-      masterKatalog.forEach(item => {
-        box.innerHTML += `
-          <div style="padding: 10px 0; border-bottom: 1px solid #F1F5F9;">
-            <div style="font-weight: 800; font-size: 12px; margin-bottom: 4px;">${item.nama_barang}</div>
-            <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-gray);">
-              <span>Gdg: <b>${item.stok_gudang}</b></span>
-              <span>NMC: <b>${item.stok_nmc}</b></span>
-              <span>NACC: <b>${item.stok_nacc}</b></span>
-              <span style="color: var(--bri-blue);">Total: <b>${item.total_stok}</b></span>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    // PEMINDAI VOUCHER KAMERA
+    // =========================================================================
+    // MODUL 5: SCAN KULAKAN / TRANSFER STOK
+    // =========================================================================
     async function handleScannerClick() {
       if (isScanning) await stopCamera();
       else await startCamera();
@@ -1005,7 +1007,7 @@
         btn.style.background = "#EF4444";
       } catch (e) {
         alert("Kamera tidak dapat diakses: " + e);
-        btn.innerText = "📷 Nyalakan Kamera Pemindai";
+        btn.innerText = "📷 Nyalakan Pemindai";
         btn.style.background = "var(--bri-blue)";
       }
     }
@@ -1016,7 +1018,7 @@
       try { if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; } } catch (e) {}
       isScanning = false;
       laser.className = "laser-guide";
-      btn.innerText = "📷 Nyalakan Kamera Pemindai";
+      btn.innerText = "📷 Nyalakan Pemindai";
       btn.style.background = "var(--bri-blue)";
     }
 
@@ -1052,10 +1054,10 @@
 
     async function sendBatchData() {
       const keys = Object.keys(cart);
-      if (keys.length === 0) return alert("Daftar scan masih kosong!");
+      if (keys.length === 0) return alert("Daftar scan voucher masih kosong!");
       const selIdx = document.getElementById("selKatalogLive").value;
       if (!selIdx) return alert("Pilih produk master terlebih dahulu!");
-      
+
       const prod = masterKatalog[selIdx];
       const payload = {
         batch_id: "BATCH-" + Date.now(),
@@ -1065,31 +1067,133 @@
         items: keys.map(k => ({ barcode: k, qty: cart[k], modal: prod.harga_modal, nama: prod.nama_barang, jual: prod.harga_jual }))
       };
 
-      try {
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
-        alert("✅ Berhasil dikirim ke PC Desktop!");
-        clearCart();
-        goHome();
-      } catch (e) { alert("Gagal kirim: " + e); }
+      await sendSafePayload(payload);
+      alert("✅ Berhasil dikirim ke PC Desktop!");
+      clearCart();
+      goHome();
     }
 
-    async function submitNewProduct() {
-      const bc = document.getElementById("newProdBarcode").value.trim();
-      const nm = document.getElementById("newProdName").value.trim();
-      if (!bc || !nm) return alert("Barcode dan nama wajib diisi!");
-      const payload = {
-        batch_id: "NEWPROD-" + Date.now(),
-        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        jenis: "DAFTAR_BARU",
-        tujuan: activeStore,
-        items: [{ barcode: bc, nama: nm, modal: parseInt(document.getElementById("newProdModal").value)||0, jual: parseInt(document.getElementById("newProdJual").value)||0, qty: 1 }]
-      };
+    // =========================================================================
+    // MODUL 6: LIVE KATALOG & STOCK VIEWER
+    // =========================================================================
+    async function fetchKatalogFromCloud() {
+      showToast("Menghubungkan ke PC Desktop...");
       try {
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
-        alert("✅ Paket berhasil didaftarkan ke Master PC!");
-        goHome();
-      } catch (e) { alert("Error: " + e); }
+        const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
+        const rawText = await resp.text();
+        let data = JSON.parse(rawText);
+        if (Array.isArray(data)) {
+          masterKatalog = data;
+          renderKatalogDropdowns();
+          renderStockSummaryView();
+          showToast(`✅ ${masterKatalog.length} produk siap.`);
+        }
+      } catch (e) {
+        showToast("Katalog offline.");
+      }
     }
-  </script>
+
+    function renderKatalogDropdowns() {
+      const sel = document.getElementById("selKatalogLive");
+      const selPos = document.getElementById("selPosProduct");
+
+      sel.innerHTML = '<option value="">-- Pilih Produk Master --</option>';
+      selPos.innerHTML = '<option value="">-- Pilih Produk Master --</option>';
+
+      masterKatalog.forEach((item, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.text = `${item.nama_barang} (Stok: ${item.total_stok})`;
+        sel.appendChild(opt);
+
+        const opt2 = document.createElement("option");
+        opt2.value = idx;
+        opt2.text = `${item.nama_barang} - Rp ${item.harga_jual.toLocaleString('id-ID')}`;
+        selPos.appendChild(opt2);
+      });
+    }
+
+    function onSelectKatalogLive() {
+      const idx = document.getElementById("selKatalogLive").value;
+      if (idx === "") return;
+      const prod = masterKatalog[idx];
+      document.getElementById("badgeStokGdg").innerText = prod.stok_gudang;
+      document.getElementById("badgeStokNmc").innerText = prod.stok_nmc;
+      document.getElementById("badgeStokNacc").innerText = prod.stok_nacc;
+      document.getElementById("badgeStokTot").innerText = prod.total_stok;
+    }
+
+    function renderStockSummaryView() {
+      const box = document.getElementById("stockListContainer");
+      if (!box || masterKatalog.length === 0) return;
+      box.innerHTML = "";
+      masterKatalog.forEach(item => {
+        box.innerHTML += `
+          <div style="padding: 10px 0; border-bottom: 1px solid #F1F5F9;">
+            <div style="font-weight: 800; font-size: 12px; margin-bottom: 4px;">${item.nama_barang}</div>
+            <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-gray);">
+              <span>Gdg: <b>${item.stok_gudang}</b></span>
+              <span>NMC: <b>${item.stok_nmc}</b></span>
+              <span>NACC: <b>${item.stok_nacc}</b></span>
+              <span style="color: var(--bri-blue);">Total: <b>${item.total_stok}</b></span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // =========================================================================
+    // MODUL 7: MEMBER & PPOB AUTOMATION
+    // =========================================================================
+    async function daftarMemberBaru() {
+      const p = document.getElementById("regMemberPhone").value.trim();
+      const n = document.getElementById("regMemberName").value.trim();
+      if (!p || !n) return alert("Nomor WhatsApp dan Nama Member wajib diisi!");
+
+      const mbrId = "MBR-" + p.slice(-6);
+      const payload = {
+        action: "sync_operation",
+        tipe_operasi: "MEMBER_BARU",
+        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        toko: activeStore,
+        id_member: mbrId,
+        nama_member: n,
+        nomor_wa: p
+      };
+
+      await sendSafePayload(payload);
+      alert(`✅ Member Berhasil Terdaftar!\nNama: ${n}\nMember ID: ${mbrId}`);
+      document.getElementById("waSendPhone").value = p;
+    }
+
+    function simulasiKirimWA() {
+      const p = document.getElementById("waSendPhone").value.trim();
+      const msg = document.getElementById("waSendMsg").value.trim();
+      if (!p) return alert("Nomor WhatsApp tujuan wajib diisi!");
+      const cleanPhone = p.startsWith("0") ? "62" + p.substring(1) : p;
+      window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
+    }
+
+    function onPPOBNotificationReceived(appName, saldoAkhir, modal, noTujuan, produk) {
+      if (appName.includes("Order Quota")) {
+        document.getElementById("saldoOQSub").innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
+      } else {
+        document.getElementById("saldoDigiposSub").innerText = "Rp " + modal.toLocaleString('id-ID');
+      }
+
+      const feedBox = document.getElementById("ppobFeedList");
+      const itemHtml = `
+        <div class="feed-item">
+          <div>
+            <div class="feed-target">${produk} ➔ ${noTujuan}</div>
+            <div class="feed-time">${appName} • ${new Date().toLocaleTimeString()}</div>
+          </div>
+          <div class="feed-cut">-Rp ${modal.toLocaleString('id-ID')}</div>
+        </div>
+      `;
+      feedBox.insertAdjacentHTML('afterbegin', itemHtml);
+      showToast(`⚡ ${appName} Rp ${modal.toLocaleString('id-ID')} tercatat otomatis!`);
+    }
+</script>
 </body>
 </html>
