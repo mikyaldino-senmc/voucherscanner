@@ -1,5 +1,5 @@
 // =========================================================================
-// MODUL PEMINDAI KAMERA: SCAN MASUK, MUTASI VOUCHER & SCAN KARTU MEMBER
+// MODUL PEMINDAI KAMERA ANTI LAYAR HITAM (SMART LENS SELECTOR)
 // =========================================================================
 
 let scanMasukQr = null;
@@ -16,6 +16,29 @@ function stopAllCameras() {
   stopScannerMember();
 }
 
+// FUNGSI PINTAR: Memilih ID Kamera Belakang Utama (Menghindari Lensa Hitam)
+async function getBestBackCameraId() {
+  try {
+    const devices = await Html5Qrcode.getCameras();
+    if (!devices || devices.length === 0) return { facingMode: "environment" };
+
+    // Cari kamera yang memiliki label "back" atau "rear" atau "belakang"
+    const backCam = devices.find(d => {
+      const label = d.label.toLowerCase();
+      return label.includes("back") || label.includes("rear") || label.includes("belakang") || label.includes("0");
+    });
+
+    if (backCam) {
+      return backCam.id;
+    }
+    // Jika tidak ada label khusus, gunakan kamera pertama
+    return devices[0].id;
+  } catch (e) {
+    // Fallback default jika getCameras dibatasi browser
+    return { facingMode: "environment" };
+  }
+}
+
 // 1. SCANNER BARANG MASUK
 async function toggleScannerMasuk() {
   if (isScanMasukRunning) stopScannerMasuk();
@@ -25,13 +48,19 @@ async function toggleScannerMasuk() {
 async function startScannerMasuk() {
   const btn = document.getElementById("btnCamMasuk");
   const laser = document.getElementById("laserMasuk");
-  btn.innerText = "⏳ Membuka Kamera...";
+  btn.innerText = "⏳ Membuka Sensor Kamera...";
 
   try {
     if (!scanMasukQr) scanMasukQr = new Html5Qrcode("reader-masuk");
+    const camConfig = await getBestBackCameraId();
+
     await scanMasukQr.start(
-      { facingMode: "environment" },
-      { fps: 20, qrbox: { width: 250, height: 130 } },
+      camConfig,
+      {
+        fps: 25,
+        qrbox: { width: 260, height: 140 },
+        aspectRatio: 1.777778
+      },
       (text) => {
         let clean = extractDigits(text);
         handleScannedBarcodeMasuk(clean);
@@ -45,9 +74,28 @@ async function startScannerMasuk() {
     btn.innerText = "⏹ Tutup Kamera";
     btn.style.background = "#EF4444";
   } catch (e) {
-    btn.innerText = "📷 Nyalakan Scanner Kamera";
-    btn.style.background = "var(--bri-blue)";
-    alert("Kamera belum dapat dibuka. Periksa izin kamera HP.");
+    console.error("Camera Error:", e);
+    // Coba Fallback kedua jika gagal
+    try {
+      await scanMasukQr.start(
+        { facingMode: "environment" },
+        { fps: 20, qrbox: { width: 250, height: 130 } },
+        (text) => {
+          let clean = extractDigits(text);
+          handleScannedBarcodeMasuk(clean);
+        },
+        () => {}
+      );
+      isScanMasukRunning = true;
+      laser.className = "laser-guide active";
+      btn.innerText = "⏹ Tutup Kamera";
+      btn.style.background = "#EF4444";
+      return;
+    } catch (errFallback) {
+      btn.innerText = "📷 Nyalakan Scanner Kamera";
+      btn.style.background = "var(--bri-blue)";
+      alert("Kamera belum dapat dibuka. Pastikan izin kamera HP sudah diaktifkan di Info Aplikasi.");
+    }
   }
 }
 
@@ -74,13 +122,19 @@ async function toggleScannerMutasi() {
 async function startScannerMutasi() {
   const btn = document.getElementById("btnCamMutasi");
   const laser = document.getElementById("laserMutasi");
-  btn.innerText = "⏳ Membuka Kamera...";
+  btn.innerText = "⏳ Membuka Sensor Kamera...";
 
   try {
     if (!scanMutasiQr) scanMutasiQr = new Html5Qrcode("reader-mutasi");
+    const camConfig = await getBestBackCameraId();
+
     await scanMutasiQr.start(
-      { facingMode: "environment" },
-      { fps: 20, qrbox: { width: 250, height: 130 } },
+      camConfig,
+      {
+        fps: 25,
+        qrbox: { width: 260, height: 140 },
+        aspectRatio: 1.777778
+      },
       (text) => {
         let clean = extractDigits(text);
         handleScannedBarcodeMutasi(clean);
@@ -122,13 +176,19 @@ async function toggleScannerMember() {
 async function startScannerMember() {
   const btn = document.getElementById("btnCamMember");
   const laser = document.getElementById("laserMember");
-  btn.innerText = "⏳ Membuka Kamera...";
+  btn.innerText = "⏳ Membuka Sensor Kamera...";
 
   try {
     if (!scanMemberQr) scanMemberQr = new Html5Qrcode("reader-member");
+    const camConfig = await getBestBackCameraId();
+
     await scanMemberQr.start(
-      { facingMode: "environment" },
-      { fps: 20, qrbox: { width: 250, height: 130 } },
+      camConfig,
+      {
+        fps: 25,
+        qrbox: { width: 260, height: 140 },
+        aspectRatio: 1.777778
+      },
       (text) => {
         let clean = text.trim();
         handleScannedBarcodeMember(clean);
