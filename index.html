@@ -26,9 +26,7 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-    /* =========================================================================
-       1. LAYAR ONBOARDING & LOGIN (PERTAMA KALI BUKA APLIKASI)
-       ========================================================================= */
+    /* 1. ONBOARDING & LOGIN SCREEN */
     #onboardingScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #FFFFFF;
       z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 32px 24px;
@@ -39,8 +37,7 @@
       display: inline-flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px;
     }
     .onboard-title { font-size: 20px; font-weight: 900; color: var(--bri-blue); }
-    .onboard-sub { font-size: 12px; color: var(--text-gray); margin-top: 6px; line-height: 1.4; }
-
+    .onboard-sub { font-size: 12px; color: var(--text-gray); margin-top: 6px; }
     .onboard-form { background: #F8FAFC; padding: 18px; border-radius: 18px; border: 1px solid var(--border); }
     .store-selector-group { display: flex; gap: 8px; margin-bottom: 12px; }
     .store-btn {
@@ -49,13 +46,10 @@
     }
     .store-btn.active { background: var(--bri-blue-light); color: var(--bri-blue); border-color: var(--bri-blue); }
 
-    /* =========================================================================
-       2. TOP APP BAR & HERO BIRU KHAS BRI
-       ========================================================================= */
+    /* 2. HERO HEADER BIRU BRI */
     .hero-container {
       background: linear-gradient(180deg, var(--bri-blue) 0%, var(--bri-blue-dark) 100%);
       color: #FFFFFF; padding: 16px 16px 85px 16px; border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
-      position: relative;
     }
     .top-brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .brand-logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
@@ -70,9 +64,7 @@
     }
     .outlet-switcher-link { font-size: 10.5px; font-weight: 700; opacity: 0.9; cursor: pointer; text-decoration: underline; }
 
-    /* =========================================================================
-       3. KARTU SALDO TERPADU (FLOATING CAROUSEL)
-       ========================================================================= */
+    /* 3. KARTU SALDO TERPADU (FLOATING CARD) */
     .balance-card-carousel {
       background: #FFFFFF; border-radius: 18px; padding: 16px 18px; margin: -68px 16px 16px 16px;
       box-shadow: var(--shadow-card); z-index: 20; position: relative; border: 1px solid rgba(0,0,0,0.03);
@@ -83,9 +75,7 @@
     .balance-amount { font-size: 22px; font-weight: 900; color: var(--text-dark); display: flex; align-items: center; gap: 8px; margin: 4px 0; }
     .eye-icon { font-size: 14px; color: var(--text-gray); cursor: pointer; }
 
-    /* =========================================================================
-       4. GRID MENU UTAMA TERSTRUKTUR (8 MENU LENGKAP KASIR)
-       ========================================================================= */
+    /* 4. FAST MENU (8 MENU TERSTRUKTUR DENGAN COLOR CODING) */
     .menu-section { padding: 0 16px; margin-bottom: 16px; }
     .section-header { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .fintech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; }
@@ -93,8 +83,9 @@
     .grid-icon-circle {
       width: 52px; height: 52px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
       font-size: 22px; margin-bottom: 6px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); position: relative;
-      background: var(--bri-blue-light); color: var(--bri-blue);
+      background: var(--bri-blue-light); color: var(--bri-blue); transition: transform 0.1s;
     }
+    .grid-item:active .grid-icon-circle { transform: scale(0.92); }
     .grid-label { font-size: 10.5px; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
 
     /* FEED TRANSAKSI OTOMATIS */
@@ -109,9 +100,7 @@
     .feed-time { font-size: 9.5px; color: var(--text-gray); margin-top: 2px; }
     .feed-cut { font-weight: 900; color: #EF4444; }
 
-    /* =========================================================================
-       5. BOTTOM NAVIGATION BAR WITH CENTER SCANNER
-       ========================================================================= */
+    /* 5. BOTTOM NAVIGATION BAR */
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: #FFFFFF;
       border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center;
@@ -128,9 +117,7 @@
       box-shadow: 0 4px 14px rgba(2, 100, 214, 0.4); cursor: pointer;
     }
 
-    /* =========================================================================
-       6. WORKSPACES (SUB-HALAMAN MODUL OPERASIONAL)
-       ========================================================================= */
+    /* 6. SUB-SCREEN WORKSPACES */
     .workspace-screen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-canvas);
       z-index: 200; display: none; flex-direction: column; overflow-y: auto;
@@ -143,7 +130,7 @@
     .workspace-title { font-size: 14px; font-weight: 900; color: var(--text-dark); }
     .workspace-content { padding: 14px; padding-bottom: 90px; }
 
-    /* FORM COMPONENTS */
+    /* FORM & CARDS */
     .card { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
     label { font-size: 10px; font-weight: 800; color: var(--text-gray); display: block; margin-bottom: 4px; text-transform: uppercase; }
     select, input {
@@ -154,6 +141,13 @@
     .btn-primary { background: var(--bri-blue); color: white; }
     .btn-success { background: #10B981; color: white; }
     .btn-danger { background: #FEE2E2; color: #EF4444; border: 1px solid #FECACA; font-size: 10px; padding: 4px 8px; border-radius: 6px; width: auto; cursor: pointer; }
+
+    /* SMART MATH PREVIEW BOX (KALKULATOR BRILINK) */
+    .smart-calc-box {
+      background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 12px;
+    }
+    .smart-calc-row { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; margin-bottom: 4px; }
+    .smart-calc-total { font-size: 14px; font-weight: 900; color: #16A34A; border-top: 1px dashed #86EFAC; padding-top: 6px; margin-top: 6px; }
 
     /* 4 BADGE INDIKATOR STOK */
     .stock-badge-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 12px 0; }
@@ -178,7 +172,7 @@
     .laser-guide.active { display: block; animation: laserSweep 1.3s ease-in-out infinite alternate; }
     @keyframes laserSweep { 0% { transform: translateY(-25px); opacity: 0.6; } 100% { transform: translateY(25px); opacity: 0.95; } }
 
-    /* TABEL VOUCHER TERSCAN */
+    /* TABEL */
     table { width: 100%; border-collapse: collapse; font-size: 11px; }
     th { padding: 8px 4px; text-align: left; color: var(--text-gray); font-size: 9.5px; font-weight: 800; border-bottom: 1px solid var(--border); }
     td { padding: 8px 4px; border-bottom: 1px solid #F1F5F9; }
@@ -197,13 +191,13 @@
   <div id="toast-msg">Notifikasi...</div>
 
   <!-- =========================================================================
-       1. LAYAR LOGIN & ONBOARDING KASIR
+       1. LAYAR LOGIN & ONBOARDING OUTLET KASIR
        ========================================================================= -->
   <div id="onboardingScreen">
     <div class="onboarding-hero">
       <div class="hero-icon-box">⚡</div>
       <div class="onboard-title">NIKOLA MOBILE POS</div>
-      <div class="onboard-sub">Sistem Operasional Kasir & Sinkronisasi Desktop</div>
+      <div class="onboard-sub">Sistem Operasional Kasir Cabang Terpadu</div>
     </div>
 
     <div class="onboard-form">
@@ -223,9 +217,10 @@
     </div>
 
     <div style="text-align: center; font-size: 10.5px; color: var(--text-gray);">
-      Nikola POS System • Version 3.7.0
+      Nikola POS System • Version 3.8.0
     </div>
   </div>
+
 
   <!-- =========================================================================
        2. DASHBOARD UTAMA (QITA BY BRI STYLE)
@@ -255,7 +250,7 @@
       </div>
     </div>
 
-    <!-- KARTU SALDO TERPADU FLOATING -->
+    <!-- KARTU SALDO TERPADU (FLOATING CAROUSEL) -->
     <div class="balance-card-carousel">
       <div class="rekening-header">
         <div class="rek-number">
@@ -276,10 +271,10 @@
       </div>
     </div>
 
-    <!-- GRID 8 MENU UTAMA -->
+    <!-- GRID 8 MENU UTAMA KASIR -->
     <div class="menu-section">
       <div class="section-header">
-        <span>LAYANAN OPERASIONAL TOKO</span>
+        <span>LAYANAN OPERASIONAL & ANTI-ERROR</span>
         <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;" id="badgeActiveStore">Toko NMC</span>
       </div>
 
@@ -304,30 +299,30 @@
           <div class="grid-icon-circle" style="background: #DCFCE7; color: #16A34A;">📊</div>
           <div class="grid-label">Cek Stok</div>
         </div>
-        <!-- 5. Transaksi BRILink -->
+        <!-- 5. Transaksi BRILink Pintar (Anti-Salah) -->
         <div class="grid-item" onclick="openWorkspace('BRILINK')">
           <div class="grid-icon-circle" style="background: #E0F2FE; color: #0284C7;">💳</div>
-          <div class="grid-label">BRILink</div>
+          <div class="grid-label">BRILink Pro</div>
         </div>
         <!-- 6. Member Loyalitas & WA -->
         <div class="grid-item" onclick="openWorkspace('MEMBER')">
           <div class="grid-icon-circle" style="background: #FCE7F3; color: #DB2777;">👥</div>
           <div class="grid-label">Member WA</div>
         </div>
-        <!-- 7. Rekap Laci Kasir -->
+        <!-- 7. Biaya Operasional & Setor Owner -->
+        <div class="grid-item" onclick="openWorkspace('BIAYA')">
+          <div class="grid-icon-circle" style="background: #FEE2E2; color: #EF4444;">💸</div>
+          <div class="grid-label">Kas Keluar</div>
+        </div>
+        <!-- 8. Rekap Laci Kasir -->
         <div class="grid-item" onclick="openWorkspace('REKAP')">
           <div class="grid-icon-circle" style="background: #F1F5F9; color: #374151;">📋</div>
           <div class="grid-label">Rekap Kas</div>
         </div>
-        <!-- 8. Buku SOP Kasir -->
-        <div class="grid-item" onclick="openWorkspace('SOP')">
-          <div class="grid-icon-circle" style="background: #FFEDD5; color: #EA580C;">📖</div>
-          <div class="grid-label">Buku SOP</div>
-        </div>
       </div>
     </div>
 
-    <!-- FEED NOTIFIKASI PPOB OTOMATIS -->
+    <!-- FEED TRANSAKSI PPOB OTOMATIS -->
     <div class="section-card">
       <div class="card-title-head">
         <span>Feed Transaksi PPOB Otomatis</span>
@@ -441,44 +436,97 @@
 
 
   <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 2: TRANSAKSI BRILINK CEPAT (FITUR 3)
+       SUB-SCREEN WORKSPACE 2: BRILINK PRO (DENGAN KALKULATOR ANTI-SALAH)
        ========================================================================= -->
   <div class="workspace-screen" id="wsBrilink">
     <div class="workspace-header">
       <button class="btn-back" onclick="goHome()">←</button>
-      <div class="workspace-title">Transaksi Kasir BRILink</div>
+      <div class="workspace-title">Transaksi Kasir BRILink (Anti-Salah)</div>
     </div>
     <div class="workspace-content">
       <div class="card">
         <label>JENIS TRANSAKSI:</label>
-        <select id="briJenisTrx">
-          <option value="Transfer Tunai">Transfer Tunai</option>
-          <option value="Tarik Tunai">Tarik Tunai</option>
-          <option value="Setor Tunai">Setor Tunai</option>
-          <option value="BAGI HASIL">Bagi Hasil / Komisi</option>
+        <select id="briJenisTrx" onchange="hitungKalkulatorBRILink()">
+          <option value="Transfer Tunai">Transfer Tunai (Kirim Uang)</option>
+          <option value="Tarik Tunai">Tarik Tunai (Nasabah Ambil Uang)</option>
+          <option value="Setor Tunai">Setor Tunai (Kas Masuk Kasir)</option>
+          <option value="BAGI HASIL">Bagi Hasil / Fee Agen</option>
           <option value="Admin Bank">Admin Bank</option>
         </select>
 
         <label>NOMINAL TRANSAKSI (RP):</label>
-        <input type="number" id="briNominal" placeholder="Contoh: 500000">
+        <input type="number" id="briNominal" placeholder="Contoh: 500000" oninput="hitungKalkulatorBRILink()">
 
-        <label>JASA KASIR / LABA PENJUALAN (RP):</label>
-        <input type="number" id="briJasaKasir" placeholder="Contoh: 5000" value="5000">
+        <div style="display: flex; gap: 8px;">
+          <div style="flex: 1;">
+            <label>JASA KASIR (RP):</label>
+            <input type="number" id="briJasaKasir" value="5000" oninput="hitungKalkulatorBRILink()">
+          </div>
+          <div style="flex: 1;">
+            <label>ADMIN BANK (RP):</label>
+            <input type="number" id="briAdminBank" value="3000" oninput="hitungKalkulatorBRILink()">
+          </div>
+        </div>
 
-        <label>BIAYA ADMIN BANK (RP):</label>
-        <input type="number" id="briAdminBank" placeholder="Contoh: 3000" value="3000">
+        <label>NAMA NASABAH / KETERANGAN:</label>
+        <input type="text" id="briDeskripsi" placeholder="Contoh: Ibu Ani / Bayar Kuliah">
 
-        <label>DESKRIPSI / NAMA NASABAH:</label>
-        <input type="text" id="briDeskripsi" placeholder="Keterangan nasabah...">
+        <!-- KOTAK KALKULATOR CERDAS PENUNTUN KASIR -->
+        <div class="smart-calc-box" id="calcGuidanceBox">
+          <div class="smart-calc-row">
+            <span>Uang Tunai dari Nasabah:</span>
+            <b id="lblUangDiterima" style="color: #0284C7;">Rp 0</b>
+          </div>
+          <div class="smart-calc-row">
+            <span>Potong Saldo Bank Toko:</span>
+            <b id="lblPotongBank" style="color: #DC2626;">Rp 0</b>
+          </div>
+          <div class="smart-calc-row smart-calc-total">
+            <span>Laba Bersih Kasir:</span>
+            <b id="lblLabaKasir">Rp 0</b>
+          </div>
+        </div>
 
-        <button class="btn btn-primary" onclick="simpanTrxBrilink()">💾 Simpan & Sinkron ke Desktop</button>
+        <button class="btn btn-primary" onclick="simpanTrxBrilinkAman()">💾 Simpan & Sinkron ke Desktop</button>
       </div>
     </div>
   </div>
 
 
   <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 3: REGISTRASI & SCAN MEMBER WA (FITUR 4)
+       SUB-SCREEN WORKSPACE 3: PENGELUARAN OPERASIONAL & SETOR OWNER
+       ========================================================================= -->
+  <div class="workspace-screen" id="wsBiaya">
+    <div class="workspace-header">
+      <button class="btn-back" onclick="goHome()">←</button>
+      <div class="workspace-title">Catat Kas Keluar / Setor Owner</div>
+    </div>
+    <div class="workspace-content">
+      <div class="card" style="border-left: 4px solid #EF4444;">
+        <label>KATEGORI PENGELUARAN:</label>
+        <select id="katBiayaSelect">
+          <option value="OPERASIONAL">Beban Operasional (Galon/Listrik/Kresek)</option>
+          <option value="SETOR_OWNER">SETORAN KAS KE OWNER (AMBIL UANG TOKO)</option>
+          <option value="BENSIN">Bensin & Transportasi Toko</option>
+          <option value="MAKAN">Konsumsi Karyawan Shift</option>
+        </select>
+
+        <label>NOMINAL UANG KELUAR (RP):</label>
+        <input type="number" id="inpNominalBiaya" placeholder="Contoh: 20000">
+
+        <label>KETERANGAN PENGELUARAN:</label>
+        <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli galon Aqua 1 buah">
+
+        <button class="btn btn-danger" style="width: 100%; padding: 12px; font-weight: 800;" onclick="simpanBiayaKasir()">
+          💸 Catat Kas Keluar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       SUB-SCREEN WORKSPACE 4: MEMBER LOYALITAS & WHATSAPP GATEWAY (FITUR 4)
        ========================================================================= -->
   <div class="workspace-screen" id="wsMember">
     <div class="workspace-header">
@@ -492,25 +540,25 @@
         <input type="text" id="regMemberPhone" placeholder="Contoh: 081234567890">
 
         <label>NAMA LENGKAP PELANGGAN:</label>
-        <input type="text" id="regMemberName" placeholder="Nama pelanggan...">
+        <input type="text" id="regMemberName" placeholder="Contoh: Ibu Rina Sukma">
 
-        <button class="btn btn-primary" onclick="daftarMemberBaru()">➕ Simpan & Buat Kartu Digital</button>
+        <button class="btn btn-primary" onclick="daftarMemberBaru()">➕ Simpan & Buat Member ID</button>
       </div>
 
       <div class="card">
-        <div style="font-size: 12px; font-weight: 800; color: var(--bri-blue); margin-bottom: 6px;">KIRIM STRUK DIGITAL WA</div>
+        <div style="font-size: 12px; font-weight: 800; color: var(--bri-blue); margin-bottom: 6px;">KIRIM STRUK DIGITAL WHATSAPP</div>
         <label>NOMOR TUJUAN WA:</label>
         <input type="text" id="waSendPhone" placeholder="08xxxxxxxxxx">
-        <label>RINCIAN NOTA:</label>
-        <input type="text" id="waSendMsg" value="Terima kasih telah berbelanja di Nikola Cell. Transaksi Anda telah berhasil dicatat.">
-        <button class="btn btn-success" onclick="simulasiKirimWA()">📲 Kirim Nota Transaksi via WA</button>
+        <label>PESAN NOTA:</label>
+        <input type="text" id="waSendMsg" value="Terima kasih telah berbelanja di Nikola Cell. Transaksi Anda telah berhasil diproses.">
+        <button class="btn btn-success" onclick="simulasiKirimWA()">📲 Kirim Nota via WhatsApp</button>
       </div>
     </div>
   </div>
 
 
   <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 4: REKAP KASIR (HITUNG LACI HARIAN)
+       SUB-SCREEN WORKSPACE 5: REKAP KASIR (HITUNG LACI HARIAN)
        ========================================================================= -->
   <div class="workspace-screen" id="wsRekap">
     <div class="workspace-header">
@@ -520,11 +568,11 @@
     <div class="workspace-content">
       <div class="card">
         <div style="font-size: 12px; font-weight: 800; margin-bottom: 8px;">UANG FISIK LACI KASIR</div>
-        <label>MASUKKAN TOTAL UANG FISIK (RP):</label>
+        <label>TOTAL UANG FISIK DI LACI (RP):</label>
         <input type="number" id="inpFisikKasir" placeholder="Contoh: 1500000" oninput="hitungSelisihLaci()">
 
         <div style="background: #F8FAFC; padding: 12px; border-radius: 10px; margin-top: 6px; border: 1px solid var(--border);">
-          <div style="font-size: 10.5px; color: var(--text-gray);">Kas Sistem: <b id="valKasSistem">Rp 1.500.000</b></div>
+          <div style="font-size: 10.5px; color: var(--text-gray);">Target Kas Buku: <b id="valKasSistem">Rp 1.500.000</b></div>
           <div style="font-size: 13px; font-weight: 900; margin-top: 4px;" id="valStatusSelisih">Status: Belum Input</div>
         </div>
       </div>
@@ -533,7 +581,7 @@
 
 
   <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 5: BUKU PANDUAN SOP KASIR
+       SUB-SCREEN WORKSPACE 6: BUKU PANDUAN KASIR (SOP)
        ========================================================================= -->
   <div class="workspace-screen" id="wsSOP">
     <div class="workspace-header">
@@ -543,16 +591,16 @@
     <div class="workspace-content">
       <div class="card">
         <div style="font-weight: 800; font-size: 12.5px; margin-bottom: 6px;">1. Standar Operasional Kulakan Voucher</div>
-        <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Pastikan fisik lembaran voucher dihitung ulang sebelum scan. Gunakan mode rentang seri jika nomor seri berurutan.</p>
-        <div style="font-weight: 800; font-size: 12.5px; margin: 12px 0 6px 0;">2. Transaksi BRILink Aman</div>
-        <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Pastikan uang tunai nasabah sudah di tangan kasir sebelum menekan tombol kirim atau transfer.</p>
+        <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Pastikan fisik lembaran voucher dihitung ulang sebelum scan. Pastikan alokasi toko sudah sesuai cabang Anda.</p>
+        <div style="font-weight: 800; font-size: 12.5px; margin: 12px 0 6px 0;">2. Transaksi BRILink Aman & Bebas Salah</div>
+        <p style="font-size: 11px; color: var(--text-gray); line-height: 1.4;">Selalu terima uang fisik nasabah sebelum menekan tombol kirim di mesin EDC atau aplikasi BRILink.</p>
       </div>
     </div>
   </div>
 
 
   <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 6: MONITORING LIVE STOK 4 CABANG
+       SUB-SCREEN WORKSPACE 7: LIVE STOK 4 CABANG
        ========================================================================= -->
   <div class="workspace-screen" id="wsStok">
     <div class="workspace-header">
@@ -569,7 +617,7 @@
 
 
   <!-- =========================================================================
-       SUB-SCREEN WORKSPACE 7: MASTER BARU
+       SUB-SCREEN WORKSPACE 8: MASTER BARU
        ========================================================================= -->
   <div class="workspace-screen" id="wsMaster">
     <div class="workspace-header">
@@ -623,6 +671,7 @@
         document.getElementById("onboardingScreen").style.display = "flex";
       }
       fetchKatalogFromCloud();
+      hitungKalkulatorBRILink();
     };
 
     function selectStore(st) {
@@ -665,7 +714,6 @@
       document.getElementById("displaySaldoKasir").innerText = isSaldoHidden ? "Rp •••••••••" : "Rp 2.191.639";
     }
 
-    // WORKSPACE NAVIGATION
     function goHome() {
       closeAllWorkspaces();
     }
@@ -680,6 +728,7 @@
         document.getElementById("trxType").value = "TRANSFER";
       } else if (id === 'MASTER') document.getElementById("wsMaster").style.display = "flex";
       else if (id === 'BRILINK') document.getElementById("wsBrilink").style.display = "flex";
+      else if (id === 'BIAYA') document.getElementById("wsBiaya").style.display = "flex";
       else if (id === 'MEMBER') document.getElementById("wsMember").style.display = "flex";
       else if (id === 'REKAP') document.getElementById("wsRekap").style.display = "flex";
       else if (id === 'SOP') document.getElementById("wsSOP").style.display = "flex";
@@ -693,6 +742,150 @@
       if (isScanning) stopCamera();
       const ws = document.querySelectorAll(".workspace-screen");
       ws.forEach(w => w.style.display = "none");
+    }
+
+    // =========================================================================
+    // KALKULATOR BRILINK ANTI-SALAH KASIR
+    // =========================================================================
+    function hitungKalkulatorBRILink() {
+      const jns = document.getElementById("briJenisTrx").value;
+      const nom = parseInt(document.getElementById("briNominal").value) || 0;
+      const jasa = parseInt(document.getElementById("briJasaKasir").value) || 0;
+      const adm = parseInt(document.getElementById("briAdminBank").value) || 0;
+
+      let uangDiterima = 0;
+      let potongBank = 0;
+      let laba = 0;
+
+      if (jns === "Transfer Tunai") {
+        uangDiterima = nom + jasa;
+        potongBank = nom + adm;
+        laba = jasa - adm;
+      } else if (jns === "Tarik Tunai") {
+        uangDiterima = 0; // Kasir menyerahkan uang
+        potongBank = -nom; // Bank toko bertambah
+        laba = jasa;
+      } else if (jns === "Setor Tunai") {
+        uangDiterima = nom;
+        potongBank = -nom;
+        laba = 0;
+      } else if (jns === "BAGI HASIL") {
+        uangDiterima = 0;
+        potongBank = -jasa;
+        laba = jasa;
+      }
+
+      document.getElementById("lblUangDiterima").innerText = "Rp " + uangDiterima.toLocaleString('id-ID');
+      document.getElementById("lblPotongBank").innerText = "Rp " + potongBank.toLocaleString('id-ID');
+      document.getElementById("lblLabaKasir").innerText = "Rp " + laba.toLocaleString('id-ID');
+    }
+
+    async function simpanTrxBrilinkAman() {
+      const jns = document.getElementById("briJenisTrx").value;
+      const nom = parseInt(document.getElementById("briNominal").value) || 0;
+      const jasa = parseInt(document.getElementById("briJasaKasir").value) || 0;
+      const adm = parseInt(document.getElementById("briAdminBank").value) || 0;
+      const desc = document.getElementById("briDeskripsi").value.trim() || "Nasabah Tunai";
+
+      if (nom <= 0) return alert("Nominal transaksi tidak boleh kosong!");
+
+      // FITUR PENCEGAH KESALAHAN NOL (SAFETY CHECK)
+      if (nom >= 1000000) {
+        const konfirmasi = confirm(`⚠️ PERINGATAN KASIR:\nAnda menginput nominal besar: Rp ${nom.toLocaleString('id-ID')} (${jns})\n\nPastikan uang tunai nasabah sudah di tangan Anda! Lanjutkan?`);
+        if (!konfirmasi) return;
+      }
+
+      const payload = {
+        action: "sync_operation",
+        tipe_operasi: "BRILINK",
+        id_trx: "BRI-MOB-" + Date.now(),
+        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        toko: activeStore,
+        nominal: nom,
+        jenis_transaksi: jns,
+        jasa_kasir: jasa,
+        admin_bank: adm,
+        deskripsi: desc
+      };
+
+      try {
+        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
+        alert(`✅ Transaksi ${jns} Rp ${nom.toLocaleString('id-ID')} berhasil dicatat & masuk ke PC Desktop!`);
+        document.getElementById("briNominal").value = "";
+        goHome();
+      } catch (e) { alert("Gagal menyimpan transaksi BRILink."); }
+    }
+
+    // =========================================================================
+    // CATAT BIAYA KAS KECIL & SETORAN OWNER
+    // =========================================================================
+    async function simpanBiayaKasir() {
+      const kat = document.getElementById("katBiayaSelect").value;
+      const nom = parseInt(document.getElementById("inpNominalBiaya").value) || 0;
+      const ket = document.getElementById("inpKetBiaya").value.trim();
+
+      if (nom <= 0) return alert("Nominal biaya harus lebih besar dari Rp 0!");
+      if (!ket) return alert("Keterangan pengeluaran wajib diisi!");
+
+      const isSetor = (kat === "SETOR_OWNER");
+      const tipe = isSetor ? "SETOR_OWNER" : "OPERASIONAL";
+
+      const payload = {
+        action: "sync_operation",
+        tipe_operasi: tipe,
+        id_trx: "EXP-" + Date.now(),
+        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        toko: activeStore,
+        nominal: nom,
+        kategori: kat,
+        deskripsi: ket
+      };
+
+      try {
+        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
+        alert(`✅ ${isSetor ? 'Setoran ke Owner' : 'Kas Keluar'} Rp ${nom.toLocaleString('id-ID')} berhasil dicatat ke Desktop!`);
+        document.getElementById("inpNominalBiaya").value = "";
+        document.getElementById("inpKetBiaya").value = "";
+        goHome();
+      } catch (e) { alert("Gagal mencatat pengeluaran."); }
+    }
+
+    // =========================================================================
+    // DAFTAR MEMBER BARU & STRUK WHATSAPP
+    // =========================================================================
+    async function daftarMemberBaru() {
+      const p = document.getElementById("regMemberPhone").value.trim();
+      const n = document.getElementById("regMemberName").value.trim();
+      if (!p || !n) return alert("Nomor WhatsApp dan Nama Member wajib diisi!");
+
+      const mbrId = "MBR-" + p.slice(-6);
+
+      const payload = {
+        action: "sync_operation",
+        tipe_operasi: "MEMBER_BARU",
+        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        toko: activeStore,
+        id_member: mbrId,
+        nama_member: n,
+        nomor_wa: p
+      };
+
+      try {
+        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
+        alert(`✅ Member Berhasil Terdaftar!\nNama: ${n}\nMember ID: ${mbrId}\nData tersinkron ke Master Desktop!`);
+        document.getElementById("waSendPhone").value = p;
+      } catch (e) { alert("Gagal mendaftarkan member."); }
+    }
+
+    function simulasiKirimWA() {
+      const p = document.getElementById("waSendPhone").value.trim();
+      const msg = document.getElementById("waSendMsg").value.trim();
+      if (!p) return alert("Nomor WhatsApp tujuan wajib diisi!");
+
+      showToast("Menghubungkan ke WhatsApp...");
+      const cleanPhone = p.startsWith("0") ? "62" + p.substring(1) : p;
+      const waUrl = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
+      window.location.href = waUrl;
     }
 
     // JEMBATAN KOTLIN: PENERIMAAN PPOB OTOMATIS (ORDER QUOTA & SMS 3636)
@@ -715,48 +908,6 @@
       `;
       feedBox.insertAdjacentHTML('afterbegin', itemHtml);
       showToast(`⚡ ${appName} ${produk} Rp ${modal.toLocaleString('id-ID')} tercatat otomatis!`);
-    }
-
-    // INTEGRASI TRANSAKSI BRILINK CEPAT (FITUR 3)
-    async function simpanTrxBrilink() {
-      const jenis = document.getElementById("briJenisTrx").value;
-      const nominal = parseInt(document.getElementById("briNominal").value) || 0;
-      const jasa = parseInt(document.getElementById("briJasaKasir").value) || 0;
-      const admin = parseInt(document.getElementById("briAdminBank").value) || 0;
-      const desc = document.getElementById("briDeskripsi").value.trim() || "Nasabah Tunai";
-
-      if (nominal <= 0) return alert("Nominal transaksi harus diisi!");
-
-      const payload = {
-        batch_id: "BRI-" + Date.now(),
-        waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        jenis: "BRILINK",
-        toko: activeStore,
-        items: [{ jenis: jenis, nominal: nominal, jasa: jasa, admin: admin, deskripsi: desc }]
-      };
-
-      try {
-        await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
-        alert(`✅ Transaksi ${jenis} Rp ${nominal.toLocaleString()} berhasil dicatat ke Desktop!`);
-        document.getElementById("briNominal").value = "";
-        goHome();
-      } catch(e) { alert("Gagal menyimpan transaksi BRILink."); }
-    }
-
-    // REGISTRASI MEMBER & WA (FITUR 4)
-    function daftarMemberBaru() {
-      const p = document.getElementById("regMemberPhone").value.trim();
-      const n = document.getElementById("regMemberName").value.trim();
-      if (!p || !n) return alert("Nomor WA dan Nama Member harus diisi!");
-      alert(`✅ Member Berhasil Terdaftar!\nNama: ${n}\nNo WA: ${p}\nID Barcode Member: MBR-${p.slice(-6)}`);
-      document.getElementById("waSendPhone").value = p;
-    }
-
-    function simulasiKirimWA() {
-      const p = document.getElementById("waSendPhone").value;
-      if (!p) return alert("Nomor WA belum diisi!");
-      showToast("Mengirim nota ke WhatsApp...");
-      setTimeout(() => alert("✅ Struk Pembelian Berhasil Terkirim ke WA: " + p), 600);
     }
 
     // REKONSILIASI KAS LACI
@@ -852,7 +1003,7 @@
         laser.className = "laser-guide active";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#EF4444";
-      } catch(e) {
+      } catch (e) {
         alert("Kamera tidak dapat diakses: " + e);
         btn.innerText = "📷 Nyalakan Kamera Pemindai";
         btn.style.background = "var(--bri-blue)";
@@ -862,7 +1013,7 @@
     async function stopCamera() {
       const btn = document.getElementById("btnScanner");
       const laser = document.getElementById("laserGuide");
-      try { if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; } } catch(e){}
+      try { if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; } } catch (e) {}
       isScanning = false;
       laser.className = "laser-guide";
       btn.innerText = "📷 Nyalakan Kamera Pemindai";
@@ -919,7 +1070,7 @@
         alert("✅ Berhasil dikirim ke PC Desktop!");
         clearCart();
         goHome();
-      } catch(e) { alert("Gagal kirim: " + e); }
+      } catch (e) { alert("Gagal kirim: " + e); }
     }
 
     async function submitNewProduct() {
@@ -937,7 +1088,7 @@
         await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
         alert("✅ Paket berhasil didaftarkan ke Master PC!");
         goHome();
-      } catch(e) { alert("Error: " + e); }
+      } catch (e) { alert("Error: " + e); }
     }
   </script>
 </body>
