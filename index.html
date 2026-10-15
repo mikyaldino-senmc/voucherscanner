@@ -6,6 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="theme-color" content="#0264D6">
     <title>Nikola Companion by BRI</title>
+    <!-- Pustaka Barcode Scanner Handal -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         :root {
@@ -149,16 +150,36 @@
         .stock-badge.highlight { background: var(--bri-blue-light); border-color: var(--bri-blue); }
         .stock-badge.highlight .val { color: var(--bri-blue); }
 
-        /* CAMERA */
-        #camera-panel, #pos-camera-panel { background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden; }
-        .reader-box { position: relative; width: 100%; min-height: 220px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        /* =========================================================
+           KUNCI PERBAIKAN: KAMERA HITAM TERATASI
+           Memaksa video kamera memiliki tinggi dan objek pas
+           ========================================================= */
+        #camera-panel, #pos-camera-panel {
+          background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden;
+        }
+        .reader-box {
+          position: relative; width: 100%; min-height: 240px; background: #000; border-radius: 10px; overflow: hidden;
+          display: flex; align-items: center; justify-content: center;
+        }
+        #reader, #reader-pos {
+          width: 100% !important; border: none !important; min-height: 240px !important;
+        }
+        #reader video, #reader-pos video {
+          width: 100% !important; height: auto !important; min-height: 240px !important; object-fit: cover !important;
+          border-radius: 8px !important;
+        }
+        #reader__header_message, #reader__status_span, #reader img,
+        #reader-pos__header_message, #reader-pos__status_span, #reader-pos img {
+          display: none !important;
+        }
+
         .laser-guide {
           position: absolute; top: 50%; left: 5%; width: 90%; height: 2px;
           background: #EF4444; box-shadow: 0 0 12px #EF4444; pointer-events: none; z-index: 15;
           transform: translateY(-50%); display: none;
         }
         .laser-guide.active { display: block; animation: laserSweep 1.3s ease-in-out infinite alternate; }
-        @keyframes laserSweep { 0% { transform: translateY(-25px); opacity: 0.6; } 100% { transform: translateY(25px); opacity: 0.95; } }
+        @keyframes laserSweep { 0% { transform: translateY(-30px); opacity: 0.6; } 100% { transform: translateY(30px); opacity: 0.95; } }
 
         /* TABEL */
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
@@ -182,9 +203,7 @@
 
 <div id="toast-msg">Notifikasi...</div>
 
-<!-- =========================================================================
-     1. ONBOARDING & LOGIN OUTLET
-     ========================================================================= -->
+<!-- ONBOARDING -->
 <div id="onboardingScreen">
     <div class="onboarding-hero">
         <div class="hero-icon-box">⚡</div>
@@ -209,13 +228,11 @@
     </div>
 
     <div style="text-align: center; font-size: 10.5px; color: var(--text-gray);">
-        Nikola POS System • Version 3.9.0 (Safe Desktop Sync)
+        Nikola POS System • Version 3.9.5
     </div>
 </div>
 
-<!-- =========================================================================
-     2. BERANDA DASHBOARD (QITA BY BRI STYLE)
-     ========================================================================= -->
+<!-- BERANDA DASHBOARD -->
 <div id="homeScreen" style="padding-bottom: 85px;">
     <div class="hero-container">
         <div class="top-brand-bar">
@@ -239,7 +256,7 @@
         </div>
     </div>
 
-    <!-- FLOATING BALANCE CARD -->
+    <!-- KARTU STATUS -->
     <div class="balance-card-carousel">
         <div class="rekening-header">
             <div class="rek-number">
@@ -260,7 +277,7 @@
         </div>
     </div>
 
-    <!-- FAST ACTION GRID (8 MENU OPERASIONAL) -->
+    <!-- GRID 8 MENU -->
     <div class="menu-section">
         <div class="section-header">
             <span>TERMINAL KASIR CEPAT</span>
@@ -268,42 +285,34 @@
         </div>
 
         <div class="fintech-grid">
-            <!-- 1. Jual Cepat (POS Kasir Keliling) -->
             <div class="grid-item" onclick="openWorkspace('POS_JUAL')">
                 <div class="grid-icon-circle" style="background: #DCFCE7; color: #16A34A;">🛒</div>
                 <div class="grid-label">Kasir Jual</div>
             </div>
-            <!-- 2. Scan Kulakan -->
             <div class="grid-item" onclick="openWorkspace('VOUCHER')">
                 <div class="grid-icon-circle">📷</div>
                 <div class="grid-label">Scan Kulakan</div>
             </div>
-            <!-- 3. Mutasi Cabang -->
             <div class="grid-item" onclick="openWorkspace('MUTASI')">
                 <div class="grid-icon-circle" style="background: #EDE9FE; color: #7C3AED;">🔄</div>
                 <div class="grid-label">Mutasi Stok</div>
             </div>
-            <!-- 4. Live Cek Stok -->
             <div class="grid-item" onclick="openWorkspace('STOK')">
                 <div class="grid-icon-circle" style="background: #FEF3C7; color: #D97706;">📊</div>
                 <div class="grid-label">Live Stok</div>
             </div>
-            <!-- 5. Transaksi BRILink Aman -->
             <div class="grid-item" onclick="openWorkspace('BRILINK')">
                 <div class="grid-icon-circle" style="background: #E0F2FE; color: #0284C7;">💳</div>
                 <div class="grid-label">BRILink Pro</div>
             </div>
-            <!-- 6. Member Loyalitas & WA -->
             <div class="grid-item" onclick="openWorkspace('MEMBER')">
                 <div class="grid-icon-circle" style="background: #FCE7F3; color: #DB2777;">👥</div>
                 <div class="grid-label">Member WA</div>
             </div>
-            <!-- 7. Kas Keluar & Setor Owner -->
             <div class="grid-item" onclick="openWorkspace('BIAYA')">
                 <div class="grid-icon-circle" style="background: #FEE2E2; color: #EF4444;">💸</div>
                 <div class="grid-label">Kas Keluar</div>
             </div>
-            <!-- 8. Rekap Fisik Kasir (Pecahan Laci) -->
             <div class="grid-item" onclick="openWorkspace('REKAP')">
                 <div class="grid-icon-circle" style="background: #F1F5F9; color: #374151;">📋</div>
                 <div class="grid-label">Hitung Laci</div>
@@ -311,10 +320,10 @@
         </div>
     </div>
 
-    <!-- FEED TRANSAKSI PPOB TERAKHIR -->
+    <!-- FEED PPOB -->
     <div class="section-card">
         <div class="card-title-head">
-            <span>Log Notifikasi PPOB Terakhir</span>
+            <span>Log Transaksi PPOB Terakhir</span>
             <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;">Real-time</span>
         </div>
         <div id="ppobFeedList">
@@ -353,9 +362,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE A: KASIR PENJUALAN BERGERAK (MOBILE POS CHECKOUT)
-     ========================================================================= -->
+<!-- WORKSPACE A: KASIR PENJUALAN MOBILE -->
 <div class="workspace-screen" id="wsPosJual">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -402,9 +409,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE B: SCAN KULAKAN & MUTASI STOK
-     ========================================================================= -->
+<!-- WORKSPACE B: SCAN KULAKAN / MUTASI STOK -->
 <div class="workspace-screen" id="wsVoucher">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -463,9 +468,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE C: BRILINK PRO (KALKULATOR CERDAS ANTI-SALAH)
-     ========================================================================= -->
+<!-- WORKSPACE C: BRILINK PRO -->
 <div class="workspace-screen" id="wsBrilink">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -498,7 +501,6 @@
             <label>NAMA NASABAH / KETERANGAN:</label>
             <input type="text" id="briDeskripsi" placeholder="Contoh: Ibu Rina / Bayar Tagihan">
 
-            <!-- PREVIEW PANDUAN KASIR -->
             <div style="background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
                 <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 700; margin-bottom: 4px;">
                     <span>Uang Diterima dari Nasabah:</span>
@@ -519,9 +521,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE D: KAS KELUAR & SETOR OWNER
-     ========================================================================= -->
+<!-- WORKSPACE D: KAS KELUAR -->
 <div class="workspace-screen" id="wsBiaya">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -550,9 +550,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE E: HITUNG FISIK UANG LACI (EOD REKAP HARIAN)
-     ========================================================================= -->
+<!-- WORKSPACE E: HITUNG FISIK UANG LACI -->
 <div class="workspace-screen" id="wsRekap">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -581,9 +579,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE F: MEMBER DIGITAL & WA GATEWAY
-     ========================================================================= -->
+<!-- WORKSPACE F: MEMBER WA -->
 <div class="workspace-screen" id="wsMember">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -612,9 +608,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE G: LIVE CEK STOK
-     ========================================================================= -->
+<!-- WORKSPACE G: LIVE CEK STOK -->
 <div class="workspace-screen" id="wsStok">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -628,9 +622,7 @@
     </div>
 </div>
 
-<!-- =========================================================================
-     WORKSPACE H: SOP KASIR
-     ========================================================================= -->
+<!-- WORKSPACE H: SOP -->
 <div class="workspace-screen" id="wsSOP">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -646,7 +638,6 @@
     </div>
 </div>
 
-<!-- LOGIKA JAVASCRIPT LENGKAP -->
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzX-uB_VVa3I0U0t6ozJ_c0S3RGd4gSSHGQaVPljKa3ipeDrbRylTe_pnsXjfAdwBXB/exec";
     let html5QrCode = null;
@@ -666,7 +657,6 @@
       setTimeout(() => { t.style.display = "none"; }, 2500);
     }
 
-    // ONLINE / OFFLINE BUFFER QUEUE
     async function sendSafePayload(payload) {
       try {
         await fetch(SCRIPT_URL, {
@@ -677,11 +667,10 @@
         });
         return true;
       } catch (err) {
-        // Simpan ke offline cache
         let offlineQ = JSON.parse(localStorage.getItem("NIKOLA_OFFLINE_Q") || "[]");
         offlineQ.push(payload);
         localStorage.setItem("NIKOLA_OFFLINE_Q", JSON.stringify(offlineQ));
-        showToast("⚠️ Offline: Transaksi diantrekan di HP.");
+        showToast("⚠️ Offline: Disimpan di memori HP.");
         return false;
       }
     }
@@ -698,7 +687,7 @@
         }
       }
       localStorage.setItem("NIKOLA_OFFLINE_Q", JSON.stringify(remaining));
-      if (remaining.length === 0) showToast("✅ Seluruh antrean offline berhasil terkirim!");
+      if (remaining.length === 0) showToast("✅ Seluruh antrean offline terkirim!");
     }
 
     window.onload = function() {
@@ -786,8 +775,72 @@
     }
 
     // =========================================================================
-    // MODUL 1: KASIR PENJUALAN MOBILE (POS CHECKOUT)
+    // KAMERA CERDAS (SUPPORT REALME C5 & AUTO CAMERA SELECTION)
     // =========================================================================
+    async function getBackCameraId() {
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (devices && devices.length > 0) {
+          // Cari kamera yang memiliki label 'back', 'rear', atau 'environment'
+          let backCam = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear'));
+          return backCam ? backCam.id : devices[devices.length - 1].id;
+        }
+      } catch (e) {
+        console.warn("Gagal getCameras:", e);
+      }
+      return { facingMode: "environment" };
+    }
+
+    async function handleScannerClick() {
+      if (isScanning) await stopCamera();
+      else await startCamera();
+    }
+
+    async function startCamera() {
+      const btn = document.getElementById("btnScanner");
+      const laser = document.getElementById("laserGuide");
+      btn.innerText = "⏳ Membuka Lensa Kamera...";
+      try {
+        const camConfig = await getBackCameraId();
+        html5QrCode = new Html5Qrcode("reader");
+        await html5QrCode.start(
+          camConfig, 
+          { fps: 20, qrbox: { width: 260, height: 140 } }, 
+          onScanSuccess, 
+          () => {}
+        );
+        isScanning = true;
+        laser.className = "laser-guide active";
+        btn.innerText = "⏹ Tutup Kamera";
+        btn.style.background = "#EF4444";
+      } catch (e) {
+        alert("Gagal membuka kamera: " + e + "\nPastikan Izin Kamera di Pengaturan HP sudah diizinkan.");
+        btn.innerText = "📷 Nyalakan Kamera Pemindai";
+        btn.style.background = "var(--bri-blue)";
+      }
+    }
+
+    async function stopCamera() {
+      const btn = document.getElementById("btnScanner");
+      const laser = document.getElementById("laserGuide");
+      try { if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; } } catch (e) {}
+      isScanning = false;
+      laser.className = "laser-guide";
+      btn.innerText = "📷 Nyalakan Kamera Pemindai";
+      btn.style.background = "var(--bri-blue)";
+    }
+
+    function onScanSuccess(decodedText) {
+      let clean = String(decodedText).replace(/[\s\-]/g, "");
+      let match = clean.match(/\d{8,25}/);
+      let sn = match ? match[0] : clean;
+      cart[sn] = (cart[sn] || 0) + 1;
+      showToast("Terbaca: " + sn);
+      if (navigator.vibrate) navigator.vibrate(80);
+      renderCart();
+    }
+
+    // POS CAMERA JUAL
     async function togglePosCamera() {
       if (isPosScanning) await stopPosCamera();
       else await startPosCamera();
@@ -798,14 +851,20 @@
       const laser = document.getElementById("posLaser");
       btn.innerText = "⏳ Membuka Kamera...";
       try {
+        const camConfig = await getBackCameraId();
         posQrCode = new Html5Qrcode("reader-pos");
-        await posQrCode.start({ facingMode: "environment" }, { fps: 25, qrbox: { width: 250, height: 120 } }, onPosScanSuccess, () => {});
+        await posQrCode.start(
+          camConfig, 
+          { fps: 20, qrbox: { width: 260, height: 140 } }, 
+          onPosScanSuccess, 
+          () => {}
+        );
         isPosScanning = true;
         laser.className = "laser-guide active";
         btn.innerText = "⏹ Tutup Kamera";
         btn.style.background = "#EF4444";
       } catch (e) {
-        alert("Kamera tidak dapat diakses: " + e);
+        alert("Gagal membuka kamera: " + e);
         btn.innerText = "📷 Nyalakan Pemindai Barcode Produk";
         btn.style.background = "var(--bri-blue)";
       }
@@ -831,8 +890,9 @@
         document.getElementById("selPosProduct").value = idx;
         onPosProductSelected();
         showToast("Ditemukan: " + masterKatalog[idx].nama_barang);
+        if (navigator.vibrate) navigator.vibrate(80);
       } else {
-        showToast("Barcode tidak cocok dengan produk master!");
+        showToast("Produk tidak ditemukan di Master Desktop!");
       }
     }
 
@@ -867,14 +927,12 @@
       };
 
       await sendSafePayload(payload);
-      alert(`✅ Penjualan ${prod.nama_barang} (${qty} pcs) berhasil! Data memotong stok di PC.`);
+      alert(`✅ Penjualan ${prod.nama_barang} (${qty} pcs) berhasil dicatat ke Desktop!`);
       document.getElementById("inpPosQty").value = "1";
       goHome();
     }
 
-    // =========================================================================
-    // MODUL 2: TRANSAKSI BRILINK PRO
-    // =========================================================================
+    // BRILINK
     function hitungKalkulatorBRILink() {
       const jns = document.getElementById("briJenisTrx").value;
       const nom = parseInt(document.getElementById("briNominal").value) || 0;
@@ -915,10 +973,10 @@
       const adm = parseInt(document.getElementById("briAdminBank").value) || 0;
       const desc = document.getElementById("briDeskripsi").value.trim() || "Nasabah Tunai";
 
-      if (nom <= 0 && jns !== "Admin Bank") return alert("Nominal transaksi tidak boleh kosong!");
+      if (nom <= 0 && jns !== "Admin Bank") return alert("Nominal tidak boleh kosong!");
 
       if (nom >= 1000000) {
-        if (!confirm(`⚠️ PERINGATAN KASIR:\nNominal besar: Rp ${nom.toLocaleString('id-ID')} (${jns})\nLanjutkan penyimpanan?`)) return;
+        if (!confirm(`⚠️ PERINGATAN KASIR:\nNominal besar: Rp ${nom.toLocaleString('id-ID')} (${jns})\nLanjutkan simpan?`)) return;
       }
 
       const payload = {
@@ -935,22 +993,20 @@
       };
 
       await sendSafePayload(payload);
-      alert(`✅ Transaksi ${jns} berhasil dicatat dan masuk ke PC Desktop!`);
+      alert(`✅ Transaksi ${jns} berhasil dicatat & masuk ke PC Desktop!`);
       document.getElementById("briNominal").value = "";
       document.getElementById("briDeskripsi").value = "";
       goHome();
     }
 
-    // =========================================================================
-    // MODUL 3: KAS KELUAR & SETOR OWNER
-    // =========================================================================
+    // BIAYA
     async function simpanBiayaKasir() {
       const kat = document.getElementById("katBiayaSelect").value;
       const nom = parseInt(document.getElementById("inpNominalBiaya").value) || 0;
       const ket = document.getElementById("inpKetBiaya").value.trim();
 
       if (nom <= 0) return alert("Nominal biaya harus lebih dari Rp 0!");
-      if (!ket) return alert("Keterangan pengeluaran wajib diisi!");
+      if (!ket) return alert("Keterangan wajib diisi!");
 
       const isSetor = (kat === "SETOR_OWNER");
       const payload = {
@@ -971,9 +1027,7 @@
       goHome();
     }
 
-    // =========================================================================
-    // MODUL 4: REKAP KASIR (HITUNG LEMBAR FISIK LACI)
-    // =========================================================================
+    // REKAP LACI
     function hitungTotalLaci() {
       let total = 0;
       document.querySelectorAll(".inp-pecahan").forEach(inp => {
@@ -986,51 +1040,7 @@
       document.getElementById("lblTotalFisikLaci").innerText = "Rp " + total.toLocaleString('id-ID');
     }
 
-    // =========================================================================
-    // MODUL 5: SCAN KULAKAN / TRANSFER STOK
-    // =========================================================================
-    async function handleScannerClick() {
-      if (isScanning) await stopCamera();
-      else await startCamera();
-    }
-
-    async function startCamera() {
-      const btn = document.getElementById("btnScanner");
-      const laser = document.getElementById("laserGuide");
-      btn.innerText = "⏳ Membuka Kamera...";
-      try {
-        html5QrCode = new Html5Qrcode("reader");
-        await html5QrCode.start({ facingMode: "environment" }, { fps: 25, qrbox: { width: 250, height: 120 } }, onScanSuccess, () => {});
-        isScanning = true;
-        laser.className = "laser-guide active";
-        btn.innerText = "⏹ Tutup Kamera";
-        btn.style.background = "#EF4444";
-      } catch (e) {
-        alert("Kamera tidak dapat diakses: " + e);
-        btn.innerText = "📷 Nyalakan Pemindai";
-        btn.style.background = "var(--bri-blue)";
-      }
-    }
-
-    async function stopCamera() {
-      const btn = document.getElementById("btnScanner");
-      const laser = document.getElementById("laserGuide");
-      try { if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; } } catch (e) {}
-      isScanning = false;
-      laser.className = "laser-guide";
-      btn.innerText = "📷 Nyalakan Pemindai";
-      btn.style.background = "var(--bri-blue)";
-    }
-
-    function onScanSuccess(decodedText) {
-      let clean = String(decodedText).replace(/[\s\-]/g, "");
-      let match = clean.match(/\d{8,25}/);
-      let sn = match ? match[0] : clean;
-      cart[sn] = (cart[sn] || 0) + 1;
-      showToast("Terbaca: " + sn);
-      renderCart();
-    }
-
+    // VOUCHER CART
     function renderCart() {
       const tbody = document.getElementById("cartTable");
       tbody.innerHTML = "";
@@ -1073,9 +1083,7 @@
       goHome();
     }
 
-    // =========================================================================
-    // MODUL 6: LIVE KATALOG & STOCK VIEWER
-    // =========================================================================
+    // KATALOG
     async function fetchKatalogFromCloud() {
       showToast("Menghubungkan ke PC Desktop...");
       try {
@@ -1142,9 +1150,7 @@
       });
     }
 
-    // =========================================================================
-    // MODUL 7: MEMBER & PPOB AUTOMATION
-    // =========================================================================
+    // MEMBER
     async function daftarMemberBaru() {
       const p = document.getElementById("regMemberPhone").value.trim();
       const n = document.getElementById("regMemberName").value.trim();
