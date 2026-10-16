@@ -52,6 +52,9 @@ async function startUniversalCamera(targetDivId, laserId, btnId, onScanSuccess) 
 
   await stopCurrentScanner();
 
+  // Berikan jeda 150ms agar elemen DOM workspace selesai dirender (mencegah layar hitam)
+  await new Promise(resolve => setTimeout(resolve, 150));
+
   try {
     const scanner = new Html5Qrcode(targetDivId);
     currentScanner = scanner;
