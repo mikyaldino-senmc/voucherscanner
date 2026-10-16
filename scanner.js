@@ -5,7 +5,6 @@
 let currentScanner = null;
 let currentScannerTarget = null;
 
-// FUNGSI PELEPAS SENSOR KAMERA (WAJIB BERSIH SEBELUM BUKA KAMERA LAIN)
 async function stopCurrentScanner() {
   if (currentScanner) {
     try {
@@ -20,22 +19,22 @@ async function stopCurrentScanner() {
     currentScannerTarget = null;
   }
 
-  // Kembalikan semua tombol dan laser ke kondisi awal
   const buttons = [
     { id: "btnCamMasuk", text: "📷 Nyalakan Scanner Kamera" },
     { id: "btnCamMutasi", text: "📷 Nyalakan Scanner Kamera" },
-    { id: "btnCamMember", text: "📷 Nyalakan Scanner Kartu" }
+    { id: "btnCamMember", text: "📷 Nyalakan Scanner Kartu" },
+    { id: "btnCamCekHarga", text: "📷 Nyalakan Kamera Cek Harga" }
   ];
 
   buttons.forEach(b => {
     const el = document.getElementById(b.id);
     if (el) {
       el.innerText = b.text;
-      el.style.background = "var(--bri-blue)";
+      el.style.background = "var(--bank-primary)";
     }
   });
 
-  ["laserMasuk", "laserMutasi", "laserMember"].forEach(id => {
+  ["laserMasuk", "laserMutasi", "laserMember", "laserCekHarga"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.className = "laser-guide";
   });
@@ -45,14 +44,12 @@ function stopAllCameras() {
   stopCurrentScanner();
 }
 
-// MESIN UTAMA PEMBUKA KAMERA (DIGUNAKAN OLEH MASUK, MUTASI, & MEMBER)
 async function startUniversalCamera(targetDivId, laserId, btnId, onScanSuccess) {
   const btn = document.getElementById(btnId);
   const laser = document.getElementById(laserId);
 
   if (btn) btn.innerText = "⏳ Membuka Sensor Kamera...";
 
-  // 1. Lepas dan matikan kamera sebelumnya agar hardware tidak terkunci
   await stopCurrentScanner();
 
   try {
@@ -65,7 +62,6 @@ async function startUniversalCamera(targetDivId, laserId, btnId, onScanSuccess) 
       qrbox: { width: 250, height: 140 }
     };
 
-    // 2. Jalankan Kamera Belakang Utama
     try {
       await scanner.start(
         { facingMode: "environment" },
@@ -74,8 +70,6 @@ async function startUniversalCamera(targetDivId, laserId, btnId, onScanSuccess) 
         () => {}
       );
     } catch (errEnv) {
-      console.warn("Lensa belakang sibuk, mencoba inisialisasi ulang...", errEnv);
-      // Fallback cadangan: Coba kamera standar jika facingMode environment ditolak
       await scanner.start(
         { facingMode: "user" },
         qrConfig,
@@ -96,9 +90,7 @@ async function startUniversalCamera(targetDivId, laserId, btnId, onScanSuccess) 
   }
 }
 
-// =========================================================================
-// 1. PENGENDALI SCANNER BARANG MASUK (KULAKAN)
-// =========================================================================
+// 1. SCANNER BARANG MASUK
 async function toggleScannerMasuk() {
   if (currentScanner && currentScannerTarget === "reader-masuk") {
     await stopCurrentScanner();
@@ -112,9 +104,7 @@ async function toggleScannerMasuk() {
   }
 }
 
-// =========================================================================
-// 2. PENGENDALI SCANNER MUTASI CABANG (GUDANG -> TOKO)
-// =========================================================================
+// 2. SCANNER MUTASI
 async function toggleScannerMutasi() {
   if (currentScanner && currentScannerTarget === "reader-mutasi") {
     await stopCurrentScanner();
@@ -127,9 +117,7 @@ async function toggleScannerMutasi() {
   }
 }
 
-// =========================================================================
-// 3. PENGENDALI SCANNER KARTU MEMBER
-// =========================================================================
+// 3. SCANNER MEMBER
 async function toggleScannerMember() {
   if (currentScanner && currentScannerTarget === "reader-member") {
     await stopCurrentScanner();
@@ -142,7 +130,19 @@ async function toggleScannerMember() {
   }
 }
 
-// PEMBERSIH DIGIT BARCODE / NOMOR SERI
+// 4. SCANNER CEK HARGA KILAT
+async function toggleScannerCekHarga() {
+  if (currentScanner && currentScannerTarget === "reader-cekharga") {
+    await stopCurrentScanner();
+  } else {
+    await startUniversalCamera("reader-cekharga", "laserCekHarga", "btnCamCekHarga", (text) => {
+      let clean = extractDigits(text);
+      handleScannedBarcodeCekHarga(clean);
+      if (navigator.vibrate) navigator.vibrate(80);
+    });
+  }
+}
+
 function extractDigits(rawStr) {
   let s = String(rawStr).replace(/[\s\-]/g, "");
   let match = s.match(/\d{8,25}/);
