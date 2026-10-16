@@ -6,9 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="theme-color" content="#0A2540">
     <title>Nikola Smart Companion</title>
-    <!-- Desain Modular Banking-Grade -->
     <link rel="stylesheet" href="style.css">
-    <!-- Scanner Barcode Kamera & Generator Barcode Member -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
@@ -16,7 +14,7 @@
 
 <div id="toast-msg">Notifikasi...</div>
 
-<!-- 1. LOGIN ID TOKO (TERKUNCI PENUH) -->
+<!-- 1. LOGIN ID TOKO -->
 <div id="onboardingScreen">
     <div class="onboarding-hero">
         <div class="hero-icon-box">⚡</div>
@@ -48,7 +46,7 @@
         <div class="top-brand-bar">
             <div class="brand-logo">Nikola <span>Companion</span></div>
             <div class="top-icons">
-                <span title="Sinkron Data PC" onclick="fetchLiveStoreData()">🔄</span>
+                <span title="Status Sinkronisasi" onclick="openWorkspace('SYNC_STATUS')">🌐</span>
                 <span title="Panduan SOP" onclick="openWorkspace('SOP')">📖</span>
                 <span title="Keluar / Logout" onclick="logoutKasir()">🚪</span>
             </div>
@@ -68,11 +66,11 @@
         </div>
     </div>
 
-    <!-- KARTU RINGKASAN SALDO PPOB & KAS HARI INI -->
+    <!-- KARTU RINGKASAN SALDO -->
     <div class="balance-card-carousel">
         <div class="rekening-header">
             <div class="rek-number"><span id="labelTokoHeader">TOKO</span> • STATUS HARI INI</div>
-            <div class="rek-badge" id="lblSyncStatus">● LIVE PC</div>
+            <div class="rek-badge" id="lblSyncStatus" onclick="openWorkspace('SYNC_STATUS')" style="cursor: pointer;">● LIVE PC</div>
         </div>
 
         <div style="font-size: 10px; color: var(--text-gray); font-weight: 700;">Kas Laci Sistem Hari Ini</div>
@@ -88,12 +86,11 @@
         </div>
     </div>
 
-    <!-- 4 ZONA OPERASIONAL TERORGANISIR -->
+    <!-- PINTASAN UTAMA (CLEAN DASHBOARD) -->
     <div class="menu-section">
-        <!-- ZONA 1: LOGISTIK & STOK -->
         <div class="section-header">
-            <span>LOGISTIK & STOK GUDANG</span>
-            <span style="font-size: 10px; color: var(--bank-accent); font-weight: 800;">Scan Barcode</span>
+            <span>PINTASAN OPERASIONAL KASIR</span>
+            <span style="font-size: 10px; color: var(--bank-accent); font-weight: 800;" onclick="openWorkspace('MENU_LOGISTIK')">Menu Logistik →</span>
         </div>
         <div class="fintech-grid">
             <div class="grid-item" onclick="openWorkspace('SCAN_MASUK')">
@@ -104,42 +101,18 @@
                 <div class="grid-icon-circle" style="color: #0284C7;">🔍</div>
                 <div class="grid-label">Cek Harga</div>
             </div>
-            <div class="grid-item" onclick="openWorkspace('MUTASI')">
-                <div class="grid-icon-circle" style="color: #7C3AED;">🔄</div>
-                <div class="grid-label">Mutasi Cabang</div>
-            </div>
-            <div class="grid-item" onclick="openWorkspace('STOK')">
-                <div class="grid-icon-circle" style="color: #4338CA;">📊</div>
-                <div class="grid-label">Live Stok</div>
-            </div>
-        </div>
-
-        <!-- ZONA 2: PPOB & OPERASIONAL HARIAN -->
-        <div class="section-header" style="margin-top: 16px;">
-            <span>OTOMASI PPOB & KEUANGAN</span>
-            <span style="font-size: 10px; color: #D97706; font-weight: 800;">Auto-Stream</span>
-        </div>
-        <div class="fintech-grid">
-            <div class="grid-item" onclick="openWorkspace('PPOB_FEED')">
-                <div class="grid-icon-circle" style="color: #D97706;">⚡</div>
-                <div class="grid-label">Feed PPOB</div>
-            </div>
             <div class="grid-item" onclick="openWorkspace('BIAYA')">
                 <div class="grid-icon-circle" style="color: #EF4444;">💸</div>
                 <div class="grid-label">Kas Keluar</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('MEMBER_DAFTAR')">
                 <div class="grid-icon-circle" style="color: #DB2777;">👥</div>
-                <div class="grid-label">Daftar Member</div>
-            </div>
-            <div class="grid-item" onclick="openWorkspace('REKAP')">
-                <div class="grid-icon-circle" style="color: #374151;">📋</div>
-                <div class="grid-label">Laci EOD</div>
+                <div class="grid-label">Member</div>
             </div>
         </div>
     </div>
 
-    <!-- FEED NOTIFIKASI PPOB REAL-TIME TERAKHIR -->
+    <!-- FEED NOTIFIKASI PPOB -->
     <div class="section-card">
         <div class="card-title-head">
             <span>Log Notifikasi PPOB Terakhir (Hari Ini)</span>
@@ -157,19 +130,19 @@
     </div>
 </div>
 
-<!-- 3. BILAH BAWAH -->
+<!-- 3. BILAH BAWAH (5 PILAR NAVIGASI) -->
 <div class="bottom-bar">
     <div class="b-item active" onclick="goHome()">
         <div class="b-icon">🏠</div>
         <div>Beranda</div>
     </div>
-    <div class="b-item" onclick="openWorkspace('SCAN_MASUK')">
-        <div class="b-icon">📥</div>
-        <div>Kulakan</div>
+    <div class="b-item" onclick="openWorkspace('MENU_LOGISTIK')">
+        <div class="b-icon">📦</div>
+        <div>Logistik</div>
     </div>
-    <div class="center-scan-btn" onclick="openWorkspace('CEK_HARGA')">
-        <span>🔍</span>
-        <span>Cek</span>
+    <div class="center-scan-btn" onclick="openWorkspace('PPOB_FEED')">
+        <span>⚡</span>
+        <span>PPOB</span>
     </div>
     <div class="b-item" onclick="openWorkspace('MEMBER_SCAN')">
         <div class="b-icon">💳</div>
@@ -181,9 +154,74 @@
     </div>
 </div>
 
-<!-- 4. SUB-LAYAR (WORKSPACES) -->
+<!-- 4. WORKSPACES -->
 
-<!-- WORKSPACE: CEK HARGA KILAT (QUICK PRICE CHECKER) -->
+<!-- WORKSPACE: MENU UTAMA LOGISTIK -->
+<div class="workspace-screen" id="wsMenuLogistik">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Pusat Logistik & Stok Cabang</div>
+    </div>
+    <div class="workspace-content">
+        <div class="card" onclick="openWorkspace('SCAN_MASUK')" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+            <div style="width: 48px; height: 48px; background: #DCFCE7; color: #16A34A; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📥</div>
+            <div>
+                <div style="font-weight: 900; font-size: 13px;">Scan Masuk (Kulakan)</div>
+                <div style="font-size: 10.5px; color: var(--text-gray);">Tambah stok baru atau restock via barcode</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openWorkspace('CEK_HARGA')" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+            <div style="width: 48px; height: 48px; background: #E0F2FE; color: #0284C7; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px;">🔍</div>
+            <div>
+                <div style="font-weight: 900; font-size: 13px;">Cek Harga Kilat</div>
+                <div style="font-size: 10.5px; color: var(--text-gray);">Cek harga jual dan ketersediaan stok cabang</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openWorkspace('MUTASI')" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+            <div style="width: 48px; height: 48px; background: #EDE9FE; color: #7C3AED; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px;">🔄</div>
+            <div>
+                <div style="font-weight: 900; font-size: 13px;">Mutasi Cabang</div>
+                <div style="font-size: 10.5px; color: var(--text-gray);">Transfer stok dari Gudang Utama ke Toko</div>
+            </div>
+        </div>
+
+        <div class="card" onclick="openWorkspace('STOK')" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+            <div style="width: 48px; height: 48px; background: #E0E7FF; color: #4338CA; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📊</div>
+            <div>
+                <div style="font-weight: 900; font-size: 13px;">Live Stok Produk</div>
+                <div style="font-size: 10.5px; color: var(--text-gray);">Lihat rekapitulasi seluruh inventaris gudang & toko</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WORKSPACE: DIAGNOSTIK & STATUS SINKRONISASI -->
+<div class="workspace-screen" id="wsSyncStatus">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Status Sinkronisasi & Antrean</div>
+    </div>
+    <div class="workspace-content">
+        <div class="card" style="border-left: 4px solid var(--bank-accent);">
+            <div style="font-size: 12px; font-weight: 900; color: var(--bank-primary); margin-bottom: 6px;">KONEKSI CLOUD DESKTOP</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 11px; color: var(--text-gray);">Status Jaringan:</span>
+                <span id="diagNetworkStatus" style="font-weight: 900; color: #10B981;">ONLINE</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 11px; color: var(--text-gray);">Antrean Offline Tertahan:</span>
+                <span id="diagOfflineCount" style="font-weight: 900; color: #D97706;">0 Item</span>
+            </div>
+            <button class="btn btn-primary" onclick="forceFlushQueue()">
+                🔄 Paksa Sinkronisasi Sekarang
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- WORKSPACE: CEK HARGA KILAT -->
 <div class="workspace-screen" id="wsCekHarga">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -200,7 +238,6 @@
             </button>
         </div>
 
-        <!-- KARTU HASIL PEMINDAIAN HARGA -->
         <div class="card" id="cardHasilCekHarga" style="display: none; background: linear-gradient(135deg, #F0FDF4, #DCFCE7); border: 2px solid #86EFAC;">
             <div style="font-size: 10px; font-weight: 800; color: #166534; margin-bottom: 4px;">BARANG DITEMUKAN:</div>
             <div style="font-size: 16px; font-weight: 900; color: #0F172A; margin-bottom: 8px;" id="resCekNama">-</div>
@@ -229,7 +266,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 1: SCAN BARANG MASUK / KULAKAN -->
+<!-- WORKSPACE: SCAN KULAKAN -->
 <div class="workspace-screen" id="wsScanMasuk">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -284,7 +321,6 @@
                 </div>
             </div>
 
-            <!-- KALKULATOR KEMBALIAN -->
             <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 11px; font-weight: 800; color: #166534;">ESTIMASI TOTAL BELANJA:</span>
@@ -307,7 +343,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 2: MUTASI CABANG -->
+<!-- WORKSPACE: MUTASI -->
 <div class="workspace-screen" id="wsMutasi">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -360,7 +396,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 3: FEED PPOB -->
+<!-- WORKSPACE: PPOB FEED -->
 <div class="workspace-screen" id="wsPpobFeed">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -386,7 +422,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 4: DAFTAR MEMBER -->
+<!-- WORKSPACE: MEMBER DAFTAR -->
 <div class="workspace-screen" id="wsMemberDaftar">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -424,7 +460,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 5: SCAN MEMBER -->
+<!-- WORKSPACE: SCAN MEMBER -->
 <div class="workspace-screen" id="wsMemberScan">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -460,7 +496,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 6: KAS KELUAR -->
+<!-- WORKSPACE: KAS KELUAR -->
 <div class="workspace-screen" id="wsBiaya">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -489,7 +525,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 7: HITUNG LACI -->
+<!-- WORKSPACE: HITUNG LACI EOD -->
 <div class="workspace-screen" id="wsRekap">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -522,7 +558,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 8: LIVE STOK -->
+<!-- WORKSPACE: LIVE STOK -->
 <div class="workspace-screen" id="wsStok">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -536,7 +572,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 9: SOP -->
+<!-- WORKSPACE: SOP -->
 <div class="workspace-screen" id="wsSOP">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
