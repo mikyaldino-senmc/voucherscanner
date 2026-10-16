@@ -1,5 +1,5 @@
 // =========================================================================
-// MODUL OPERASIONAL: CEK HARGA, LOGISTIK, MUTASI, PPOB, MEMBER & KALKULATOR
+// MODUL OPERASIONAL: LOGISTIK, CEK HARGA, MUTASI, PPOB, MEMBER & DIAGNOSTIK
 // =========================================================================
 
 window.activeStore = window.activeStore || "Toko NMC";
@@ -24,6 +24,13 @@ function openWorkspace(id) {
   if (id === 'SCAN_MASUK') {
     document.getElementById("wsScanMasuk").style.display = "flex";
     resetFormMasuk();
+  }
+  else if (id === 'MENU_LOGISTIK') {
+    document.getElementById("wsMenuLogistik").style.display = "flex";
+  }
+  else if (id === 'SYNC_STATUS') {
+    document.getElementById("wsSyncStatus").style.display = "flex";
+    updateDiagnosticsView();
   }
   else if (id === 'CEK_HARGA') {
     document.getElementById("wsCekHarga").style.display = "flex";
@@ -64,7 +71,38 @@ function openWorkspace(id) {
 }
 
 // =========================================================================
-// 1. FITUR: QUICK PRICE CHECKER (CEK HARGA KILAT)
+// 1. DIAGNOSTIK & STATUS SINKRONISASI OFFLINE
+// =========================================================================
+function updateDiagnosticsView() {
+  const netStatus = document.getElementById("diagNetworkStatus");
+  const offlineCount = document.getElementById("diagOfflineCount");
+  
+  if (netStatus) {
+    if (navigator.onLine) {
+      netStatus.innerText = "ONLINE (Terhubung)";
+      netStatus.style.color = "#10B981";
+    } else {
+      netStatus.innerText = "OFFLINE (Terputus)";
+      netStatus.style.color = "#EF4444";
+    }
+  }
+
+  if (offlineCount) {
+    const offlineQ = JSON.parse(localStorage.getItem("NIKOLA_OFFLINE_Q") || "[]");
+    offlineCount.innerText = offlineQ.length + " Item";
+  }
+}
+
+async function forceFlushQueue() {
+  showToast("🔄 Memaksa sinkronisasi antrean...");
+  if (typeof flushOfflineQueue === 'function') {
+    await flushOfflineQueue();
+  }
+  updateDiagnosticsView();
+}
+
+// =========================================================================
+// 2. QUICK PRICE CHECKER (CEK HARGA KILAT)
 // =========================================================================
 function handleScannedBarcodeCekHarga(cleanCode) {
   const card = document.getElementById("cardHasilCekHarga");
@@ -97,7 +135,7 @@ function handleScannedBarcodeCekHarga(cleanCode) {
 }
 
 // =========================================================================
-// 2. LOGISTIK: SCAN BARANG MASUK / KULAKAN + KALKULATOR KEMBALIAN
+// 3. SCAN BARANG MASUK + KALKULATOR KEMBALIAN
 // =========================================================================
 function resetFormMasuk() {
   document.getElementById("inpBarcodeMasuk").value = "";
@@ -224,7 +262,7 @@ async function simpanBarangMasuk() {
 }
 
 // =========================================================================
-// 3. MUTASI STOK GUDANG ➔ TOKO CABANG
+// 4. MUTASI CABANG
 // =========================================================================
 function populateKatalogMutasi() {
   const sel = document.getElementById("selKatalogMutasi");
@@ -309,7 +347,7 @@ async function kirimMutasiStok() {
 }
 
 // =========================================================================
-// 4. PPOB CHECKLIST VERIFIKASI
+// 5. PPOB CHECKLIST
 // =========================================================================
 function renderPpobChecklist() {
   const cont = document.getElementById("ppobChecklistContainer");
@@ -365,7 +403,7 @@ function togglePpobVerify(idTrx, isChecked) {
 }
 
 // =========================================================================
-// 5. MEMBER LOYALITAS
+// 6. MEMBER & KAS KELUAR / REKAP LACI
 // =========================================================================
 let lastRegisteredMember = null;
 
@@ -410,9 +448,7 @@ async function simpanMemberDanGenerateBarcode() {
       height: 50,
       displayValue: true
     });
-  } catch (e) {
-    console.error("Barcode Error:", e);
-  }
+  } catch (e) {}
 
   alert(`✅ Member Berhasil Didaftarkan!\nID Member: ${memberId}`);
   document.getElementById("inpMemberWA").value = "";
@@ -444,9 +480,6 @@ function handleScannedBarcodeMember(cleanCode) {
   }
 }
 
-// =========================================================================
-// 6. KAS KELUAR & HITUNG LACI
-// =========================================================================
 async function simpanBiayaKasir() {
   const kat = document.getElementById("katBiayaSelect").value;
   const nom = parseInt(document.getElementById("inpNominalBiaya").value) || 0;
