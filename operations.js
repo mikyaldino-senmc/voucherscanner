@@ -1,10 +1,11 @@
 // =========================================================================
-// MODUL OPERASIONAL: LOGISTIK, CEK HARGA, MUTASI, PPOB, MEMBER & DIAGNOSTIK
+// MODUL OPERASIONAL: LOGISTIK, CEK HARGA, MUTASI, PPOB, MEMBER & FITUR BARU
 // =========================================================================
 
 window.activeStore = window.activeStore || "Toko NMC";
 window.masterKatalog = window.masterKatalog || [];
 let cartMutasi = {};
+let cartPO = {};
 
 function goHome() {
   closeAllWorkspaces();
@@ -61,6 +62,19 @@ function openWorkspace(id) {
     document.getElementById("wsStok").style.display = "flex";
     renderStockSummaryView();
   }
+  else if (id === 'OWNER_DASH') {
+    document.getElementById("wsOwnerDash").style.display = "flex";
+    renderOwnerDashboard();
+  }
+  else if (id === 'PURCHASE_ORDER') {
+    document.getElementById("wsPurchaseOrder").style.display = "flex";
+    populateKatalogPO();
+    renderCartPO();
+  }
+  else if (id === 'PRICE_TAG') {
+    document.getElementById("wsPriceTag").style.display = "flex";
+    populateKatalogTag();
+  }
   else if (id === 'SOP') {
     document.getElementById("wsSOP").style.display = "flex";
   }
@@ -76,7 +90,7 @@ function openWorkspace(id) {
 function updateDiagnosticsView() {
   const netStatus = document.getElementById("diagNetworkStatus");
   const offlineCount = document.getElementById("diagOfflineCount");
-  
+
   if (netStatus) {
     if (navigator.onLine) {
       netStatus.innerText = "ONLINE (Terhubung)";
@@ -106,7 +120,6 @@ async function forceFlushQueue() {
 // =========================================================================
 function handleScannedBarcodeCekHarga(cleanCode) {
   const card = document.getElementById("cardHasilCekHarga");
-  
   const prod = window.masterKatalog.find(p =>
     p.kode_barang === cleanCode ||
     (p.barcode && p.barcode.includes(cleanCode))
@@ -115,13 +128,13 @@ function handleScannedBarcodeCekHarga(cleanCode) {
   card.style.display = "block";
   if (prod) {
     const stokToko = (window.activeStore === "Toko NACC") ? (prod.stok_nacc || 0) : (prod.stok_nmc || 0);
-    
+
     document.getElementById("resCekNama").innerText = prod.nama_barang;
     document.getElementById("resCekBarcode").innerText = cleanCode;
     document.getElementById("resCekJual").innerText = "Rp " + Number(prod.harga_jual || 0).toLocaleString('id-ID');
     document.getElementById("resCekStokToko").innerText = stokToko + " pcs";
     document.getElementById("resCekStokGudang").innerText = (prod.stok_gudang || 0) + " pcs";
-    
+
     showToast(`✅ Ditemukan: ${prod.nama_barang}`);
   } else {
     document.getElementById("resCekNama").innerText = "❌ Barang Tidak Ditemukan di Master!";
@@ -129,7 +142,7 @@ function handleScannedBarcodeCekHarga(cleanCode) {
     document.getElementById("resCekJual").innerText = "Rp 0";
     document.getElementById("resCekStokToko").innerText = "0";
     document.getElementById("resCekStokGudang").innerText = "0";
-    
+
     showToast("⚠️ Barcode belum terdaftar di sistem.");
   }
 }
@@ -246,13 +259,7 @@ async function simpanBarangMasuk() {
     waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
     jenis: jenisTrx,
     tujuan: lokasi,
-    items: [{
-      barcode: code,
-      nama: nama,
-      qty: qty,
-      modal: modal,
-      jual: jual
-    }]
+    items: [{ barcode: code, nama: nama, qty: qty, modal: modal, jual: jual }]
   };
 
   await sendSafePayload(payload);
@@ -332,11 +339,7 @@ async function kirimMutasiStok() {
     asal: "Gudang Utama",
     tujuan: tujuan,
     items: keys.map(k => ({
-      barcode: k,
-      qty: cartMutasi[k],
-      modal: prod.harga_modal,
-      nama: prod.nama_barang,
-      jual: prod.harga_jual
+      barcode: k, qty: cartMutasi[k], modal: prod.harga_modal, nama: prod.nama_barang, jual: prod.harga_jual
     }))
   };
 
@@ -418,13 +421,9 @@ async function simpanMemberDanGenerateBarcode() {
   const memberId = "MBR-" + cleanWA.slice(-6);
 
   const payload = {
-    action: "sync_operation",
-    tipe_operasi: "MEMBER_BARU",
+    action: "sync_operation", tipe_operasi: "MEMBER_BARU",
     waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
-    toko: window.activeStore,
-    id_member: memberId,
-    nama_member: nama,
-    nomor_wa: cleanWA
+    toko: window.activeStore, id_member: memberId, nama_member: nama, nomor_wa: cleanWA
   };
 
   await sendSafePayload(payload);
@@ -441,13 +440,7 @@ async function simpanMemberDanGenerateBarcode() {
   document.getElementById("resMemberID").innerText = memberId;
 
   try {
-    JsBarcode("#memberBarcodeSvg", memberId, {
-      format: "CODE128",
-      lineColor: "#0F172A",
-      width: 2,
-      height: 50,
-      displayValue: true
-    });
+    JsBarcode("#memberBarcodeSvg", memberId, { format: "CODE128", lineColor: "#0F172A", width: 2, height: 50, displayValue: true });
   } catch (e) {}
 
   alert(`✅ Member Berhasil Didaftarkan!\nID Member: ${memberId}`);
@@ -457,7 +450,7 @@ async function simpanMemberDanGenerateBarcode() {
 
 function kirimKartuMemberViaWA() {
   if (!lastRegisteredMember) return alert("Belum ada data member yang dibuat.");
-  const msg = `Halo Kak ${lastRegisteredMember.nama},\nSelamat! Anda resmi terdaftar sebagai Member Nikola Cell.\n\nNomor Member: *${lastRegisteredMember.id}*\nGunakan nomor ini atau tunjukkan kartu saat bertransaksi untuk mengumpulkan poin reward menarik.\n\nTerima kasih!`;
+  const msg = `Halo Kak ${lastRegisteredMember.nama},\nSelamat! Anda resmi terdaftar sebagai Member Nikola Cell.\n\nNomor Member: *${lastRegisteredMember.id}*\nGunakan nomor ini atau tunjukkan kartu saat bertransaksi untuk mengumpulkan poin reward.\n\nTerima kasih!`;
   window.location.href = `whatsapp://send?phone=${lastRegisteredMember.wa}&text=${encodeURIComponent(msg)}`;
 }
 
@@ -490,14 +483,9 @@ async function simpanBiayaKasir() {
 
   const isSetor = (kat === "SETOR_OWNER");
   const payload = {
-    action: "sync_operation",
-    tipe_operasi: isSetor ? "SETOR_OWNER" : "OPERASIONAL",
-    id_trx: "EXP-" + Date.now(),
-    waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
-    toko: window.activeStore,
-    nominal: nom,
-    kategori: kat,
-    deskripsi: ket
+    action: "sync_operation", tipe_operasi: isSetor ? "SETOR_OWNER" : "OPERASIONAL",
+    id_trx: "EXP-" + Date.now(), waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    toko: window.activeStore, nominal: nom, kategori: kat, deskripsi: ket
   };
 
   await sendSafePayload(payload);
@@ -524,9 +512,7 @@ function hitungTotalLaci() {
 
 async function simpanHitungLaciEOD() {
   const total = hitungTotalLaci();
-  if (total <= 0) {
-    if (!confirm("⚠️ Total fisik laci Rp 0. Apakah Anda yakin ingin menyimpan?")) return;
-  }
+  if (total <= 0 && !confirm("⚠️ Total fisik laci Rp 0. Apakah Anda yakin ingin menyimpan?")) return;
 
   const rincian = {};
   document.querySelectorAll(".inp-pecahan").forEach(inp => {
@@ -537,22 +523,166 @@ async function simpanHitungLaciEOD() {
   const receh = parseInt(document.getElementById("inpReceh")?.value) || 0;
   if (receh > 0) rincian["Koin/Receh"] = receh;
 
-  if (!confirm(`Konfirmasi Tutup Kasir (EOD):\nToko: ${window.activeStore}\nTotal Fisik Laci: Rp ${total.toLocaleString('id-ID')}\nKirim rekonsiliasi ke PC Desktop?`)) {
-    return;
-  }
+  if (!confirm(`Konfirmasi Tutup Kasir (EOD):\nToko: ${window.activeStore}\nTotal Fisik Laci: Rp ${total.toLocaleString('id-ID')}\nKirim rekonsiliasi ke PC Desktop?`)) return;
 
   const payload = {
-    action: "sync_operation",
-    tipe_operasi: "HITUNG_LACI",
-    id_trx: "EOD-MOB-" + Date.now(),
-    waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
-    toko: window.activeStore,
-    nominal: total,
-    deskripsi: `Hitung Fisik Laci ${window.activeStore} EOD`,
-    extra_json: JSON.stringify(rincian)
+    action: "sync_operation", tipe_operasi: "HITUNG_LACI",
+    id_trx: "EOD-MOB-" + Date.now(), waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    toko: window.activeStore, nominal: total, deskripsi: `Hitung Fisik Laci ${window.activeStore} EOD`, extra_json: JSON.stringify(rincian)
   };
 
   await sendSafePayload(payload);
   alert(`✅ Hitung Fisik Laci Rp ${total.toLocaleString('id-ID')} berhasil terkirim ke Desktop!`);
   goHome();
+}
+
+
+// =========================================================================
+// 7. IMPLEMENTASI LOGIKA FITUR BARU
+// =========================================================================
+
+// F1. Owner Remote Dashboard & Smart Alert
+function renderOwnerDashboard() {
+  const alertCont = document.getElementById("ownerAlertContainer");
+  const summaryCont = document.getElementById("ownerSummaryContainer");
+  const store = window.activeStore;
+  const d = window.storeSummaryToday[store] || { saldo_kas: 0, saldo_oq: 0, saldo_digipos: 0, laba_ppob_today: 0 };
+
+  let alerts = [];
+  if ((d.saldo_oq || 0) < 50000) {
+    alerts.push(`⚠️ Saldo Order Kuota menipis: Rp ${Number(d.saldo_oq).toLocaleString('id-ID')}! Segera lakukan Top Up.`);
+  }
+  if ((d.saldo_digipos || 0) < 50000) {
+    alerts.push(`⚠️ Saldo Digipos menipis: Rp ${Number(d.saldo_digipos).toLocaleString('id-ID')}! Segera lakukan Top Up.`);
+  }
+
+  if (alerts.length > 0) {
+    alertCont.innerHTML = alerts.map(a => `<div style="padding: 10px; background: #FEE2E2; border: 1px solid #FECACA; border-radius: 8px; font-size: 11px; color: #991B1B; font-weight: 700; margin-bottom: 6px;">${a}</div>`).join('');
+  } else {
+    alertCont.innerHTML = `<div style="padding: 10px; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 8px; font-size: 11px; color: #166534; font-weight: 700;">✅ Semua saldo server mencukupi dan normal.</div>`;
+  }
+
+  summaryCont.innerHTML = `
+    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F1F5F9;"><span>Saldo Kas Toko:</span><b>Rp ${Number(d.saldo_kas || 0).toLocaleString('id-ID')}</b></div>
+    <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F1F5F9;"><span>Laba PPOB Hari Ini:</span><b style="color:#10B981">Rp ${Number(d.laba_ppob_today || 0).toLocaleString('id-ID')}</b></div>
+    <div style="display: flex; justify-content: space-between; padding: 6px 0;"><span>Status Koneksi:</span><b style="color:#0284C7">${navigator.onLine ? 'ONLINE (Live)' : 'OFFLINE'}</b></div>
+  `;
+}
+
+// F2. Purchase Order (PO) / Restock List
+function populateKatalogPO() {
+  const sel = document.getElementById("selKatalogPO");
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Pilih Produk Master --</option>';
+  window.masterKatalog.forEach((item, idx) => {
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = `${item.nama_barang} (Stok: ${item.stok_gudang || 0})`;
+    sel.appendChild(opt);
+  });
+}
+
+function tambahItemPO() {
+  const sel = document.getElementById("selKatalogPO");
+  const qty = parseInt(document.getElementById("inpQtyPO").value) || 1;
+  if (!sel || sel.value === "") return alert("Pilih produk master terlebih dahulu!");
+  
+  const prod = window.masterKatalog[sel.value];
+  const barcode = prod.barcode || prod.kode_barang;
+
+  cartPO[barcode] = {
+    nama: prod.nama_barang,
+    qty: (cartPO[barcode]?.qty || 0) + qty,
+    modal: prod.harga_modal
+  };
+  renderCartPO();
+  showToast(`Ditambahkan ke PO: ${prod.nama_barang}`);
+}
+
+function renderCartPO() {
+  const tbody = document.getElementById("cartTablePO");
+  tbody.innerHTML = "";
+  const keys = Object.keys(cartPO);
+  if (keys.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-gray); padding: 12px;">Belum ada item dalam daftar PO.</td></tr>`;
+    return;
+  }
+  keys.forEach(k => {
+    tbody.innerHTML += `
+      <tr>
+        <td><b>${cartPO[k].nama}</b><br><span class="badge-code">${k}</span></td>
+        <td style="text-align: center;">${cartPO[k].qty} pcs</td>
+        <td style="text-align: right;"><button class="btn-danger" onclick="delete cartPO['${k}']; renderCartPO();">✕</button></td>
+      </tr>
+    `;
+  });
+}
+
+async function kirimPurchaseOrder() {
+  const keys = Object.keys(cartPO);
+  if (keys.length === 0) return alert("Daftar PO masih kosong!");
+
+  const payload = {
+    action: "sync_po",
+    batch_id: "PO-" + Date.now(),
+    waktu: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    toko: window.activeStore,
+    items: keys.map(k => ({
+      barcode: k,
+      nama: cartPO[k].nama,
+      qty: cartPO[k].qty,
+      modal: cartPO[k].modal
+    }))
+  };
+
+  await sendSafePayload(payload);
+  alert("✅ Purchase Order berhasil dikirim ke Desktop / Supplier!");
+  cartPO = {};
+  renderCartPO();
+  goHome();
+}
+
+// F3. Price Tag & Barcode Generator
+function populateKatalogTag() {
+  const sel = document.getElementById("selKatalogTag");
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Pilih Produk untuk Cetak Tag --</option>';
+  window.masterKatalog.forEach((item, idx) => {
+    const opt = document.createElement("option");
+    opt.value = idx;
+    opt.textContent = `${item.nama_barang} (Rp ${Number(item.harga_jual || 0).toLocaleString('id-ID')})`;
+    sel.appendChild(opt);
+  });
+}
+
+function onSelectKatalogTag() {
+  const sel = document.getElementById("selKatalogTag");
+  if (!sel || sel.value === "") return;
+  const prod = window.masterKatalog[sel.value];
+  if (prod) {
+    document.getElementById("inpManualTagCode").value = prod.barcode || prod.kode_barang;
+    document.getElementById("inpManualTagName").value = prod.nama_barang;
+    document.getElementById("inpManualTagPrice").value = prod.harga_jual || 0;
+    generateCustomBarcodeTag();
+  }
+}
+
+function generateCustomBarcodeTag() {
+  const code = document.getElementById("inpManualTagCode").value.trim() || "12345678";
+  const name = document.getElementById("inpManualTagName").value.trim() || "Nama Produk";
+  const price = parseInt(document.getElementById("inpManualTagPrice").value) || 0;
+
+  document.getElementById("previewTagName").innerText = name;
+  document.getElementById("previewTagPrice").innerText = "Rp " + price.toLocaleString('id-ID');
+  document.getElementById("previewTagCode").innerText = "Kode: " + code;
+
+  try {
+    JsBarcode("#previewBarcodeSvg", code, {
+      format: "CODE128",
+      lineColor: "#0F172A",
+      width: 2,
+      height: 60,
+      displayValue: true
+    });
+  } catch (e) {}
 }
