@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nikola Companion</title>
-    <!-- Hubungkan CSS Utama -->
     <link rel="stylesheet" href="style.css">
-    <!-- Library QR/Barcode Scanner (Html5Qrcode & JsBarcode) -->
+    <!-- Library QR/Barcode Scanner & Barcode Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 </head>
 <body>
 
-    <!-- 1. LAYAR ONBOARDING / LOGIN TOKO -->
+    <!-- 1. ONBOARDING / LOGIN SCREEN -->
     <div id="onboardingScreen">
         <div class="onboarding-hero">
             <div class="hero-icon-box">🏦</div>
@@ -29,7 +28,7 @@
         <div style="text-align: center; font-size: 10px; color: #93C5FD;">Banking-Grade Secure Sync v2.0</div>
     </div>
 
-    <!-- 2. DASHBOARD UTAMA -->
+    <!-- 2. HERO HEADER & DASHBOARD -->
     <div class="hero-container">
         <div class="top-brand-bar">
             <div class="brand-logo">NIKOLA <span id="labelTokoHeader">TOKO NMC</span></div>
@@ -49,7 +48,7 @@
         </div>
     </div>
 
-    <!-- FLOATING SALDO CARD -->
+    <!-- FLOATING BALANCE CARD -->
     <div class="balance-card-carousel">
         <div class="rekening-header">
             <span class="rek-number">SALDO KAS & OPERASIONAL</span>
@@ -66,7 +65,7 @@
         </div>
     </div>
 
-    <!-- 3. MENU UTAMA FINTECH GRID -->
+    <!-- 3. FINTECH GRID MENU -->
     <div class="menu-section">
         <div class="section-header">MENU OPERASIONAL TOKO</div>
         <div class="fintech-grid">
@@ -105,7 +104,7 @@
         </div>
     </div>
 
-    <!-- 4. FEED NOTIFIKASI TERAKHIR -->
+    <!-- 4. NOTIFICATION FEED MINI -->
     <div class="section-card">
         <div class="card-title-head">
             <span>TRANSAKSI PPOB TERAKHIR</span>
@@ -116,8 +115,66 @@
         </div>
     </div>
 
-    <!-- 5. WORKSPACE / HALAMAN MODAL (SCAN MASUK, MUTASI, DLL) -->
-    <!-- (Contoh Workspace Cek Harga) -->
+
+    <!-- ========================================================================= -->
+    <!-- WORKSPACES / SUB-MENU SCREENS (WAJIB ADA AGAR MENU BISA DIBUKA) -->
+    <!-- ========================================================================= -->
+
+    <!-- A. WORKSPACE SCAN BARANG MASUK -->
+    <div id="wsScanMasuk" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Scan Barang Masuk / Kulakan</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div class="camera-panel-box">
+                    <div class="reader-box"><div id="reader-masuk"></div><div class="laser-guide" id="laserMasuk"></div></div>
+                </div>
+                <button class="btn btn-primary" id="btnCamMasuk" onclick="toggleScannerMasuk()">📷 Nyalakan Scanner Kamera</button>
+            </div>
+            <div class="card">
+                <label>Barcode / Kode Barang</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="inpBarcodeMasuk" placeholder="Scan atau ketik kode..." onchange="onBarcodeEnteredManual()">
+                </div>
+                <div id="panelItemStatus" style="display:none; padding:10px; border-radius:10px; margin-bottom:12px;"></div>
+                <label>Nama Barang</label>
+                <input type="text" id="inpNamaBarangMasuk" placeholder="Nama produk...">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label>Harga Modal (Rp)</label><input type="number" id="inpModalMasuk" oninput="hitungTotalKulakan()"></div>
+                    <div style="flex:1;"><label>Harga Jual (Rp)</label><input type="number" id="inpJualMasuk"></div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;"><label>Jumlah Qty</label><input type="number" id="inpQtyMasuk" value="1" oninput="hitungTotalKulakan()"></div>
+                    <div style="flex:1;"><label>Lokasi Tujuan</label>
+                        <select id="selLokasiMasuk">
+                            <option value="Gudang Utama">Gudang Utama</option>
+                            <option value="Toko NMC">Toko NMC</option>
+                            <option value="Toko NACC">Toko NACC</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="background:#F8FAFC; padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid #E2E8F0;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800;">
+                        <span>Total Estimasi Kulakan:</span>
+                        <span id="lblTotalEstimasiKulakan" style="color:#0284C7">Rp 0</span>
+                    </div>
+                </div>
+                <label>Uang Diterima dari Pemilik/Kasir (Kalkulator Kembalian)</label>
+                <input type="number" id="inpUangDiterima" placeholder="Nominal uang tunai..." oninput="hitungKembalianKulakan()">
+                <div style="background:#FEF3C7; padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid #FDE68A;">
+                    <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:900;">
+                        <span>Uang Kembalian:</span>
+                        <span id="lblUangKembalian" style="color:#B45309">Rp 0</span>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="simpanBarangMasuk()">💾 Simpan & Kirim ke Desktop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- B. WORKSPACE CEK HARGA KILAT -->
     <div id="wsCekHarga" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -141,6 +198,204 @@
             </div>
         </div>
     </div>
+
+    <!-- C. WORKSPACE MUTASI STOK -->
+    <div id="wsMutasi" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Mutasi Voucher / Stok</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <label>Pilih Produk Master</label>
+                <select id="selKatalogMutasi" onchange="onSelectKatalogMutasi()"></select>
+                <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Stok Gudang Tersedia: <b id="lblStokGudangMutasi">0</b> pcs</div>
+                
+                <label>Tujuan Mutasi Cabang</label>
+                <select id="selTujuanMutasi">
+                    <option value="Toko NMC">Toko NMC</option>
+                    <option value="Toko NACC">Toko NACC</option>
+                </select>
+            </div>
+            <div class="card">
+                <div class="camera-panel-box">
+                    <div class="reader-box"><div id="reader-mutasi"></div><div class="laser-guide" id="laserMutasi"></div></div>
+                </div>
+                <button class="btn btn-primary" id="btnCamMutasi" onclick="toggleScannerMutasi()">📷 Nyalakan Scanner Kamera</button>
+            </div>
+            <div class="card">
+                <div style="font-weight:900; font-size:12px; margin-bottom:8px;">Daftar Item Voucher Dipindai</div>
+                <table>
+                    <thead><tr><th>Barcode Voucher</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Aksi</th></tr></thead>
+                    <tbody id="cartTableMutasi">
+                        <tr><td colspan="3" style="text-align: center; color: var(--text-gray); padding: 12px;">Belum ada item dipindai.</td></tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-success" style="margin-top:14px;" onclick="kirimMutasiStok()">🚀 Kirim Mutasi ke Desktop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- D. WORKSPACE PPOB FEED -->
+    <div id="wsPpobFeed" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Checklist PPOB Harian</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Ceklis transaksi Order Kuota & Digipos yang masuk agar sesuai dengan fisik server.</div>
+                <div id="ppobChecklistContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- E. WORKSPACE DAFTAR MEMBER -->
+    <div id="wsMemberDaftar" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Registrasi Member Baru</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <label>Nomor WhatsApp Member</label>
+                <input type="tel" id="inpMemberWA" placeholder="08xxxxxxxxxx">
+                <label>Nama Lengkap Member</label>
+                <input type="text" id="inpMemberName" placeholder="Nama pelanggan...">
+                <button class="btn btn-primary" onclick="simpanMemberDanGenerateBarcode()">✨ Buat Kartu & Daftarkan</button>
+            </div>
+            <div class="card" id="cardMemberResult" style="display:none; text-align:center; background:#F8FAFC;">
+                <div style="font-weight:900; font-size:14px; color:#0F172A;" id="resMemberName">-</div>
+                <div style="font-size:11px; color:#64748B;" id="resMemberWA">-</div>
+                <div style="font-size:12px; font-weight:900; color:#0284C7; margin:6px 0;" id="resMemberID">-</div>
+                <svg id="memberBarcodeSvg" style="margin:10px auto; display:block;"></svg>
+                <button class="btn btn-success" onclick="kirimKartuMemberViaWA()">💬 Kirim Kartu via WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F. WORKSPACE SCAN MEMBER -->
+    <div id="wsMemberScan" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Scan Barcode Member</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div class="camera-panel-box">
+                    <div class="reader-box"><div id="reader-member"></div><div class="laser-guide" id="laserMember"></div></div>
+                </div>
+                <button class="btn btn-primary" id="btnCamMember" onclick="toggleScannerMember()">📷 Nyalakan Scanner Kartu</button>
+            </div>
+            <div class="card" id="panelMemberScanResult" style="display:none; background:#F0FDF4; border-color:#86EFAC;">
+                <div style="font-weight:900; font-size:14px; color:#166534;" id="scanResMemberName">-</div>
+                <div style="font-size:11px; color:#475569;" id="scanResMemberID">-</div>
+                <div style="font-size:16px; font-weight:900; color:#0284C7; margin-top:8px;" id="scanResMemberPoin">0 Poin</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- G. WORKSPACE KAS KELUAR / BIAYA -->
+    <div id="wsBiaya" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Catat Kas Keluar / Setoran</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <label>Kategori Pengeluaran</label>
+                <select id="katBiayaSelect">
+                    <option value="OPERASIONAL">Biaya Operasional Toko (Listrik, Konsumsi, dll)</option>
+                    <option value="SETOR_OWNER">Setor Tunai Kas ke Owner</option>
+                    <option value="LAINNYA">Lain-lain</option>
+                </select>
+                <label>Nominal (Rp)</label>
+                <input type="number" id="inpNominalBiaya" placeholder="Contoh: 50000">
+                <label>Keterangan / Catatan</label>
+                <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli token listrik token..." style="margin-bottom:16px;">
+                <button class="btn btn-primary" onclick="simpanBiayaKasir()">💾 Catat & Kirim ke Desktop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- H. WORKSPACE HITUNG LACI / REKAP EOD -->
+    <div id="wsRekap" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Hitung Fisik Laci (Tutup Kasir)</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div style="font-size:11px; color:var(--text-gray); margin-bottom:12px;">Masukkan jumlah lembar uang fisik di laci kasir per pecahan.</div>
+                <div class="pecahan-row"><span>Rp 100.000</span><input type="number" class="inp-pecahan" data-val="100000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row"><span>Rp 50.000</span><input type="number" class="inp-pecahan" data-val="50000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row"><span>Rp 20.000</span><input type="number" class="inp-pecahan" data-val="20000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row"><span>Rp 10.000</span><input type="number" class="inp-pecahan" data-val="10000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row"><span>Rp 5.000</span><input type="number" class="inp-pecahan" data-val="5000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row"><span>Rp 2.000</span><input type="number" class="inp-pecahan" data-val="2000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row"><span>Rp 1.000</span><input type="number" class="inp-pecahan" data-val="1000" value="0" oninput="hitungTotalLaci()"></div>
+                <div class="pecahan-row" style="margin-top:10px;"><span>Koin / Receh (Total Rp)</span><input type="number" id="inpReceh" value="0" oninput="hitungTotalLaci()"></div>
+                
+                <div style="background:#F0FDF4; padding:14px; border-radius:12px; margin:16px 0; border:1px solid #86EFAC; text-align:center;">
+                    <div style="font-size:11px; color:#166534; font-weight:800;">TOTAL FISIK LACI KASIR</div>
+                    <div style="font-size:22px; font-weight:900; color:#15803D; margin-top:4px;" id="lblTotalFisikLaci">Rp 0</div>
+                </div>
+                <button class="btn btn-success" onclick="simpanHitungLaciEOD()">🚀 Kirim Rekonsiliasi EOD ke Desktop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- I. WORKSPACE CEK STOK -->
+    <div id="wsStok" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Ringkasan Katalog & Stok</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Daftar stok barang di master katalog PC Desktop.</div>
+                <div id="stockListContainer">
+                    <div style="text-align:center; padding:20px; color:#64748B;">Memuat katalog...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- J. WORKSPACE DIAGNOSTIK & SYNC -->
+    <div id="wsSyncStatus" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">Diagnostik & Sinkronisasi</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div style="font-weight:900; font-size:13px; margin-bottom:8px;">Status Jaringan & Antrean</div>
+                <div style="font-size:12px; margin-bottom:6px;">Koneksi Internet: <b id="diagNetworkStatus" style="color:#10B981">Memeriksa...</b></div>
+                <div style="font-size:12px; margin-bottom:14px;">Antrean Offline Tertunda: <b id="diagOfflineCount" style="color:#D97706">0 Item</b></div>
+                <button class="btn btn-primary" onclick="forceFlushQueue()">🔄 Paksa Sinkronisasi Antrean</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- K. WORKSPACE SOP -->
+    <div id="wsSOP" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">SOP & Panduan Operasional</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <div style="font-weight:900; font-size:13px; margin-bottom:8px;">📖 SOP Singkat Kasir Nikola</div>
+                <ul style="font-size:12px; color:var(--text-gray); padding-left:16px; line-height:1.6;">
+                    <li><b>Stok Masuk:</b> Gunakan menu Stok Masuk untuk kulakan atau mendaftarkan barang baru ke PC Desktop.</li>
+                    <li><b>Mutasi:</b> Gunakan saat mengirim voucher fisik antar cabang atau gudang.</li>
+                    <li><b>PPOB Feed:</b> Ceklis transaksi Order Kuota atau Digipos yang masuk secara berkala.</li>
+                    <li><b>Hitung Laci EOD:</b> Lakukan setiap tutup shift kasir untuk mencocokkan uang fisik laci.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast-msg">Notifikasi Sistem</div>
@@ -169,7 +424,7 @@
         </div>
     </div>
 
-    <!-- PENGHUBUNG FILE JAVASCRIPT -->
+    <!-- SCRIPT CONNECTIONS -->
     <script src="sync.js"></script>
     <script src="operations.js"></script>
     <script src="scanner.js"></script>
