@@ -1,5 +1,5 @@
 // =========================================================================
-// MODUL OPERASIONAL: LOGISTIK, MUTASI, PPOB CHECKLIST, MEMBER BARCODE
+// MODUL OPERASIONAL: LOGISTIK, MUTASI, PPOB CHECKLIST, MEMBER & KALKULATOR
 // =========================================================================
 
 window.activeStore = window.activeStore || "Toko NMC";
@@ -60,7 +60,7 @@ function openWorkspace(id) {
 }
 
 // =========================================================================
-// 1. LOGISTIK: SCAN BARANG MASUK / KULAKAN (ANTI-DUPLIKASI)
+// 1. LOGISTIK: SCAN BARANG MASUK / KULAKAN + KALKULATOR KEMBALIAN
 // =========================================================================
 function resetFormMasuk() {
   document.getElementById("inpBarcodeMasuk").value = "";
@@ -68,7 +68,45 @@ function resetFormMasuk() {
   document.getElementById("inpModalMasuk").value = "";
   document.getElementById("inpJualMasuk").value = "";
   document.getElementById("inpQtyMasuk").value = "1";
+  document.getElementById("inpUangDiterima").value = "";
+  document.getElementById("lblTotalEstimasiKulakan").innerText = "Rp 0";
+  document.getElementById("lblUangKembalian").innerText = "Rp 0";
   document.getElementById("panelItemStatus").style.display = "none";
+}
+
+function hitungTotalKulakan() {
+  const modal = parseInt(document.getElementById("inpModalMasuk").value) || 0;
+  const qty = parseInt(document.getElementById("inpQtyMasuk").value) || 1;
+  const total = modal * qty;
+
+  const lblTotal = document.getElementById("lblTotalEstimasiKulakan");
+  if (lblTotal) {
+    lblTotal.innerText = "Rp " + total.toLocaleString('id-ID');
+  }
+  hitungKembalianKulakan();
+}
+
+function hitungKembalianKulakan() {
+  const modal = parseInt(document.getElementById("inpModalMasuk").value) || 0;
+  const qty = parseInt(document.getElementById("inpQtyMasuk").value) || 1;
+  const totalBelanja = modal * qty;
+
+  const uangDiterima = parseInt(document.getElementById("inpUangDiterima").value) || 0;
+  const kembalian = uangDiterima - totalBelanja;
+
+  const lblKembalian = document.getElementById("lblUangKembalian");
+  if (lblKembalian) {
+    if (uangDiterima === 0) {
+      lblKembalian.innerText = "Rp 0";
+      lblKembalian.style.color = "#B45309";
+    } else if (kembalian < 0) {
+      lblKembalian.innerText = "⚠️ Uang Kurang (Rp " + Math.abs(kembalian).toLocaleString('id-ID') + ")";
+      lblKembalian.style.color = "#EF4444";
+    } else {
+      lblKembalian.innerText = "Rp " + kembalian.toLocaleString('id-ID');
+      lblKembalian.style.color = "#16A34A";
+    }
+  }
 }
 
 function onBarcodeEnteredManual() {
@@ -80,15 +118,13 @@ function handleScannedBarcodeMasuk(cleanCode) {
   document.getElementById("inpBarcodeMasuk").value = cleanCode;
   const panel = document.getElementById("panelItemStatus");
 
-  // Cari apakah barang sudah ada di master
-  const prod = window.masterKatalog.find(p => 
-    p.kode_barang === cleanCode || 
+  const prod = window.masterKatalog.find(p =>
+    p.kode_barang === cleanCode ||
     (p.barcode && p.barcode.includes(cleanCode))
   );
 
   panel.style.display = "block";
   if (prod) {
-    // BARANG SUDAH ADA DI MASTER
     panel.style.background = "#DCFCE7";
     panel.style.border = "1px solid #86EFAC";
     panel.innerHTML = `
@@ -101,7 +137,6 @@ function handleScannedBarcodeMasuk(cleanCode) {
     document.getElementById("inpModalMasuk").value = prod.harga_modal || 0;
     document.getElementById("inpJualMasuk").value = prod.harga_jual || 0;
   } else {
-    // BARANG BARU
     panel.style.background = "#FEF3C7";
     panel.style.border = "1px solid #FDE68A";
     panel.innerHTML = `
@@ -113,6 +148,7 @@ function handleScannedBarcodeMasuk(cleanCode) {
     document.getElementById("inpModalMasuk").value = "";
     document.getElementById("inpJualMasuk").value = "";
   }
+  hitungTotalKulakan();
 }
 
 async function simpanBarangMasuk() {
@@ -236,7 +272,7 @@ async function kirimMutasiStok() {
 }
 
 // =========================================================================
-// 3. PPOB CHECKLIST VERIFIKASI (PENGGANTI BUKU MANUAL)
+// 3. PPOB CHECKLIST VERIFIKASI
 // =========================================================================
 function renderPpobChecklist() {
   const cont = document.getElementById("ppobChecklistContainer");
@@ -247,7 +283,7 @@ function renderPpobChecklist() {
     cont.innerHTML = `
       <div style="text-align: center; color: var(--text-gray); padding: 25px 10px;">
         Belum ada notifikasi transaksi masuk hari ini.<br>
-        <span style="font-size: 10px;">Setiap notifikasi Order Quota/Digipos akan otomatis tampil di sini.</span>
+        <span style="font-size: 10px;">Setiap notifikasi Order Kuota/Digipos akan otomatis tampil di sini.</span>
       </div>
     `;
     return;
@@ -256,7 +292,7 @@ function renderPpobChecklist() {
   const verifiedMap = JSON.parse(localStorage.getItem("NIKOLA_VERIFIED_PPOB") || "{}");
 
   let html = '';
-  rawList.forEach((trx, idx) => {
+  rawList.forEach((trx) => {
     const isChecked = !!verifiedMap[trx.id_trx];
     html += `
       <div class="checklist-row" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F1F5F9;">
@@ -292,7 +328,7 @@ function togglePpobVerify(idTrx, isChecked) {
 }
 
 // =========================================================================
-// 4. MEMBER LOYALITAS: DAFTAR, BARCODE VISUAL & WHATSAPP
+// 4. MEMBER LOYALITAS
 // =========================================================================
 let lastRegisteredMember = null;
 
@@ -318,14 +354,12 @@ async function simpanMemberDanGenerateBarcode() {
 
   await sendSafePayload(payload);
 
-  // Simpan di memori lokal agar bisa di-scan seketika
   let members = JSON.parse(localStorage.getItem("NIKOLA_LOCAL_MEMBERS") || "[]");
   members.push({ id_member: memberId, nama_member: nama, nomor_wa: cleanWA, poin: 0 });
   localStorage.setItem("NIKOLA_LOCAL_MEMBERS", JSON.stringify(members));
 
   lastRegisteredMember = { id: memberId, nama: nama, wa: cleanWA };
 
-  // Render Barcode Visual Kartu
   document.getElementById("cardMemberResult").style.display = "block";
   document.getElementById("resMemberName").innerText = nama;
   document.getElementById("resMemberWA").innerText = cleanWA;
