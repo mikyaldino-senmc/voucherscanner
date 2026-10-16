@@ -98,7 +98,11 @@
         <div class="fintech-grid">
             <div class="grid-item" onclick="openWorkspace('SCAN_MASUK')">
                 <div class="grid-icon-circle" style="color: #10B981;">📥</div>
-                <div class="grid-label">Scan Masuk (Kulakan)</div>
+                <div class="grid-label">Scan Masuk</div>
+            </div>
+            <div class="grid-item" onclick="openWorkspace('CEK_HARGA')">
+                <div class="grid-icon-circle" style="color: #0284C7;">🔍</div>
+                <div class="grid-label">Cek Harga</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('MUTASI')">
                 <div class="grid-icon-circle" style="color: #7C3AED;">🔄</div>
@@ -108,33 +112,29 @@
                 <div class="grid-icon-circle" style="color: #4338CA;">📊</div>
                 <div class="grid-label">Live Stok</div>
             </div>
-            <div class="grid-item" onclick="openWorkspace('REKAP')">
-                <div class="grid-icon-circle" style="color: #374151;">📋</div>
-                <div class="grid-label">Hitung Laci (EOD)</div>
-            </div>
         </div>
 
         <!-- ZONA 2: PPOB & OPERASIONAL HARIAN -->
         <div class="section-header" style="margin-top: 16px;">
-            <span>OTOMASI PPOB (PENGGANTI BUKU MANUAL)</span>
+            <span>OTOMASI PPOB & KEUANGAN</span>
             <span style="font-size: 10px; color: #D97706; font-weight: 800;">Auto-Stream</span>
         </div>
         <div class="fintech-grid">
             <div class="grid-item" onclick="openWorkspace('PPOB_FEED')">
                 <div class="grid-icon-circle" style="color: #D97706;">⚡</div>
-                <div class="grid-label">Feed & Ceklis PPOB</div>
+                <div class="grid-label">Feed PPOB</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('BIAYA')">
                 <div class="grid-icon-circle" style="color: #EF4444;">💸</div>
-                <div class="grid-label">Kas Keluar Toko</div>
+                <div class="grid-label">Kas Keluar</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('MEMBER_DAFTAR')">
                 <div class="grid-icon-circle" style="color: #DB2777;">👥</div>
                 <div class="grid-label">Daftar Member</div>
             </div>
-            <div class="grid-item" onclick="openWorkspace('MEMBER_SCAN')">
-                <div class="grid-icon-circle" style="color: #A21CAF;">📷</div>
-                <div class="grid-label">Scan Barcode Member</div>
+            <div class="grid-item" onclick="openWorkspace('REKAP')">
+                <div class="grid-icon-circle" style="color: #374151;">📋</div>
+                <div class="grid-label">Laci EOD</div>
             </div>
         </div>
     </div>
@@ -167,9 +167,9 @@
         <div class="b-icon">📥</div>
         <div>Kulakan</div>
     </div>
-    <div class="center-scan-btn" onclick="openWorkspace('PPOB_FEED')">
-        <span>⚡</span>
-        <span>PPOB</span>
+    <div class="center-scan-btn" onclick="openWorkspace('CEK_HARGA')">
+        <span>🔍</span>
+        <span>Cek</span>
     </div>
     <div class="b-item" onclick="openWorkspace('MEMBER_SCAN')">
         <div class="b-icon">💳</div>
@@ -183,7 +183,53 @@
 
 <!-- 4. SUB-LAYAR (WORKSPACES) -->
 
-<!-- WORKSPACE 1: SCAN BARANG MASUK / KULAKAN + KALKULATOR KEMBALIAN -->
+<!-- WORKSPACE: CEK HARGA KILAT (QUICK PRICE CHECKER) -->
+<div class="workspace-screen" id="wsCekHarga">
+    <div class="workspace-header">
+        <button class="btn-back" onclick="goHome()">←</button>
+        <div class="workspace-title">Cek Harga & Stok Kilat</div>
+    </div>
+    <div class="workspace-content">
+        <div id="scanner-cekharga-panel" class="camera-panel-box">
+            <div class="reader-box">
+                <div id="reader-cekharga"></div>
+                <div class="laser-guide" id="laserCekHarga"></div>
+            </div>
+            <button class="btn btn-primary" id="btnCamCekHarga" style="margin-top: 6px;" onclick="toggleScannerCekHarga()">
+                📷 Nyalakan Kamera Cek Harga
+            </button>
+        </div>
+
+        <!-- KARTU HASIL PEMINDAIAN HARGA -->
+        <div class="card" id="cardHasilCekHarga" style="display: none; background: linear-gradient(135deg, #F0FDF4, #DCFCE7); border: 2px solid #86EFAC;">
+            <div style="font-size: 10px; font-weight: 800; color: #166534; margin-bottom: 4px;">BARANG DITEMUKAN:</div>
+            <div style="font-size: 16px; font-weight: 900; color: #0F172A; margin-bottom: 8px;" id="resCekNama">-</div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #CBD5E1; padding-top: 8px; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 800; color: #475569;">KODE / BARCODE:</span>
+                <span class="badge-code" id="resCekBarcode">-</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #CBD5E1; padding-top: 8px; margin-bottom: 8px;">
+                <span style="font-size: 11px; font-weight: 800; color: #475569;">HARGA JUAL KONSUMEN:</span>
+                <span style="font-size: 20px; font-weight: 900; color: #0284C7;" id="resCekJual">Rp 0</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                <div style="background: #FFFFFF; padding: 8px; border-radius: 8px; border: 1px solid #CBD5E1; text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-gray); font-weight: 700;">STOK TOKO INI</div>
+                    <div style="font-size: 14px; font-weight: 900; color: #16A34A;" id="resCekStokToko">0</div>
+                </div>
+                <div style="background: #FFFFFF; padding: 8px; border-radius: 8px; border: 1px solid #CBD5E1; text-align: center;">
+                    <div style="font-size: 9px; color: var(--text-gray); font-weight: 700;">STOK GUDANG</div>
+                    <div style="font-size: 14px; font-weight: 900; color: #4338CA;" id="resCekStokGudang">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WORKSPACE 1: SCAN BARANG MASUK / KULAKAN -->
 <div class="workspace-screen" id="wsScanMasuk">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -207,7 +253,6 @@
                 <button class="btn btn-primary" style="width: 70px;" onclick="onBarcodeEnteredManual()">Cek</button>
             </div>
 
-            <!-- Panel Status Barang Ditemukan / Baru -->
             <div id="panelItemStatus" style="display: none; padding: 10px; border-radius: 8px; margin-bottom: 10px;"></div>
 
             <label>NAMA BARANG:</label>
@@ -239,7 +284,7 @@
                 </div>
             </div>
 
-            <!-- FITUR ANTI-ERROR: KALKULATOR KEMBALIAN & ESTIMASI -->
+            <!-- KALKULATOR KEMBALIAN -->
             <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 14px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 11px; font-weight: 800; color: #166534;">ESTIMASI TOTAL BELANJA:</span>
@@ -262,7 +307,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 2: MUTASI CABANG (GUDANG -> TOKO) -->
+<!-- WORKSPACE 2: MUTASI CABANG -->
 <div class="workspace-screen" id="wsMutasi">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -315,7 +360,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 3: FEED & CEKLIS VERIFIKASI PPOB -->
+<!-- WORKSPACE 3: FEED PPOB -->
 <div class="workspace-screen" id="wsPpobFeed">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -341,7 +386,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 4: DAFTAR MEMBER BARU -->
+<!-- WORKSPACE 4: DAFTAR MEMBER -->
 <div class="workspace-screen" id="wsMemberDaftar">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -379,7 +424,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 5: SCAN BARCODE KARTU MEMBER -->
+<!-- WORKSPACE 5: SCAN MEMBER -->
 <div class="workspace-screen" id="wsMemberScan">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -444,7 +489,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 7: HITUNG LACI (EOD) -->
+<!-- WORKSPACE 7: HITUNG LACI -->
 <div class="workspace-screen" id="wsRekap">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
