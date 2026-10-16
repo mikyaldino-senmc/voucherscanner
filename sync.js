@@ -1,14 +1,51 @@
 // =========================================================================
-// MODUL SINKRONISASI CLOUD, KATALOG, DAN OTOMASI PPOB
+// MODUL SINKRONISASI CLOUD, KATALOG, OTOMASI PPOB & DETEKTOR STATUS LIVE
 // =========================================================================
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzX-uB_VVa3I0U0t6ozJ_c0S3RGd4gSSHGQaVPljKa3ipeDrbRylTe_pnsXjfAdwBXB/exec";
 
+// Global Window State (Mencegah benturan variabel)
 window.masterKatalog = [];
 window.isSaldoHidden = false;
 window.activeStore = "Toko NMC";
 window.activeKasir = "Kasir";
 window.storeSummaryToday = {};
 window.ppobListToday = JSON.parse(localStorage.getItem("NIKOLA_PPOB_CACHE") || "[]");
+
+// =========================================================================
+// 1. INDIKATOR STATUS ONLINE / OFFLINE NYATA (REAL LIVE HEARTBEAT)
+// =========================================================================
+function updateConnectionBadge(status) {
+  const badge = document.getElementById("lblSyncStatus");
+  if (!badge) return;
+
+  if (status === "ONLINE") {
+    badge.innerText = "● LIVE PC";
+    badge.style.color = "#0284C7";
+    badge.style.background = "#E0F2FE";
+  } else if (status === "SYNCING") {
+    badge.innerText = "● MENYINKRON...";
+    badge.style.color = "#D97706";
+    badge.style.background = "#FEF3C7";
+  } else {
+    badge.innerText = "● OFFLINE";
+    badge.style.color = "#EF4444";
+    badge.style.background = "#FEE2E2";
+  }
+}
+
+// Sensor Jaringan HP Otomatis
+window.addEventListener('online', () => {
+  updateConnectionBadge("SYNCING");
+  showToast("🌐 Internet terhubung kembali.");
+  fetchLiveStoreData();
+  flushOfflineQueue();
+});
+
+window.addEventListener('offline', () => {
+  updateConnectionBadge("OFFLINE");
+  showToast("⚠️ Internet terputus. Mode offline aktif.");
+});
 
 function showToast(msg) {
   const t = document.getElementById("toast-msg");
@@ -18,13 +55,18 @@ function showToast(msg) {
   setTimeout(() => { t.style.display = "none"; }, 2500);
 }
 
-// 1. LOGIN BERBASIS ID TOKO
+// =========================================================================
+// 2. SISTEM LOGIN BERBASIS ID TOKO (TERKUNCI KE OUTLET)
+// =========================================================================
 function submitLoginById() {
   const storeId = document.getElementById("inpStoreId").value.trim().toUpperCase();
   const kasirName = document.getElementById("inpKasirName").value.trim() || "Kasir";
 
-  if (!storeId) return alert("Harap masukkan ID Toko!");
+  if (!storeId) {
+    return alert("Harap masukkan ID Toko!");
+  }
 
+  // Pemetaan ID Toko Resmi
   let targetStore = "";
   if (storeId === "NMC" || storeId.startsWith("NMC")) {
     targetStore = "Toko NMC";
@@ -40,7 +82,7 @@ function submitLoginById() {
 
   setSession(targetStore, kasirName);
   document.getElementById("onboardingScreen").style.display = "none";
-  showToast(`✅ Berhasil Masuk Terminal: ${targetStore}`);
+  showToast(`✅ Masuk Terminal: ${targetStore}`);
   fetchLiveStoreData();
 }
 
@@ -66,18 +108,27 @@ function logoutKasir() {
   }
 }
 
-// 2. DATA FINANCIAL & PPOB LIVE HARI INI
+// =========================================================================
+// 3. TARIK STATUS SALDO KAS & LABA PPOB HARI INI DARI PC
+// =========================================================================
 async function fetchLiveStoreData() {
-  showToast("Sinkron data hari ini...");
+  if (!navigator.onLine) {
+    updateConnectionBadge("OFFLINE");
+    return;
+  }
+
+  updateConnectionBadge("SYNCING");
   try {
     const resp = await fetch(SCRIPT_URL + "?action=get_ringkasan_harian");
     const data = await resp.json();
     if (data && typeof data === 'object') {
       window.storeSummaryToday = data;
       renderTodayFinancials();
-      showToast("✅ Data hari ini sinkron!");
+      updateConnectionBadge("ONLINE"); // Koneksi Berhasil
     }
-  } catch (e) {}
+  } catch (e) {
+    updateConnectionBadge("OFFLINE"); // Server Desktop/Cloud Tidak Merespons
+  }
   fetchKatalogFromCloud();
 }
 
@@ -99,20 +150,33 @@ function renderTodayFinancials() {
   document.getElementById("lblLabaPpobSub").innerText = "Rp " + Number(d.laba_ppob_today || 0).toLocaleString('id-ID');
 }
 
-// 3. PENGIRIMAN OFFLINE-FIRST
+function toggleSaldo() {
+  window.isSaldoHidden = !window.isSaldoHidden;
+  renderTodayFinancials();
+  if (window.isSaldoHidden) {
+    document.getElementById("displaySaldoKasir").innerText = "••••••••";
+  }
+}
+
+// =========================================================================
+// 4. SISTEM PENGIRIMAN OFFLINE-FIRST (ANTI-GAGAL)
+// =========================================================================
 async function sendSafePayload(payload) {
   try {
+    updateConnectionBadge("SYNCING");
     await fetch(SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload)
     });
+    updateConnectionBadge("ONLINE");
     return true;
   } catch (err) {
     let offlineQ = JSON.parse(localStorage.getItem("NIKOLA_OFFLINE_Q") || "[]");
     offlineQ.push(payload);
     localStorage.setItem("NIKOLA_OFFLINE_Q", JSON.stringify(offlineQ));
+    updateConnectionBadge("OFFLINE");
     showToast("⚠️ Disimpan di antrean offline HP.");
     return false;
   }
@@ -121,19 +185,30 @@ async function sendSafePayload(payload) {
 async function flushOfflineQueue() {
   let offlineQ = JSON.parse(localStorage.getItem("NIKOLA_OFFLINE_Q") || "[]");
   if (offlineQ.length === 0) return;
+
   let remaining = [];
   for (let p of offlineQ) {
     try {
-      await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(p) });
+      await fetch(SCRIPT_URL, { 
+        method: "POST", 
+        mode: "no-cors", 
+        headers: { "Content-Type": "text/plain" }, 
+        body: JSON.stringify(p) 
+      });
     } catch (e) {
       remaining.push(p);
     }
   }
   localStorage.setItem("NIKOLA_OFFLINE_Q", JSON.stringify(remaining));
-  if (remaining.length === 0) showToast("✅ Seluruh antrean offline terkirim!");
+  if (remaining.length === 0) {
+    showToast("✅ Seluruh antrean offline berhasil terkirim!");
+    updateConnectionBadge("ONLINE");
+  }
 }
 
-// 4. PENARIKAN MASTER KATALOG DARI DESKTOP
+// =========================================================================
+// 5. MASTER KATALOG & LIVE STOK PRODUK
+// =========================================================================
 async function fetchKatalogFromCloud() {
   try {
     const resp = await fetch(SCRIPT_URL + "?action=get_katalog");
@@ -172,7 +247,9 @@ function renderStockSummaryView() {
   cont.innerHTML = html;
 }
 
-// 5. PEREKAM NOTIFIKASI PPOB OTOMATIS (DARI KOTLIN)
+// =========================================================================
+// 6. PENERIMA NOTIFIKASI PPOB OTOMATIS (DIPANGGIL DARI KOTLIN)
+// =========================================================================
 function onPPOBNotificationReceived(appName, saldoAkhir, modal, noTujuan, produk) {
   const item = {
     id_trx: "PPOB-" + Date.now(),
@@ -183,6 +260,7 @@ function onPPOBNotificationReceived(appName, saldoAkhir, modal, noTujuan, produk
     produk: produk
   };
 
+  // Masukkan ke urutan teratas daftar transaksi hari ini
   window.ppobListToday.unshift(item);
   localStorage.setItem("NIKOLA_PPOB_CACHE", JSON.stringify(window.ppobListToday));
 
@@ -192,6 +270,7 @@ function onPPOBNotificationReceived(appName, saldoAkhir, modal, noTujuan, produk
     document.getElementById("lblSaldoDigiSub").innerText = "Rp " + Number(modal).toLocaleString('id-ID');
   }
 
+  // Update Mini Feed Beranda
   const feedMini = document.getElementById("ppobFeedListMini");
   if (feedMini) {
     const itemHtml = `
@@ -205,16 +284,13 @@ function onPPOBNotificationReceived(appName, saldoAkhir, modal, noTujuan, produk
     `;
     feedMini.insertAdjacentHTML('afterbegin', itemHtml);
   }
+
+  showToast(`⚡ ${appName} Rp ${Number(modal).toLocaleString('id-ID')} tercatat otomatis!`);
 }
 
-function toggleSaldo() {
-  window.isSaldoHidden = !window.isSaldoHidden;
-  renderTodayFinancials();
-  if (window.isSaldoHidden) {
-    document.getElementById("displaySaldoKasir").innerText = "••••••••";
-  }
-}
-
+// =========================================================================
+// 7. INISIALISASI SAAT APLIKASI PERTAMA KALI DIBUKA
+// =========================================================================
 window.onload = function() {
   const savedStore = localStorage.getItem("NIKOLA_STORE");
   const savedKasir = localStorage.getItem("NIKOLA_KASIR");
@@ -227,7 +303,16 @@ window.onload = function() {
     document.getElementById("onboardingScreen").style.display = "flex";
   }
 
+  // Cek koneksi awal saat dibuka
+  if (navigator.onLine) {
+    updateConnectionBadge("SYNCING");
+  } else {
+    updateConnectionBadge("OFFLINE");
+  }
+
   flushOfflineQueue();
-  setInterval(flushOfflineQueue, 30000);
-  setInterval(fetchLiveStoreData, 60000);
+
+  // Sinkronisasi otomatis berkala di latar belakang
+  setInterval(flushOfflineQueue, 30000);   // Flush antrean offline tiap 30 detik
+  setInterval(fetchLiveStoreData, 60000);  // Tarik data live PC tiap 1 menit
 };
