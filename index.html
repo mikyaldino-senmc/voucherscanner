@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta name="theme-color" content="#0264D6">
+    <meta name="theme-color" content="#0A2540">
     <title>Nikola Smart Companion</title>
-    <!-- Desain Modular -->
+    <!-- Desain Modular Banking-Grade -->
     <link rel="stylesheet" href="style.css">
     <!-- Scanner Barcode Kamera & Generator Barcode Member -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -37,7 +37,7 @@
         <button class="btn btn-primary" onclick="submitLoginById()">🚀 MASUK TERMINAL TOKO</button>
     </div>
 
-    <div style="text-align: center; font-size: 11px; color: var(--text-gray);">
+    <div style="text-align: center; font-size: 11px; color: #93C5FD;">
         ID NMC = Toko NMC • ID NACC = Toko NACC
     </div>
 </div>
@@ -59,10 +59,10 @@
                 <div class="avatar-char" id="userAvatarChar">T</div>
                 <div>
                     <div style="font-size: 9.5px; opacity: 0.85;">Petugas Kasir</div>
-                    <div id="displayKasirName">Kasir Toko</div>
+                    <div id="displayKasirName" style="font-weight: 900;">Kasir Toko</div>
                 </div>
             </div>
-            <div style="font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px;" id="badgeStoreLock">
+            <div style="font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 6px;" id="badgeStoreLock">
                 LOCKED: TOKO
             </div>
         </div>
@@ -81,10 +81,10 @@
             <span class="eye-icon" onclick="toggleSaldo()">👁</span>
         </div>
 
-        <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--text-gray); margin-top: 6px; border-top: 1px dashed var(--border); padding-top: 6px;">
-            <span>Order Quota: <b style="color: var(--bri-blue);" id="lblSaldoOqSub">Rp 0</b></span>
-            <span>Digipos: <b style="color: #EF4444;" id="lblSaldoDigiSub">Rp 0</b></span>
-            <span>Laba PPOB: <b style="color: #16A34A;" id="lblLabaPpobSub">Rp 0</b></span>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--text-gray); margin-top: 6px; border-top: 1px dashed var(--border-subtle); padding-top: 6px;">
+            <span>Order Quota: <b style="color: var(--bank-accent);" id="lblSaldoOqSub">Rp 0</b></span>
+            <span>Digipos: <b style="color: var(--danger);" id="lblSaldoDigiSub">Rp 0</b></span>
+            <span>Laba PPOB: <b style="color: var(--success);" id="lblLabaPpobSub">Rp 0</b></span>
         </div>
     </div>
 
@@ -93,23 +93,23 @@
         <!-- ZONA 1: LOGISTIK & STOK -->
         <div class="section-header">
             <span>LOGISTIK & STOK GUDANG</span>
-            <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;">Scan Barcode</span>
+            <span style="font-size: 10px; color: var(--bank-accent); font-weight: 800;">Scan Barcode</span>
         </div>
         <div class="fintech-grid">
             <div class="grid-item" onclick="openWorkspace('SCAN_MASUK')">
-                <div class="grid-icon-circle" style="background: #DCFCE7; color: #16A34A;">📥</div>
+                <div class="grid-icon-circle" style="color: #10B981;">📥</div>
                 <div class="grid-label">Scan Masuk (Kulakan)</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('MUTASI')">
-                <div class="grid-icon-circle" style="background: #EDE9FE; color: #7C3AED;">🔄</div>
+                <div class="grid-icon-circle" style="color: #7C3AED;">🔄</div>
                 <div class="grid-label">Mutasi Cabang</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('STOK')">
-                <div class="grid-icon-circle" style="background: #E0E7FF; color: #4338CA;">📊</div>
+                <div class="grid-icon-circle" style="color: #4338CA;">📊</div>
                 <div class="grid-label">Live Stok</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('REKAP')">
-                <div class="grid-icon-circle" style="background: #F1F5F9; color: #374151;">📋</div>
+                <div class="grid-icon-circle" style="color: #374151;">📋</div>
                 <div class="grid-label">Hitung Laci (EOD)</div>
             </div>
         </div>
@@ -121,19 +121,19 @@
         </div>
         <div class="fintech-grid">
             <div class="grid-item" onclick="openWorkspace('PPOB_FEED')">
-                <div class="grid-icon-circle" style="background: #FEF3C7; color: #D97706;">⚡</div>
+                <div class="grid-icon-circle" style="color: #D97706;">⚡</div>
                 <div class="grid-label">Feed & Ceklis PPOB</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('BIAYA')">
-                <div class="grid-icon-circle" style="background: #FEE2E2; color: #EF4444;">💸</div>
+                <div class="grid-icon-circle" style="color: #EF4444;">💸</div>
                 <div class="grid-label">Kas Keluar Toko</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('MEMBER_DAFTAR')">
-                <div class="grid-icon-circle" style="background: #FCE7F3; color: #DB2777;">👥</div>
+                <div class="grid-icon-circle" style="color: #DB2777;">👥</div>
                 <div class="grid-label">Daftar Member</div>
             </div>
             <div class="grid-item" onclick="openWorkspace('MEMBER_SCAN')">
-                <div class="grid-icon-circle" style="background: #FDF4FF; color: #A21CAF;">📷</div>
+                <div class="grid-icon-circle" style="color: #A21CAF;">📷</div>
                 <div class="grid-label">Scan Barcode Member</div>
             </div>
         </div>
@@ -143,7 +143,7 @@
     <div class="section-card">
         <div class="card-title-head">
             <span>Log Notifikasi PPOB Terakhir (Hari Ini)</span>
-            <span style="font-size: 10px; color: var(--bri-blue); font-weight: 800;" onclick="openWorkspace('PPOB_FEED')">Lihat Semua →</span>
+            <span style="font-size: 10px; color: var(--bank-accent); font-weight: 800;" onclick="openWorkspace('PPOB_FEED')">Lihat Semua →</span>
         </div>
         <div id="ppobFeedListMini">
             <div class="feed-item">
@@ -183,7 +183,7 @@
 
 <!-- 4. SUB-LAYAR (WORKSPACES) -->
 
-<!-- WORKSPACE 1: SCAN BARANG MASUK / KULAKAN (CERDAS ANTI-DUPLIKASI) -->
+<!-- WORKSPACE 1: SCAN BARANG MASUK / KULAKAN + KALKULATOR KEMBALIAN -->
 <div class="workspace-screen" id="wsScanMasuk">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -216,7 +216,7 @@
             <div style="display: flex; gap: 8px;">
                 <div style="flex: 1;">
                     <label>HARGA MODAL (RP):</label>
-                    <input type="number" id="inpModalMasuk" placeholder="0">
+                    <input type="number" id="inpModalMasuk" placeholder="0" oninput="hitungTotalKulakan()">
                 </div>
                 <div style="flex: 1;">
                     <label>HARGA JUAL (RP):</label>
@@ -227,7 +227,7 @@
             <div style="display: flex; gap: 8px;">
                 <div style="flex: 1;">
                     <label>JUMLAH (QTY MASUK):</label>
-                    <input type="number" id="inpQtyMasuk" value="1" min="1" style="font-size: 16px; font-weight: 800; text-align: center;">
+                    <input type="number" id="inpQtyMasuk" value="1" min="1" style="font-size: 16px; font-weight: 800; text-align: center;" onchange="hitungTotalKulakan()">
                 </div>
                 <div style="flex: 1;">
                     <label>MASUK KE LOKASI:</label>
@@ -239,7 +239,23 @@
                 </div>
             </div>
 
-            <button class="btn btn-success" style="margin-top: 6px;" onclick="simpanBarangMasuk()">
+            <!-- FITUR ANTI-ERROR: KALKULATOR KEMBALIAN & ESTIMASI -->
+            <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 11px; font-weight: 800; color: #166534;">ESTIMASI TOTAL BELANJA:</span>
+                    <span style="font-size: 16px; font-weight: 900; color: #15803D;" id="lblTotalEstimasiKulakan">Rp 0</span>
+                </div>
+
+                <label style="color: #166534;">UANG DITERIMA DARI SUPPLIER / KAS:</label>
+                <input type="number" id="inpUangDiterima" placeholder="Contoh: 100000" oninput="hitungKembalianKulakan()" style="background: #FFFFFF; border-color: #86EFAC; margin-bottom: 8px;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; font-weight: 800; color: #166534;">KEMBALIAN:</span>
+                    <span style="font-size: 16px; font-weight: 900; color: #B45309;" id="lblUangKembalian">Rp 0</span>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="simpanBarangMasuk()">
                 📥 Tambah Stok ke PC Desktop
             </button>
         </div>
@@ -270,11 +286,11 @@
             </select>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-                <div style="background: #F8FAFC; padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="background: #F8FAFC; padding: 8px; border-radius: 8px; border: 1px solid var(--border-subtle);">
                     <div style="font-size: 9px; color: var(--text-gray); font-weight: 700;">STOK GUDANG ASAL</div>
                     <div style="font-size: 16px; font-weight: 900; color: #0F172A;" id="lblStokGudangMutasi">0</div>
                 </div>
-                <div style="background: #F8FAFC; padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="background: #F8FAFC; padding: 8px; border-radius: 8px; border: 1px solid var(--border-subtle);">
                     <div style="font-size: 9px; color: var(--text-gray); font-weight: 700;">TRANSFER KE</div>
                     <select id="selTujuanMutasi" style="margin-bottom: 0; padding: 4px; font-size: 11px;">
                         <option value="Toko NMC">Toko NMC</option>
@@ -299,7 +315,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 3: FEED & CEKLIS VERIFIKASI PPOB (PENGGANTI BUKU MANUAL) -->
+<!-- WORKSPACE 3: FEED & CEKLIS VERIFIKASI PPOB -->
 <div class="workspace-screen" id="wsPpobFeed">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -325,7 +341,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 4: DAFTAR MEMBER BARU & GENERATE BARCODE KARTU -->
+<!-- WORKSPACE 4: DAFTAR MEMBER BARU -->
 <div class="workspace-screen" id="wsMemberDaftar">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -345,18 +361,17 @@
             </button>
         </div>
 
-        <!-- TAMPILAN KARTU MEMBER DIGITAL DENGAN BARCODE VISUAL -->
         <div class="card" id="cardMemberResult" style="display: none; text-align: center; background: #FFFFFF; border: 2px dashed #DB2777;">
-            <div style="font-size: 13px; font-weight: 900; color: var(--bri-blue);">KARTU MEMBER NIKOLA</div>
+            <div style="font-size: 13px; font-weight: 900; color: var(--bank-accent);">KARTU MEMBER NIKOLA</div>
             <div style="font-size: 11px; font-weight: 800; margin-top: 4px;" id="resMemberName">Nama Member</div>
             <div style="font-size: 10px; color: var(--text-gray);" id="resMemberWA">08xxxxxx</div>
-            
+
             <div style="margin: 12px 0;">
                 <svg id="memberBarcodeSvg"></svg>
             </div>
 
             <div style="font-size: 11px; font-weight: 800; color: #0F172A;" id="resMemberID">MBR-000000</div>
-            
+
             <button class="btn btn-success" style="margin-top: 10px;" onclick="kirimKartuMemberViaWA()">
                 📲 Kirim Kartu & Barcode via WhatsApp
             </button>
@@ -364,7 +379,7 @@
     </div>
 </div>
 
-<!-- WORKSPACE 5: SCAN BARCODE KARTU MEMBER FISIK -->
+<!-- WORKSPACE 5: SCAN BARCODE KARTU MEMBER -->
 <div class="workspace-screen" id="wsMemberScan">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -422,14 +437,14 @@
             <label>KETERANGAN:</label>
             <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli galon & bensin">
 
-            <button class="btn btn-danger" style="width: 100%; padding: 12px; font-weight: 800;" onclick="simpanBiayaKasir()">
+            <button class="btn btn-danger" style="width: 100%; padding: 12px; font-weight: 800; background: #EF4444; color: #FFF;" onclick="simpanBiayaKasir()">
                 💸 Catat Pengeluaran Kas
             </button>
         </div>
     </div>
 </div>
 
-<!-- WORKSPACE 7: HITUNG LACI (EOD BLIND COUNT) -->
+<!-- WORKSPACE 7: HITUNG LACI (EOD) -->
 <div class="workspace-screen" id="wsRekap">
     <div class="workspace-header">
         <button class="btn-back" onclick="goHome()">←</button>
@@ -437,7 +452,7 @@
     </div>
     <div class="workspace-content">
         <div class="card">
-            <div style="font-size: 11px; font-weight: 800; color: var(--bri-blue); margin-bottom: 10px;">
+            <div style="font-size: 11px; font-weight: 800; color: var(--bank-accent); margin-bottom: 10px;">
                 INPUT LEMBAR PECAHAN UANG FISIK LACI
             </div>
 
@@ -450,7 +465,7 @@
             <div class="pecahan-row"><span>Rp 1.000 :</span><input type="number" class="inp-pecahan" data-val="1000" placeholder="0" oninput="hitungTotalLaci()"></div>
             <div class="pecahan-row"><span>Koin / Receh :</span><input type="number" id="inpReceh" placeholder="0" oninput="hitungTotalLaci()"></div>
 
-            <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-top: 10px; text-align: center;">
+            <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px; margin-top: 10px; text-align: center;">
                 <div style="font-size: 11px; color: var(--text-gray); font-weight: 700;">TOTAL FISIK DI LACI:</div>
                 <div style="font-size: 20px; font-weight: 900; color: #10B981;" id="lblTotalFisikLaci">Rp 0</div>
             </div>
