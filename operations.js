@@ -1,5 +1,5 @@
 // =========================================================================
-// MODUL OPERASIONAL: LOGISTIK, MUTASI, PPOB CHECKLIST, MEMBER & KALKULATOR
+// MODUL OPERASIONAL: CEK HARGA, LOGISTIK, MUTASI, PPOB, MEMBER & KALKULATOR
 // =========================================================================
 
 window.activeStore = window.activeStore || "Toko NMC";
@@ -24,6 +24,10 @@ function openWorkspace(id) {
   if (id === 'SCAN_MASUK') {
     document.getElementById("wsScanMasuk").style.display = "flex";
     resetFormMasuk();
+  }
+  else if (id === 'CEK_HARGA') {
+    document.getElementById("wsCekHarga").style.display = "flex";
+    document.getElementById("cardHasilCekHarga").style.display = "none";
   }
   else if (id === 'MUTASI') {
     document.getElementById("wsMutasi").style.display = "flex";
@@ -60,7 +64,40 @@ function openWorkspace(id) {
 }
 
 // =========================================================================
-// 1. LOGISTIK: SCAN BARANG MASUK / KULAKAN + KALKULATOR KEMBALIAN
+// 1. FITUR: QUICK PRICE CHECKER (CEK HARGA KILAT)
+// =========================================================================
+function handleScannedBarcodeCekHarga(cleanCode) {
+  const card = document.getElementById("cardHasilCekHarga");
+  
+  const prod = window.masterKatalog.find(p =>
+    p.kode_barang === cleanCode ||
+    (p.barcode && p.barcode.includes(cleanCode))
+  );
+
+  card.style.display = "block";
+  if (prod) {
+    const stokToko = (window.activeStore === "Toko NACC") ? (prod.stok_nacc || 0) : (prod.stok_nmc || 0);
+    
+    document.getElementById("resCekNama").innerText = prod.nama_barang;
+    document.getElementById("resCekBarcode").innerText = cleanCode;
+    document.getElementById("resCekJual").innerText = "Rp " + Number(prod.harga_jual || 0).toLocaleString('id-ID');
+    document.getElementById("resCekStokToko").innerText = stokToko + " pcs";
+    document.getElementById("resCekStokGudang").innerText = (prod.stok_gudang || 0) + " pcs";
+    
+    showToast(`✅ Ditemukan: ${prod.nama_barang}`);
+  } else {
+    document.getElementById("resCekNama").innerText = "❌ Barang Tidak Ditemukan di Master!";
+    document.getElementById("resCekBarcode").innerText = cleanCode;
+    document.getElementById("resCekJual").innerText = "Rp 0";
+    document.getElementById("resCekStokToko").innerText = "0";
+    document.getElementById("resCekStokGudang").innerText = "0";
+    
+    showToast("⚠️ Barcode belum terdaftar di sistem.");
+  }
+}
+
+// =========================================================================
+// 2. LOGISTIK: SCAN BARANG MASUK / KULAKAN + KALKULATOR KEMBALIAN
 // =========================================================================
 function resetFormMasuk() {
   document.getElementById("inpBarcodeMasuk").value = "";
@@ -187,7 +224,7 @@ async function simpanBarangMasuk() {
 }
 
 // =========================================================================
-// 2. MUTASI STOK GUDANG ➔ TOKO CABANG
+// 3. MUTASI STOK GUDANG ➔ TOKO CABANG
 // =========================================================================
 function populateKatalogMutasi() {
   const sel = document.getElementById("selKatalogMutasi");
@@ -272,7 +309,7 @@ async function kirimMutasiStok() {
 }
 
 // =========================================================================
-// 3. PPOB CHECKLIST VERIFIKASI
+// 4. PPOB CHECKLIST VERIFIKASI
 // =========================================================================
 function renderPpobChecklist() {
   const cont = document.getElementById("ppobChecklistContainer");
@@ -328,7 +365,7 @@ function togglePpobVerify(idTrx, isChecked) {
 }
 
 // =========================================================================
-// 4. MEMBER LOYALITAS
+// 5. MEMBER LOYALITAS
 // =========================================================================
 let lastRegisteredMember = null;
 
@@ -408,7 +445,7 @@ function handleScannedBarcodeMember(cleanCode) {
 }
 
 // =========================================================================
-// 5. KAS KELUAR & HITUNG LACI EOD
+// 6. KAS KELUAR & HITUNG LACI
 // =========================================================================
 async function simpanBiayaKasir() {
   const kat = document.getElementById("katBiayaSelect").value;
