@@ -1,154 +1,596 @@
+/* =========================================================================
+   NIKOLA MOBILE COMPANION - BANKING-GRADE DESIGN SYSTEM (UI/UX 2.0)
+   ========================================================================= */
+
 :root {
-  --bri-blue: #0264D6;
-  --bri-blue-dark: #004BB3;
-  --bri-blue-light: #EBF3FC;
-  --bri-orange: #F37021;
-  --bg-canvas: #F8FAFC;
-  --bg-white: #FFFFFF;
+  --bank-primary: #0A2540;
+  --bank-primary-light: #1E3A8A;
+  --bank-accent: #0284C7;
+  --bank-gold: #F59E0B;
+  --bank-gold-light: #FEF3C7;
+  --success: #10B981;
+  --success-light: #DCFCE7;
+  --danger: #EF4444;
+  --danger-light: #FEE2E2;
+  
+  --bg-canvas: #F4F6F9;
+  --bg-card: #FFFFFF;
   --text-dark: #0F172A;
   --text-gray: #64748B;
-  --border: #E2E8F0;
-  --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
-  --shadow-card: 0 8px 20px rgba(2, 100, 214, 0.08);
-  --shadow-float: 0 -4px 16px rgba(0,0,0,0.06);
+  --border-subtle: #E2E8F0;
+  
+  --shadow-card: 0 10px 25px -5px rgba(10, 37, 64, 0.08), 0 8px 10px -6px rgba(10, 37, 64, 0.04);
+  --shadow-float: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+  
+  --radius-card: 20px;
+  --radius-btn: 14px;
 }
 
-* { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background-color: var(--bg-canvas); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-
-/* ONBOARDING */
-#onboardingScreen {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #FFFFFF;
-  z-index: 1000; display: none; flex-direction: column; justify-content: space-between; padding: 50px 24px 32px 24px;
-}
-.onboarding-hero { text-align: center; margin-top: 20px; }
-.hero-icon-box {
-  width: 72px; height: 72px; background: var(--bri-blue-light); border-radius: 24px;
-  display: inline-flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px;
-}
-.onboard-title { font-size: 20px; font-weight: 900; color: var(--bri-blue); }
-.onboard-sub { font-size: 12px; color: var(--text-gray); margin-top: 6px; }
-.onboard-form { background: #F8FAFC; padding: 18px; border-radius: 18px; border: 1px solid var(--border); }
-
-/* HEADER HERO */
-.hero-container {
-  background: linear-gradient(180deg, var(--bri-blue) 0%, var(--bri-blue-dark) 100%);
-  color: #FFFFFF;
-  padding: 38px 16px 85px 16px;
-  border-bottom-left-radius: 26px; border-bottom-right-radius: 26px;
-}
-.top-brand-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.brand-logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
-.brand-logo span { font-size: 11px; font-weight: 500; opacity: 0.85; }
-.top-icons { display: flex; gap: 14px; font-size: 18px; align-items: center; }
-
-.user-greeting { display: flex; align-items: center; justify-content: space-between; }
-.user-badge-circle { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; }
-.avatar-char {
-  width: 32px; height: 32px; background: rgba(255,255,255,0.25); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900;
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* FLOATING BALANCE CARD */
-.balance-card-carousel {
-  background: #FFFFFF; border-radius: 18px; padding: 16px 18px; margin: -68px 16px 16px 16px;
-  box-shadow: var(--shadow-card); z-index: 20; position: relative; border: 1px solid rgba(0,0,0,0.03);
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
-.rekening-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.rek-number { font-size: 11px; font-weight: 700; color: var(--text-gray); }
-.rek-badge { font-size: 9.5px; font-weight: 800; color: var(--bri-blue); background: var(--bri-blue-light); padding: 2px 8px; border-radius: 6px; }
-.balance-amount { font-size: 22px; font-weight: 900; color: var(--text-dark); display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-.eye-icon { font-size: 14px; color: var(--text-gray); cursor: pointer; }
-
-/* FAST ACTION GRID */
-.menu-section { padding: 0 16px; margin-bottom: 16px; }
-.section-header { font-size: 12px; font-weight: 900; color: var(--text-dark); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-.fintech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; margin-bottom: 14px; }
-.grid-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
-.grid-icon-circle {
-  width: 52px; height: 52px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
-  font-size: 22px; margin-bottom: 6px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); position: relative;
-  transition: transform 0.1s;
-}
-.grid-item:active .grid-icon-circle { transform: scale(0.92); }
-.grid-label { font-size: 10.5px; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
-
-/* FEED PPOB */
-.section-card {
-  background: #FFFFFF; border-radius: 16px; padding: 14px 16px; margin: 0 16px 14px 16px;
-  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-}
-.card-title-head { font-size: 12px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-.feed-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #F1F5F9; font-size: 11.5px; }
-.feed-item:last-child { border-bottom: none; }
-.feed-target { font-weight: 800; color: var(--text-dark); }
-.feed-time { font-size: 9.5px; color: var(--text-gray); margin-top: 2px; }
-.feed-cut { font-weight: 900; color: #EF4444; }
-
-/* BILAH BAWAH */
-.bottom-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  height: 84px; padding-bottom: 22px; background: #FFFFFF;
-  border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center;
-  z-index: 100; box-shadow: var(--shadow-float);
-}
-.b-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--text-gray); font-size: 9.5px; font-weight: 800; width: 60px; }
-.b-item.active { color: var(--bri-blue); }
-.b-icon { font-size: 18px; }
-
-.center-scan-btn {
-  width: 54px; height: 54px; background: linear-gradient(135deg, var(--bri-blue), #004BB3);
-  border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: white; font-weight: 900; font-size: 10px; margin-top: -36px; border: 4px solid #FFFFFF;
-  box-shadow: 0 4px 14px rgba(2, 100, 214, 0.4); cursor: pointer;
-}
-
-/* WORKSPACES */
-.workspace-screen {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-canvas);
-  z-index: 200; display: none; flex-direction: column; overflow-y: auto;
-}
-.workspace-header {
-  height: 70px; padding: 22px 16px 0 16px; background: #FFFFFF; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; position: sticky; top: 0; z-index: 50; gap: 14px;
-}
-.btn-back { background: none; border: none; font-size: 18px; font-weight: 800; color: var(--text-dark); cursor: pointer; }
-.workspace-title { font-size: 14px; font-weight: 900; color: var(--text-dark); }
-.workspace-content { padding: 14px; padding-bottom: 120px; }
-
-.card { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
-label { font-size: 10px; font-weight: 800; color: var(--text-gray); display: block; margin-bottom: 4px; text-transform: uppercase; }
-select, input {
-  width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border);
-  background: #F8FAFC; color: var(--text-dark); font-size: 12px; font-weight: 600; margin-bottom: 10px; outline: none;
-}
-.btn { padding: 12px; border: none; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
-.btn-primary { background: var(--bri-blue); color: white; }
-.btn-success { background: #10B981; color: white; }
-.btn-danger { background: #FEE2E2; color: #EF4444; border: 1px solid #FECACA; font-size: 10px; padding: 4px 8px; border-radius: 6px; width: auto; cursor: pointer; }
 
 /* =========================================================================
-   PERBAIKAN AREA KAMERA & VIDEO ANTI LAYAR HITAM
+   1. ONBOARDING / LOGIN TERMINAL (MODERN BANKING AUTH)
+   ========================================================================= */
+#onboardingScreen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, var(--bank-primary) 0%, var(--bank-primary-light) 100%);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 24px 36px 24px;
+  color: #FFFFFF;
+}
+
+.onboarding-hero {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.hero-icon-box {
+  width: 80px; height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.onboard-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+}
+
+.onboard-sub {
+  font-size: 12.5px;
+  color: #93C5FD;
+  margin-top: 6px;
+}
+
+.onboard-form {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 22px;
+  border-radius: var(--radius-card);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.onboard-form label {
+  color: #93C5FD;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.onboard-form input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  margin-bottom: 14px;
+}
+
+.onboard-form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* =========================================================================
+   2. HERO HEADER & DASHBOARD
+   ========================================================================= */
+.hero-container {
+  background: linear-gradient(160deg, var(--bank-primary) 0%, var(--bank-primary-light) 100%);
+  color: #FFFFFF;
+  padding: 36px 18px 90px 18px;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  box-shadow: 0 10px 30px rgba(10, 37, 64, 0.2);
+}
+
+.top-brand-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.brand-logo {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.brand-logo span {
+  font-size: 11px;
+  font-weight: 500;
+  color: #93C5FD;
+  background: rgba(255,255,255,0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+.top-icons {
+  display: flex;
+  gap: 12px;
+  font-size: 16px;
+  align-items: center;
+}
+
+.top-icons span {
+  background: rgba(255,255,255,0.1);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.top-icons span:active {
+  background: rgba(255,255,255,0.25);
+}
+
+.user-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-badge-circle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-char {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--bank-gold), #D97706);
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+}
+
+/* =========================================================================
+   3. FLOATING BALANCE CARD (BANKING ACCOUNT STYLE)
+   ========================================================================= */
+.balance-card-carousel {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 18px 20px;
+  margin: -72px 16px 16px 16px;
+  box-shadow: var(--shadow-card);
+  z-index: 20;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.rekening-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rek-number {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--text-gray);
+  letter-spacing: 0.5px;
+}
+
+.rek-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--bank-accent);
+  background: #E0F2FE;
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+
+.balance-amount {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+.eye-icon {
+  font-size: 15px;
+  color: var(--text-gray);
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* =========================================================================
+   4. FINTECH / BANKING GRID MENU
+   ========================================================================= */
+.menu-section {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.section-header {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fintech-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px 8px;
+  margin-bottom: 14px;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.grid-icon-circle {
+  width: 56px; height: 56px;
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 6px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-subtle);
+  background: #FFFFFF;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.grid-item:active .grid-icon-circle {
+  transform: scale(0.90);
+  box-shadow: none;
+  background: #F1F5F9;
+}
+
+.grid-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1.25;
+}
+
+/* =========================================================================
+   5. NOTIFICATION FEED CARD
+   ========================================================================= */
+.section-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 16px 18px;
+  margin: 0 16px 16px 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.card-title-head {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feed-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 11.5px;
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+}
+
+.feed-target {
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.feed-time {
+  font-size: 9.5px;
+  color: var(--text-gray);
+  margin-top: 2px;
+}
+
+.feed-cut {
+  font-weight: 900;
+  color: var(--danger);
+}
+
+/* =========================================================================
+   6. FLOATING BOTTOM NAVIGATION BAR
+   ========================================================================= */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 80px;
+  padding-bottom: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  box-shadow: var(--shadow-float);
+}
+
+.b-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  color: var(--text-gray);
+  font-size: 9.5px;
+  font-weight: 800;
+  width: 60px;
+  transition: color 0.2s;
+}
+
+.b-item.active {
+  color: var(--bank-accent);
+}
+
+.b-icon {
+  font-size: 20px;
+}
+
+.center-scan-btn {
+  width: 58px; height: 58px;
+  background: linear-gradient(135deg, var(--bank-primary), var(--bank-primary-light));
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 900;
+  font-size: 9.5px;
+  margin-top: -38px;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 6px 20px rgba(10, 37, 64, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.center-scan-btn:active {
+  transform: scale(0.92);
+}
+
+/* =========================================================================
+   7. WORKSPACES & FORMS (MODERN BANKING INPUTS)
+   ========================================================================= */
+.workspace-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg-canvas);
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.workspace-header {
+  height: 72px;
+  padding: 22px 18px 0 18px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+}
+
+.btn-back {
+  background: #F1F5F9;
+  border: none;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text-dark);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.workspace-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--text-dark);
+}
+
+.workspace-content {
+  padding: 16px;
+  padding-bottom: 130px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-gray);
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+select, input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-subtle);
+  background: #F8FAFC;
+  color: var(--text-dark);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select:focus, input:focus {
+  border-color: var(--bank-accent);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.btn {
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-btn);
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--bank-primary), var(--bank-primary-light));
+  color: white;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--danger-light);
+  color: var(--danger);
+  border: 1px solid #FECACA;
+  font-size: 10.5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  width: auto;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+/* =========================================================================
+   8. CAMERA & SCANNER WRAPPER
    ========================================================================= */
 .camera-panel-box {
-  background: #000000; border-radius: 14px; padding: 6px; margin-bottom: 12px; overflow: hidden;
+  background: #000000;
+  border-radius: var(--radius-card);
+  padding: 8px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
+
 .reader-box {
-  position: relative; width: 100%; min-height: 240px; height: 240px; background: #000000;
-  border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: #000000;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Selektor Universal untuk Elemen Video html5-qrcode */
 #reader-masuk, #reader-mutasi, #reader-member {
-  width: 100% !important; height: 100% !important; min-height: 240px !important; border: none !important;
-}
-#reader-masuk video, #reader-mutasi video, #reader-member video {
-  width: 100% !important; height: 100% !important; min-height: 240px !important;
-  object-fit: cover !important; border-radius: 8px !important; display: block !important;
-  background: #000000 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
 }
 
-/* Sembunyikan elemen teks/status default html5-qrcode agar tampilan bersih */
+#reader-masuk video, #reader-mutasi video, #reader-member video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 12px !important;
+}
+
 #reader-masuk__header_message, #reader-masuk__status_span, #reader-masuk img,
 #reader-mutasi__header_message, #reader-mutasi__status_span, #reader-mutasi img,
 #reader-member__header_message, #reader-member__status_span, #reader-member img {
@@ -156,25 +598,104 @@ select, input {
 }
 
 .laser-guide {
-  position: absolute; top: 50%; left: 5%; width: 90%; height: 2px;
-  background: #EF4444; box-shadow: 0 0 12px #EF4444; pointer-events: none; z-index: 15;
-  transform: translateY(-50%); display: none;
+  position: absolute;
+  top: 50%; left: 5%;
+  width: 90%; height: 2px;
+  background: #EF4444;
+  box-shadow: 0 0 12px #EF4444;
+  pointer-events: none;
+  z-index: 15;
+  transform: translateY(-50%);
+  display: none;
 }
-.laser-guide.active { display: block; animation: laserSweep 1.3s ease-in-out infinite alternate; }
-@keyframes laserSweep { 0% { transform: translateY(-30px); opacity: 0.6; } 100% { transform: translateY(30px); opacity: 0.95; } }
 
-/* TABEL */
-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-th { padding: 8px 4px; text-align: left; color: var(--text-gray); font-size: 9.5px; font-weight: 800; border-bottom: 1px solid var(--border); }
-td { padding: 8px 4px; border-bottom: 1px solid #F1F5F9; }
-.badge-code { background: #F1F5F9; color: var(--bri-blue); padding: 3px 6px; border-radius: 6px; font-family: monospace; font-size: 11px; font-weight: bold; }
-.qty-input { width: 45px; text-align: center; padding: 4px; background: #FFFFFF; border: 1px solid var(--bri-blue); color: var(--bri-blue); font-weight: 900; border-radius: 6px; margin: 0; }
+.laser-guide.active {
+  display: block;
+  animation: laserSweep 1.3s ease-in-out infinite alternate;
+}
 
-.pecahan-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
-.pecahan-row input { width: 80px; margin-bottom: 0; text-align: center; font-weight: 800; padding: 6px; }
+@keyframes laserSweep {
+  0% { transform: translateY(-35px); opacity: 0.5; }
+  100% { transform: translateY(35px); opacity: 0.95; }
+}
+
+/* =========================================================================
+   9. TABLES & MISC COMPONENTS
+   ========================================================================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+th {
+  padding: 10px 6px;
+  text-align: left;
+  color: var(--text-gray);
+  font-size: 10px;
+  font-weight: 900;
+  border-bottom: 2px solid var(--border-subtle);
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 10px 6px;
+  border-bottom: 1px solid #F1F5F9;
+  font-weight: 600;
+}
+
+.badge-code {
+  background: #F1F5F9;
+  color: var(--bank-accent);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 900;
+  border: 1px solid #E2E8F0;
+}
+
+.qty-input {
+  width: 50px;
+  text-align: center;
+  padding: 6px;
+  background: #FFFFFF;
+  border: 2px solid var(--bank-accent);
+  color: var(--bank-accent);
+  font-weight: 900;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.pecahan-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.pecahan-row input {
+  width: 90px;
+  margin-bottom: 0;
+  text-align: center;
+  font-weight: 900;
+  padding: 8px;
+}
 
 #toast-msg {
-  position: fixed; top: 50px; left: 16px; right: 16px; background: #0F172A;
-  color: #F8FAFC; border-radius: 12px; padding: 10px 14px; font-size: 11.5px; font-weight: 800;
-  z-index: 2000; text-align: center; display: none;
+  position: fixed;
+  top: 40px; left: 16px; right: 16px;
+  background: var(--bank-primary);
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 800;
+  z-index: 2000;
+  text-align: center;
+  display: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
 }
