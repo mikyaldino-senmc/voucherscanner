@@ -19,13 +19,13 @@
             <div class="onboard-sub">Terminal Mobile Kasir & Logistik</div>
         </div>
         <div class="onboard-form">
-            <label>ID TOKO (NMC / NACC)</label>
-            <input type="text" id="inpStoreId" placeholder="Contoh: NMC atau NACC">
-            <label>NAMA KASIR / PETUGAS</label>
+            <label>ID TOKO (NMC / NACC / OWNER)</label>
+            <input type="text" id="inpStoreId" placeholder="Contoh: NMC, NACC, atau OWNER">
+            <label>NAMA KASIR / OWNER</label>
             <input type="text" id="inpKasirName" placeholder="Nama Anda">
             <button class="btn btn-primary" onclick="submitLoginById()">MASUK TERMINAL ➔</button>
         </div>
-        <div style="text-align: center; font-size: 10px; color: #93C5FD;">Banking-Grade Secure Sync v2.0</div>
+        <div style="text-align: center; font-size: 10px; color: #93C5FD;">Banking-Grade Secure Sync v2.5</div>
     </div>
 
     <!-- 2. HERO HEADER & DASHBOARD -->
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    <!-- 3. FINTECH GRID MENU -->
+    <!-- 3. FINTECH GRID MENU (LENGKAP DENGAN FITUR BARU) -->
     <div class="menu-section">
         <div class="section-header">MENU OPERASIONAL TOKO</div>
         <div class="fintech-grid">
@@ -101,6 +101,23 @@
                 <div class="grid-icon-circle" style="color: #14B8A6;">💰</div>
                 <div class="grid-label">Hitung Laci</div>
             </div>
+            <!-- FITUR BARU -->
+            <div class="grid-item" onclick="openWorkspace('OWNER_DASH')">
+                <div class="grid-icon-circle" style="color: #7C3AED; background: #EDE9FE;">🚨</div>
+                <div class="grid-label">Owner Alert</div>
+            </div>
+            <div class="grid-item" onclick="openWorkspace('PURCHASE_ORDER')">
+                <div class="grid-icon-circle" style="color: #0284C7; background: #E0F2FE;">📦</div>
+                <div class="grid-label">Order Stok</div>
+            </div>
+            <div class="grid-item" onclick="openWorkspace('PRICE_TAG')">
+                <div class="grid-icon-circle" style="color: #059669; background: #D1FAE5;">🖨️</div>
+                <div class="grid-label">Cetak Barcode</div>
+            </div>
+            <div class="grid-item" onclick="openWorkspace('SOP')">
+                <div class="grid-icon-circle" style="color: #64748B;">📖</div>
+                <div class="grid-label">SOP Kasir</div>
+            </div>
         </div>
     </div>
 
@@ -117,10 +134,10 @@
 
 
     <!-- ========================================================================= -->
-    <!-- WORKSPACES / SUB-MENU SCREENS (WAJIB ADA AGAR MENU BISA DIBUKA) -->
+    <!-- WORKSPACES / SUB-MENU SCREENS -->
     <!-- ========================================================================= -->
 
-    <!-- A. WORKSPACE SCAN BARANG MASUK -->
+    <!-- 1. SCAN MASUK -->
     <div id="wsScanMasuk" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -135,9 +152,7 @@
             </div>
             <div class="card">
                 <label>Barcode / Kode Barang</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="inpBarcodeMasuk" placeholder="Scan atau ketik kode..." onchange="onBarcodeEnteredManual()">
-                </div>
+                <input type="text" id="inpBarcodeMasuk" placeholder="Scan atau ketik kode..." onchange="onBarcodeEnteredManual()">
                 <div id="panelItemStatus" style="display:none; padding:10px; border-radius:10px; margin-bottom:12px;"></div>
                 <label>Nama Barang</label>
                 <input type="text" id="inpNamaBarangMasuk" placeholder="Nama produk...">
@@ -161,7 +176,7 @@
                         <span id="lblTotalEstimasiKulakan" style="color:#0284C7">Rp 0</span>
                     </div>
                 </div>
-                <label>Uang Diterima dari Pemilik/Kasir (Kalkulator Kembalian)</label>
+                <label>Uang Diterima Kasir (Kalkulator Kembalian)</label>
                 <input type="number" id="inpUangDiterima" placeholder="Nominal uang tunai..." oninput="hitungKembalianKulakan()">
                 <div style="background:#FEF3C7; padding:12px; border-radius:12px; margin-bottom:14px; border:1px solid #FDE68A;">
                     <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:900;">
@@ -174,7 +189,7 @@
         </div>
     </div>
 
-    <!-- B. WORKSPACE CEK HARGA KILAT -->
+    <!-- 2. CEK HARGA KILAT -->
     <div id="wsCekHarga" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -199,7 +214,7 @@
         </div>
     </div>
 
-    <!-- C. WORKSPACE MUTASI STOK -->
+    <!-- 3. MUTASI STOK -->
     <div id="wsMutasi" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -210,7 +225,6 @@
                 <label>Pilih Produk Master</label>
                 <select id="selKatalogMutasi" onchange="onSelectKatalogMutasi()"></select>
                 <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Stok Gudang Tersedia: <b id="lblStokGudangMutasi">0</b> pcs</div>
-                
                 <label>Tujuan Mutasi Cabang</label>
                 <select id="selTujuanMutasi">
                     <option value="Toko NMC">Toko NMC</option>
@@ -236,7 +250,7 @@
         </div>
     </div>
 
-    <!-- D. WORKSPACE PPOB FEED -->
+    <!-- 4. PPOB CHECKLIST -->
     <div id="wsPpobFeed" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -244,13 +258,13 @@
         </div>
         <div class="workspace-content">
             <div class="card">
-                <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Ceklis transaksi Order Kuota & Digipos yang masuk agar sesuai dengan fisik server.</div>
+                <div style="font-size:11px; color:var(--text-gray); margin-bottom:10px;">Ceklis transaksi Order Kuota & Digipos yang masuk.</div>
                 <div id="ppobChecklistContainer"></div>
             </div>
         </div>
     </div>
 
-    <!-- E. WORKSPACE DAFTAR MEMBER -->
+    <!-- 5. DAFTAR MEMBER -->
     <div id="wsMemberDaftar" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -274,7 +288,7 @@
         </div>
     </div>
 
-    <!-- F. WORKSPACE SCAN MEMBER -->
+    <!-- 6. SCAN MEMBER -->
     <div id="wsMemberScan" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -295,7 +309,7 @@
         </div>
     </div>
 
-    <!-- G. WORKSPACE KAS KELUAR / BIAYA -->
+    <!-- 7. KAS KELUAR -->
     <div id="wsBiaya" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -312,13 +326,13 @@
                 <label>Nominal (Rp)</label>
                 <input type="number" id="inpNominalBiaya" placeholder="Contoh: 50000">
                 <label>Keterangan / Catatan</label>
-                <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli token listrik token..." style="margin-bottom:16px;">
+                <input type="text" id="inpKetBiaya" placeholder="Contoh: Beli token listrik..." style="margin-bottom:16px;">
                 <button class="btn btn-primary" onclick="simpanBiayaKasir()">💾 Catat & Kirim ke Desktop</button>
             </div>
         </div>
     </div>
 
-    <!-- H. WORKSPACE HITUNG LACI / REKAP EOD -->
+    <!-- 8. HITUNG LACI EOD -->
     <div id="wsRekap" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -345,7 +359,7 @@
         </div>
     </div>
 
-    <!-- I. WORKSPACE CEK STOK -->
+    <!-- 9. CEK STOK -->
     <div id="wsStok" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -361,7 +375,95 @@
         </div>
     </div>
 
-    <!-- J. WORKSPACE DIAGNOSTIK & SYNC -->
+    <!-- ========================================================================= -->
+    <!-- WORKSPACE FITUR BARU -->
+    <!-- ========================================================================= -->
+
+    <!-- F1. OWNER ALERT DASHBOARD -->
+    <div id="wsOwnerDash" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">🚨 Owner Remote Dashboard</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card" style="background: linear-gradient(135deg, #7C3AED, #5B21B6); color: white;">
+                <div style="font-size: 11px; opacity: 0.8; font-weight:800;">STATUS KESEHATAN SERVER TOKO</div>
+                <div style="font-size: 18px; font-weight: 900; margin-top: 4px;">Pusat Kontrol Pemilik</div>
+                <div style="font-size: 11px; margin-top: 8px; opacity: 0.9;">Memantau saldo server PPOB dan aktivitas kasir secara real-time.</div>
+            </div>
+            <div class="card">
+                <div style="font-weight: 900; font-size: 12px; margin-bottom: 10px;">⚠️ Peringatan Saldo & Sistem</div>
+                <div id="ownerAlertContainer">
+                    <div style="padding: 10px; background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 8px; font-size: 11px; color: #92400E; font-weight: 700;">
+                        ✅ Semua sistem server normal. Saldo Order Kuota & Digipos mencukupi.
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div style="font-weight: 900; font-size: 12px; margin-bottom: 10px;">📊 Ringkasan Keuangan Harian Toko</div>
+                <div id="ownerSummaryContainer" style="font-size: 12px; color: var(--text-dark);">
+                    <div>Memuat data ringkasan...</div>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 14px;" onclick="fetchLiveStoreData()">🔄 Refresh Data Server</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F2. PURCHASE ORDER (PO) / RESTOCK LIST -->
+    <div id="wsPurchaseOrder" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">📦 Purchase Order & Restock</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <label>Pilih Produk Master untuk Restock</label>
+                <select id="selKatalogPO"></select>
+                <label>Jumlah Pesanan (Qty)</label>
+                <input type="number" id="inpQtyPO" value="5">
+                <button class="btn btn-primary" onclick="tambahItemPO()">➕ Masukkan ke Daftar PO</button>
+            </div>
+            <div class="card">
+                <div style="font-weight: 900; font-size: 12px; margin-bottom: 8px;">Daftar Barang Belanjaan (PO)</div>
+                <table>
+                    <thead><tr><th>Nama Barang</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Aksi</th></tr></thead>
+                    <tbody id="cartTablePO">
+                        <tr><td colspan="3" style="text-align: center; color: var(--text-gray); padding: 12px;">Belum ada item dalam daftar PO.</td></tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-success" style="margin-top: 14px;" onclick="kirimPurchaseOrder()">🚀 Kirim PO ke Desktop / Supplier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- F3. PRICE TAG & BARCODE GENERATOR -->
+    <div id="wsPriceTag" class="workspace-screen">
+        <div class="workspace-header">
+            <button class="btn-back" onclick="goHome()">✕</button>
+            <div class="workspace-title">🖨️ Cetak Barcode & Label Harga</div>
+        </div>
+        <div class="workspace-content">
+            <div class="card">
+                <label>Pilih Produk dari Katalog Master</label>
+                <select id="selKatalogTag" onchange="onSelectKatalogTag()"></select>
+                <label>Atau Ketik Kode Barcode Manual</label>
+                <input type="text" id="inpManualTagCode" placeholder="Scan atau ketik kode..." oninput="generateCustomBarcodeTag()">
+                <label>Nama Produk / Label</label>
+                <input type="text" id="inpManualTagName" placeholder="Nama barang...">
+                <label>Harga Jual (Rp)</label>
+                <input type="number" id="inpManualTagPrice" placeholder="Contoh: 15000">
+            </div>
+            <div class="card" style="text-align: center; background: #FFFFFF;">
+                <div style="font-weight: 900; font-size: 13px; color: var(--text-dark); margin-bottom: 4px;" id="previewTagName">Nama Produk</div>
+                <div style="font-size: 18px; font-weight: 900; color: #0284C7; margin-bottom: 12px;" id="previewTagPrice">Rp 0</div>
+                <svg id="previewBarcodeSvg" style="margin: 0 auto; display: block;"></svg>
+                <div style="font-size: 10px; color: var(--text-gray); margin-top: 8px;" id="previewTagCode">-</div>
+                <button class="btn btn-primary" style="margin-top: 16px;" onclick="window.print()">🖨️ Cetak Label (Print)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAGNOSTIK & SOP -->
     <div id="wsSyncStatus" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -377,7 +479,6 @@
         </div>
     </div>
 
-    <!-- K. WORKSPACE SOP -->
     <div id="wsSOP" class="workspace-screen">
         <div class="workspace-header">
             <button class="btn-back" onclick="goHome()">✕</button>
@@ -385,17 +486,15 @@
         </div>
         <div class="workspace-content">
             <div class="card">
-                <div style="font-weight:900; font-size:13px; margin-bottom:8px;">📖 SOP Singkat Kasir Nikola</div>
+                <div style="font-weight:900; font-size:13px; margin-bottom:8px;">📖 SOP Kasir & Fitur Baru</div>
                 <ul style="font-size:12px; color:var(--text-gray); padding-left:16px; line-height:1.6;">
-                    <li><b>Stok Masuk:</b> Gunakan menu Stok Masuk untuk kulakan atau mendaftarkan barang baru ke PC Desktop.</li>
-                    <li><b>Mutasi:</b> Gunakan saat mengirim voucher fisik antar cabang atau gudang.</li>
-                    <li><b>PPOB Feed:</b> Ceklis transaksi Order Kuota atau Digipos yang masuk secara berkala.</li>
-                    <li><b>Hitung Laci EOD:</b> Lakukan setiap tutup shift kasir untuk mencocokkan uang fisik laci.</li>
+                    <li><b>Owner Alert:</b> Memantau saldo server PPOB kritis dan ringkasan keuangan harian.</li>
+                    <li><b>Order Stok (PO):</b> Membuat daftar belanjaan barang kosong untuk dikirim ke desktop/supplier.</li>
+                    <li><b>Cetak Barcode:</b> Membuat label harga instan dan barcode produk langsung dari HP.</li>
                 </ul>
             </div>
         </div>
     </div>
-
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast-msg">Notifikasi Sistem</div>
